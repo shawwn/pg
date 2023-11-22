@@ -350,28 +350,28 @@
 (defmemo imbutton (text)
   (with img (render-image-name)
     (shell 'convert
-           '-size '61x14
-           (+ "xc:" (render-color (color 0x66 0x66 0x99)))
+           '-size '62x15
+           '-background 'none
+           "xc:"
            '-gravity 'west
            '-font (+ rootdir* "assets/fonts/metaplusbold-roman.ttf")
-           '-fill 'white
-           '-strokewidth 1
-           '-pointsize "11.7"
-           '-draw (+ "text 2,0 " (tostring:write text))
-           "("
-           '+clone
-           '-shade '315x75
+           '-fill (render-color (color 0xf7 0xf7 0xf7))
+           '-pointsize "12.0" '-kerning 0.0
+           '-draw (+ "text 2,-1 " (tostring:write text))
+           "(" '+clone
+               '-background 'black
+               '-shadow "60x0-1-1"
            ")"
-           '-compose 'multiply
-           '-composite
-           '-sigmoidal-contrast "3x40%"
-           '-mattecolor (render-color (color 0x77 0x77 0x77))
-           '-frame "2.5x2.5+2+0"
+           '+swap
+           '-background (render-color (color 0x66 0x66 0x99))
+           '-layers 'merge
+           '-mattecolor (render-color (color 0xa0 0xa0 0xa0))
+           '-frame "2x2+2+0"
            img)))
 
 (def navbutton (text dest)
   (link (tostring:gentag img src (imbutton text)
-                         width 69 height 21
+                         width 67 height 21
                          border 0 hspace 0 vspace 0)
         (to dest))
   (br))
