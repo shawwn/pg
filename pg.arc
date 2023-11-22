@@ -247,8 +247,10 @@
           (each cols (tuples @!contents (either @!columns 1))
             (rowshim (either @!margin-top 5))
             (tag (tr valign 'top)
-              (each x cols
-                (tag (td width @!column-width)
+              (on x cols
+                (unless (is index 0)
+                  (td (shim 8)))
+                (tag (td width (either @!column-width 210))
                   (gentag img src "https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif"
                           width 12 height 14 align 'left border 0 hspace 0 vspace 0)
                   (tag (font size 2 face 'verdana)

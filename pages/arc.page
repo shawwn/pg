@@ -1,7 +1,7 @@
 (title: "Arc"
  image: (obj type: 'image
-             src: "https://s.turbifycdn.com/aah/paulgraham/arc-12.gif"
-             destination: "https://s.turbifycdn.com/aah/paulgraham/arc-13.gif"
+             src: "https://s.turbifycdn.com/aah/paulgraham/arc-13.gif"
+             destination: "https://s.turbifycdn.com/aah/paulgraham/arc-12.gif"
              width: 49 height: 50 align: 'left)
  contents: (list
              (tostring:link "Forum" "http://arclanguage.org/forum")
