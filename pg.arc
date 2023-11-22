@@ -231,7 +231,8 @@
         link (link x!title x!src)
         (err "Don't know how to render" x))
       (isa!string x)
-      (pr x)
+      (pr (multisubst (list (list "\n\n" "<br /><br />"))
+                      x))
       (err "Don't know how to render" x)))
 
 (def rowshim (height)
@@ -277,7 +278,7 @@
             (on x cols
               (unless (is index 0)
                 (td (shim 8)))
-              (tag (td width (either @!column-width 210))
+              (tag (td width (either @!column-width (if (> (either @!columns 1) 1) 210 421)))
                 (gentag img src "https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif"
                         width 12 height 14 align 'left border 0 hspace 0 vspace 0)
                 (tag (font size 2 face 'verdana)
