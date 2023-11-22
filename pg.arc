@@ -356,7 +356,7 @@
            '-gravity 'west
            '-font (+ rootdir* "assets/fonts/metaplusbold-roman.ttf")
            '-fill (render-color (color 0xf7 0xf7 0xf7))
-           '-pointsize "12.0" '-kerning 0.0
+           '-pointsize "11.95" '-kerning 0.0
            '-draw (+ "text 2,-1 " (tostring:write text))
            "(" '+clone
                '-background 'black
@@ -387,10 +387,20 @@
         (pr it)))
   (navbutton "Essays" 'articles)
   (navbutton "H&P" "http://www.amazon.com/gp/product/0596006624")
+  (navbutton "Books" "books.html")
+  (navbutton "YC" "https://ycombinator.com")
   (navbutton "Arc" 'arc)
+  (navbutton "Bel" "bel.html")
+  (navbutton "Lisp" "lisp.html")
+  (navbutton "Spam" "spam.html")
+  (navbutton "Responses" "responses.html")
+  (navbutton "FAQs" "faq.html")
+  (navbutton "RAQs" "raq.html")
+  (navbutton "Quotes" "quo.html")
   (navbutton "RSS" "pgessays.rss")
   (navbutton "Bio" 'bio)
   (navbutton "Twitter" "https://twitter.com/paulg")
+  (navbutton "Mastodon" "https://mas.to/@@paulg")
   (awhen (tostring
            (navbutton "Index" 'ind)
            (navbutton "Email" 'info))
