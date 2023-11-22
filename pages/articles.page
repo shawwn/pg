@@ -1,0 +1,15 @@
+(title: "Essays"
+ contents: (list
+   'superlinear
+   'road
+   'taste
+ )
+ margin-bottom: false
+ ;columns: 2
+ ;column-width: 196
+)
+If you're not sure which to read, try 
+<a href="wisdom.html"><u>Is it Worth Being Wise?</u></a>,
+<a href="kids.html"><u>Having Kids</u></a>,
+or 
+<a href="selfindulgence.html"><u>How to Lose Time and Money</u></a>.

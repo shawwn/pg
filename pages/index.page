@@ -1,0 +1,12 @@
+(site-name: "Paul Graham"
+ site-desc: "Paul Graham: Essays"
+ ;favicon-url: "http://ycombinator.com/arc/arc.png"
+ favicon-url: "favicon.ico"
+ text-color: black
+ link-color: (color 0 0 0x99)
+ visited-link-color: (color 0x46 0x46 0x46)
+ site-image: (obj url:    "https://user-images.githubusercontent.com/59632/213842621-78c527ed-c657-4126-b27d-2670f35fb053.png"
+                  type:   "image/png"
+                  width:  512
+                  height: 512)
+)

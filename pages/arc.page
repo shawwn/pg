@@ -1,0 +1,44 @@
+(title: "Arc"
+ image: (obj type: 'image
+             src: "https://s.turbifycdn.com/aah/paulgraham/arc-12.gif"
+             destination: "https://s.turbifycdn.com/aah/paulgraham/arc-13.gif"
+             width: 49 height: 50 align: 'left)
+ contents: (list
+             (tostring:link "Forum" "http://arclanguage.org/forum")
+             (tostring:link "Tutorial" "http://ycombinator.com/arc/tut.txt")
+           )
+)
+Arc is a new dialect of Lisp we're working on.   You can 
+find an early release and ask questions at 
+<a href="http://arclanguage.org">arclanguage.org</a>.
+The Arc community is very newbie-friendly,
+because all the users are newbies to some extent.
+
+To get an idea of where we eventually hope to take Arc,
+see <a href ="popular.html">Being Popular</a>
+and <a href="hundred.html">The Hundred-Year Language</a>.
+<!-- We do now have a reasonably efficient Arc implementation,
+written by Robert Morris and me on top of MzScheme.
+The next step is to beat it into shape on some real projects.
+The most interesting is <a href="http://news.ycombinator.com">Hacker
+News</a>, which is written entirely in Arc, including the http
+server.  Among other things this allowed us to add a read-eval-print
+loop (which I obviously can't link to) that we can use to modify
+the server as it's running, without restarting it.
+
+When we release something, we'll set up a server where you'll be able to 
+get an Arc toplevel through Web forms.
+Anyone who wants to try Arc will be able to see the latest version
+without having to download or install anything.
+If you'd like to try Arc, send an email to <a href="mailto:tryarc@paulgraham.com">tryarc@paulgraham.com</a>
+and we'll notify you when there is something online to experiment with.
+
+When will that be?  We have no idea.  We reserve the right to take a
+very long time.  It's been almost 50 years since
+McCarthy first <a href="rootsoflisp.html">described</a> Lisp.  
+Another 2 or 3 aren't going to kill
+anyone. So please don't send us mail asking what
+Arc's status is or when it will be done.
+(When it's done, we'll tell you.)
+-->
+<br>
