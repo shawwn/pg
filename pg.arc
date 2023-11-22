@@ -348,16 +348,20 @@
   ;(gentag img src "https://s.turbifycdn.com/aah/paulgraham/img-26.gif"
   ;        width 69 height 399
   ;        border 0 hspace 0 vspace 0)
-  (if (is @!id 'index)
-      (do (shim 21 69) (br))
-      (navbutton "Home" 'index))
+  (awhen (tostring
+           (navbutton "Home" 'index))
+    (if (is @!id 'index)
+        (do (shim 21 69) (br))
+        (pr it)))
   (navbutton "Essays" 'articles)
   (navbutton "H&P" "http://www.amazon.com/gp/product/0596006624")
   (navbutton "Arc" 'arc)
   (navbutton "Twitter" "https://twitter.com/paulg")
-  (when (is @!id 'index)
-    (navbutton "Index" 'ind)
-    (navbutton "Email" 'info))
+  (awhen (tostring
+           (navbutton "Index" 'ind)
+           (navbutton "Email" 'info))
+    (when (is @!id 'index)
+      (pr it)))
   nil)
 
 gen-site
