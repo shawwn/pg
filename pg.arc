@@ -261,6 +261,9 @@
       (sitetable 435
         (trtd
           (tag (font size 2 face 'verdana)
+            (awhen @!bottom-text
+              (br 2)
+              (pr it))
             (br 2)
             (gentag hr)
             (only&pr @!footer)
@@ -358,6 +361,7 @@
   (navbutton "Essays" 'articles)
   (navbutton "H&P" "http://www.amazon.com/gp/product/0596006624")
   (navbutton "Arc" 'arc)
+  (navbutton "RSS" "pgessays.rss")
   (navbutton "Twitter" "https://twitter.com/paulg")
   (awhen (tostring
            (navbutton "Index" 'ind)
