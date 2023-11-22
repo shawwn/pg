@@ -100,7 +100,7 @@
              (sitetable nil
                (tag (tr valign 'top)
                  (td (navbuttons))
-                 (td (shim 1 26))
+                 (td (shim 1 28))
                  (td ,@body)))))))))
 
 (def romandigit (n (o chars "ivx"))
@@ -225,7 +225,7 @@
       (case x!type
         image (let v (tostring:gentag img src x!src
                                       width x!width height x!height align x!align
-                                      border x!border hspace x!hspace vspace x!vspace
+                                      border (or x!border 0) hspace (or x!hspace 0) vspace (or x!vspace 0)
                                       alt (or x!alt "Click to enlarge"))
                 (aif x!destination (link v it) (pr v)))
         link (link x!title x!src)
@@ -244,9 +244,10 @@
 
 (def display-text (text)
   (unless (empty text)
-    (gentag img src (imtitle text)
-            height 23 border 0 hspace 0 vspace 0
-            alt text)
+    (let im (imtitle text)
+      (gentag img src im
+              height (imheight im) border 0 hspace 0 vspace 0
+              alt text))
     (br 2)))
 
 (def gen-section ()
@@ -267,8 +268,8 @@
             (pr @!text)
             (when @!image
               (tag (br clear 'all)))))))
-    (br)
     (when @!contents
+      (br)
       (sitetable 435
         (each cols (tuples @!contents (either @!columns 1))
           (rowshim (either @!margin-top 5))
@@ -328,23 +329,37 @@
                    (o :text-align 'left)
                    (o :background-color 'none)
                    (o :font 'verdana)
-                   (o :font-size 17.8))
+                   (o :kerning 0)
+                   (o :font-size 18))
   (with img (render-image-name)
     (shell 'convert
            '-font font
            '-pointsize font-size
+           '-kerning kerning
+           '-gravity "west"
+           '-size "1500x@(round font-size)"
            '-fill (render-color text-color)
+           "xc:"
            '-background (render-color background-color)
-           "label:@text"
+           ;"label:@text"
+           '-draw "text 0,-1 @(tostring:write text)"
+           '-define' "trim:edges=east,west" '-trim '+repage
            img)))
 
 (def imsize (img)
   (map int (tokens (shell 'identify '-format "%w %h" img))))
 
+(def imwidth (img)
+  (car (imsize img)))
+
+(def imheight (img)
+  (cadr (imsize img)))
+
 (defmemo imtitle (text)
   (render-text text
                font: (+ rootdir* "assets/fonts/metaplusbook-caps.ttf")
-               font-size: 17.8
+               ;kerning: 0.28
+               font-size: 17.5
                text-color: (color 0x64 0x1b 0x16)))
 
 (defmemo imbutton (text)
