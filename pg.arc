@@ -245,7 +245,7 @@
 (def display-text (text)
   (unless (empty text)
     (gentag img src (imtitle text)
-            border 0 hspace 0 vspace 0
+            height 23 border 0 hspace 0 vspace 0
             alt text)
     (br 2)))
 
