@@ -242,45 +242,49 @@
   (gentag img src "https://sep.turbifycdn.com/ca/Img/trans_1x1.gif"
           height height width width border 0 align align))
 
-(def gen-section (id (o prev) (o next))
-  (with-object id
-    (page id @!title
-      (link (tostring:gentag img src "https://s.turbifycdn.com/aah/paulgraham/essays-6.gif"
-                             width 410 height 45
-                             border 0 hspace 0 vspace 0)
-            (to 'index))
-      (br 2)
+(def display-text (text)
+  (unless (empty text)
+    (gentag img src (imtitle text)
+            border 0 hspace 0 vspace 0
+            alt text)
+    (br 2)))
+
+(def gen-section ()
+  (page @!id @!title
+    (link (tostring:gentag img src "https://s.turbifycdn.com/aah/paulgraham/essays-6.gif"
+                           width 410 height 45
+                           border 0 hspace 0 vspace 0)
+          (to 'index))
+    (br 2)
+    (sitetable 435
+      (tag (tr valign 'top)
+        (tag (td width 435)
+          (awhen @!image
+            (render-object it)
+            (shim (+ it!height 8) 10 align: 'left))
+          (display-text (or @!headline @!title))
+          (tag (font size 2 face 'verdana)
+            (pr @!text)
+            (when @!image
+              (tag (br clear 'all)))))))
+    (br)
+    (when @!contents
       (sitetable 435
-        (tag (tr valign 'top)
-          (tag (td width 435)
-            (awhen @!image
-              (render-object it)
-              (shim (+ it!height 8) 10 align: 'left))
-            (gentag img src (imtitle @!title)
-                    border 0 hspace 0 vspace 0
-                    alt @!title)
-            (br 2)
-            (tag (font size 2 face 'verdana)
-              (pr @!text)
-              (when @!image
-                (tag (br clear 'all)))))))
-      (br)
-      (when @!contents
-        (sitetable 435
-          (each cols (tuples @!contents (either @!columns 1))
-            (rowshim (either @!margin-top 5))
-            (tag (tr valign 'top)
-              (on x cols
-                (unless (is index 0)
-                  (td (shim 8)))
-                (tag (td width (either @!column-width 210))
-                  (gentag img src "https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif"
-                          width 12 height 14 align 'left border 0 hspace 0 vspace 0)
-                  (tag (font size 2 face 'verdana)
-                    (render-object x)
-                    (shim 2)))))
-            (rowshim (either @!margin-bottom 8)))))
-      (br)
+        (each cols (tuples @!contents (either @!columns 1))
+          (rowshim (either @!margin-top 5))
+          (tag (tr valign 'top)
+            (on x cols
+              (unless (is index 0)
+                (td (shim 8)))
+              (tag (td width (either @!column-width 210))
+                (gentag img src "https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif"
+                        width 12 height 14 align 'left border 0 hspace 0 vspace 0)
+                (tag (font size 2 face 'verdana)
+                  (render-object x)
+                  (shim 2)))))
+          (rowshim (either @!margin-bottom 8)))))
+    (br)
+    (unless @!nofoot
       (sitetable 435
         (trtd
           (tag (font size 2 face 'verdana)
@@ -290,9 +294,7 @@
             (br 2)
             (gentag hr)
             (only&pr @!footer)
-            )))
-      )
-    ))
+            ))))))
 
 (def gen-site ()
   (each name (sort < (dir pagesdir*))
@@ -304,7 +306,8 @@
   (gen-rss)
   (each (k v) pages*
     (unless (is k 'index)
-      (gen-section k))))
+      (with-object k
+        (gen-section)))))
 
 
 (def clean-name (name)
