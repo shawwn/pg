@@ -182,6 +182,26 @@
       (br))
     ))
 
+(def gen-index ()
+  (page 'ind (cat @!site-name " Index")
+    (gentag img src "https://s.turbifycdn.com/aah/paulgraham/essays-6.gif"
+            width 410 height 45
+            border 0 hspace 0 vspace 0)
+    (br 2)
+    (sitetable 435
+      (trtd
+        (each i (all-items)
+          (link i!title (to i!id))
+          (br))))))
+
+(def all-items ((o sections (keys pages*)))
+  (let tems nil
+    (each s sections
+      (with-object s
+        (when @!title
+          (pushnew (self*) tems (compare is !title)))))
+    (sort (compare < !title) tems)))
+
 (def gen-rss ()
   (tofile "pgessays.rss"
     (prn "<rss version=\"2.0\" xmlns:content=\"http://purl.org/rss/1.0/modules/content/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><channel>")
@@ -280,6 +300,7 @@
       (let id (sym:cut name 0 -5)
         (load-page id))))
   (gen-contents)
+  (gen-index)
   (gen-rss)
   (each (k v) pages*
     (unless (is k 'index)
