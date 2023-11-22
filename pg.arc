@@ -168,7 +168,7 @@
                   (br)
                   (spacer 5))))
             (br 2)
-            (gentag link rel "alternate" type "application/rss+xml" title "RSS" href "http://www.aaronsw.com/2002/feeds/pgessays.rss")
+            (gentag link rel "alternate" type "application/rss+xml" title "RSS" href "pgessays.rss")
             )))
       (br)
       (sitetable 435
@@ -180,8 +180,22 @@
                 (pr "&copy; " (romannum:car:date) " pg")))))
         )
       (br))
-
     ))
+
+(def gen-rss ()
+  (tofile "pgessays.rss"
+    (prn "<rss version=\"2.0\" xmlns:content=\"http://purl.org/rss/1.0/modules/content/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><channel>")
+    (prn "  <title>" @!site-desc "</title>")
+    (prn "  <link>" @!site-url "</link>")
+    (prn "  <description>Scraped feed provided by aaronsw.com</description>")
+    (with-object 'articles
+      (each x @!contents
+        (with-object x
+          (prn "  <item>")
+          (prn "    <link>" @!site-url (to @!id) "</link>")
+          (prn "    <title>" @!title "</title>")
+          (prn "  </item>"))))
+    (prn "</channel></rss>")))
 
 (def render-object (x)
   (if (isa!sym x)
@@ -219,8 +233,6 @@
             (awhen @!image
               (render-object it)
               (shim (+ it!height 8) 10 align: 'left))
-            ;(gentag img src "https://sep.turbifycdn.com/ca/Img/trans_1x1.gif"
-            ;        height 58 width 10 align 'left border 0)
             (gentag img src (imtitle @!title)
                     border 0 hspace 0 vspace 0
                     alt @!title)
@@ -260,6 +272,7 @@
       (let id (sym:cut name 0 -5)
         (load-page id))))
   (gen-contents)
+  (gen-rss)
   (each (k v) pages*
     (unless (is k 'index)
       (gen-section k))))
@@ -344,8 +357,7 @@
   (navbutton "Twitter" "https://twitter.com/paulg")
   (when (is @!id 'index)
     (navbutton "Index" 'ind)
-    (navbutton "Email" 'info)
-    )
+    (navbutton "Email" 'info))
   nil)
 
 gen-site

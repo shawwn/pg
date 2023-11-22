@@ -1,0 +1,17 @@
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel>
+  <title>Paul Graham: Essays</title>
+  <link>https://shawwn.github.io/pg/</link>
+  <description>Scraped feed provided by aaronsw.com</description>
+  <item>
+    <link>https://shawwn.github.io/pg/superlinear.html</link>
+    <title>Superlinear Returns</title>
+  </item>
+  <item>
+    <link>https://shawwn.github.io/pg/road.html</link>
+    <title>The Other Road Ahead</title>
+  </item>
+  <item>
+    <link>https://shawwn.github.io/pg/taste.html</link>
+    <title>Taste for Makers</title>
+  </item>
+</channel></rss>
