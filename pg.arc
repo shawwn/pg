@@ -405,7 +405,7 @@
   (navbutton "Books" "books.html")
   (navbutton "YC" "https://ycombinator.com")
   (navbutton "Arc" 'arc)
-  (navbutton "Bel" "bel.html")
+  (navbutton "Bel" 'bel)
   (navbutton "Lisp" "lisp.html")
   (navbutton "Spam" "spam.html")
   (navbutton "Responses" "responses.html")
