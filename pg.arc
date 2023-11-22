@@ -100,7 +100,7 @@
              (sitetable nil
                (tag (tr valign 'top)
                  (td (navbuttons))
-                 (td (gentag img src "s.gif" width 26 height 1 border 0))
+                 (td (shim 1 26))
                  (td ,@body)))))))))
 
 (def romandigit (n (o chars "ivx"))
@@ -203,7 +203,10 @@
         (link @!title (to @!id)))
       (isa!table x)
       (case x!type
-        image (let v (tostring:gentag img src x!src width x!width height x!height align x!align alt (or x!alt "Click to enlarge"))
+        image (let v (tostring:gentag img src x!src
+                                      width x!width height x!height align x!align
+                                      border x!border hspace x!hspace vspace x!vspace
+                                      alt (or x!alt "Click to enlarge"))
                 (aif x!destination (link v it) (pr v)))
         link (link x!title x!src)
         (err "Don't know how to render" x))
@@ -362,6 +365,7 @@
   (navbutton "H&P" "http://www.amazon.com/gp/product/0596006624")
   (navbutton "Arc" 'arc)
   (navbutton "RSS" "pgessays.rss")
+  (navbutton "Bio" 'bio)
   (navbutton "Twitter" "https://twitter.com/paulg")
   (awhen (tostring
            (navbutton "Index" 'ind)
