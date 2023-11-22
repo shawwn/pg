@@ -361,7 +361,7 @@
                font: (+ rootdir* "assets/fonts/metaplusbook-caps.ttf")
                ;kerning: 0.28
                font-size: 17.5
-               text-color: (color 0x64 0x1b 0x16)))
+               text-color: (color 0x7f 0x1b 0x16)))
 
 (defmemo imbutton (text)
   (with img (render-image-name)
