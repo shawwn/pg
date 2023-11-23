@@ -1,4 +1,6 @@
-#!/usr/bin/env sparc
+#!/usr/bin/env arc
+
+(require (libpath "html.arc"))
 
 (or= pages* (obj))
 
