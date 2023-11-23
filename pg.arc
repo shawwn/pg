@@ -99,7 +99,7 @@
                       vlink @!visited-link-color)
              (sitetable nil
                (tag (tr valign 'top)
-                 (td (navbuttons))
+                 (td (navbuttons ,name))
                  (td (shim 1 28))
                  (td ,@body)))))))))
 
@@ -392,13 +392,13 @@
         (to dest))
   (br))
 
-(def navbuttons ()
+(def navbuttons ((o id @!id))
   ;(gentag img src "https://s.turbifycdn.com/aah/paulgraham/img-26.gif"
   ;        width 69 height 399
   ;        border 0 hspace 0 vspace 0)
   (awhen (tostring
            (navbutton "Home" 'index))
-    (if (is @!id 'index)
+    (if (is id 'index)
         (do (shim 21 69) (br))
         (pr it)))
   (navbutton "Essays" 'articles)
@@ -420,7 +420,7 @@
   (awhen (tostring
            (navbutton "Index" 'ind)
            (navbutton "Email" 'info))
-    (when (is @!id 'index)
+    (when (is id 'index)
       (pr it)))
   nil)
 
