@@ -3,6 +3,8 @@
  site-url: "https://shawwn.github.io/pg/"
  ;favicon-url: "http://ycombinator.com/arc/arc.png"
  favicon-url: "favicon.ico"
+ rss-url: "pgessays.rss"
+ rss-desc: "Scraped feed provided by aaronsw.com"
  text-color: black
  link-color: (color 0 0 0x99)
  visited-link-color: (color 0x46 0x46 0x46)
@@ -10,4 +12,22 @@
                   type:   "image/png"
                   width:  512
                   height: 512)
+ buttons: (list
+  (list "Essays" 'articles)
+  (list "H&P" "http://www.amazon.com/gp/product/0596006624")
+  (list "Books" "books.html")
+  (list "YC" "https://ycombinator.com")
+  (list "Arc" 'arc)
+  (list "Bel" 'bel)
+  (list "Lisp" "lisp.html")
+  (list "Spam" "spam.html")
+  (list "Responses" "responses.html")
+  (list "FAQs" "faq.html")
+  (list "RAQs" "raq.html")
+  (list "Quotes" "quo.html")
+  (list "RSS" "pgessays.rss")
+  (list "Bio" 'bio)
+  (list "Twitter" "https://twitter.com/paulg")
+  (list "Mastodon" "https://mas.to/@@paulg")
+ )
 )

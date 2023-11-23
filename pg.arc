@@ -2,10 +2,9 @@
 
 (require (libpath "html.arc"))
 
-(or= pages* (obj))
-
-(= rootdir* (expandpath "./")
-   pagesdir* (+ rootdir* "pages/"))
+(or= pages* (obj)
+     rootdir* (expandpath ".")
+     pagesdir* (expandpath "pages"))
 
 (def load-page (id)
   (w/param cwd pagesdir*
@@ -18,17 +17,24 @@
                                 (list "\n\n" "<br /><br />")
                                 )
                     (allchars))
-           (pages* id) p)
-        ))))
+           (pages* id) p)))))
 
-(= site* (load-page 'index)
-   self* (make-param nil false 'self*))
+(def load-pages ()
+  (= site* (assert (load-page 'index)))
+  (each name (sort < (dir pagesdir*))
+    (when (endmatch ".page" name)
+      (let id (sym:cut name 0 -5)
+        (unless (is id "index")
+          (load-page id))))))
+
+(or= site* nil self* (make-param nil false 'self*))
 
 (mac with-object (id . body)
   `(w/param self* (assert (pages* ,id))
      ,@body))
 
 (def @ (prop (o fail))
+  (assert site*)
   (let x (aand (self*) (it prop))
     (if (~null x) x
       (site* prop fail))))
@@ -133,6 +139,9 @@
 (def spacer (height (o width 1))
   (gentag img src "http://www.virtumundo.com/images/spacer.gif" height height width width))
 
+(def rss-url ()
+  (or @!rss-url "essays.rss"))
+
 (def gen-contents ()
   (page 'index @!site-name
     (tag (font size 2 face 'verdana)
@@ -170,7 +179,7 @@
                   (br)
                   (spacer 5))))
             (br 2)
-            (gentag link rel "alternate" type "application/rss+xml" title "RSS" href "pgessays.rss")
+            (gentag link rel "alternate" type "application/rss+xml" title "RSS" href (rss-url))
             )))
       (br)
       (sitetable 435
@@ -205,11 +214,11 @@
     (sort (compare < !title) tems)))
 
 (def gen-rss ()
-  (tofile "pgessays.rss"
+  (tofile (rss-url)
     (prn "<rss version=\"2.0\" xmlns:content=\"http://purl.org/rss/1.0/modules/content/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><channel>")
-    (prn "  <title>" @!site-desc "</title>")
+    (prn "  <title>" (or @!site-desc @!site-name) "</title>")
     (prn "  <link>" @!site-url "</link>")
-    (prn "  <description>Scraped feed provided by aaronsw.com</description>")
+    (prn "  <description>" (or @!rss-desc "") "</description>")
     (with-object 'articles
       (each x @!contents
         (with-object x
@@ -300,11 +309,9 @@
             (only&pr @!footer)
             ))))))
 
-(def gen-site ()
-  (each name (sort < (dir pagesdir*))
-    (when (endmatch ".page" name)
-      (let id (sym:cut name 0 -5)
-        (load-page id))))
+(def gen-site ((o pagesdir (expandpath "pages")))
+  (= pagesdir* pagesdir)
+  (load-pages)
   (gen-contents)
   (gen-index)
   (gen-rss)
@@ -403,22 +410,8 @@
     (if (is id 'index)
         (do (shim 21 69) (br))
         (pr it)))
-  (navbutton "Essays" 'articles)
-  (navbutton "H&P" "http://www.amazon.com/gp/product/0596006624")
-  (navbutton "Books" "books.html")
-  (navbutton "YC" "https://ycombinator.com")
-  (navbutton "Arc" 'arc)
-  (navbutton "Bel" 'bel)
-  (navbutton "Lisp" "lisp.html")
-  (navbutton "Spam" "spam.html")
-  (navbutton "Responses" "responses.html")
-  (navbutton "FAQs" "faq.html")
-  (navbutton "RAQs" "raq.html")
-  (navbutton "Quotes" "quo.html")
-  (navbutton "RSS" "pgessays.rss")
-  (navbutton "Bio" 'bio)
-  (navbutton "Twitter" "https://twitter.com/paulg")
-  (navbutton "Mastodon" "https://mas.to/@@paulg")
+  (each (name dest) @!buttons
+    (navbutton name dest))
   (awhen (tostring
            (navbutton "Index" 'ind)
            (navbutton "Email" 'info))
