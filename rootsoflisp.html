@@ -1,0 +1,70 @@
+<html><head><meta name="description" content="Paul Graham: Essays"><meta property="og:type" content="website"><meta property="og:title" content="The Roots of Lisp"><meta property="og:site_name" content="Paul Graham"><meta property="og:description" content="Paul Graham: Essays"><meta property="og:image" content="https://user-images.githubusercontent.com/59632/213842621-78c527ed-c657-4126-b27d-2670f35fb053.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="512"><meta property="og:image:height" content="512"><title>The Roots of Lisp</title><link rel="shortcut icon" href="favicon.ico"></head><body text=#000000 link=#000066 vlink=#464646><table border=0 cellspacing=0 cellpadding=0><tr valign=top><td><a href="index.html"><img src="index-1.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="articles.html"><img src="index-2.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="http://www.amazon.com/gp/product/0596006624"><img src="index-3.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="books.html"><img src="index-4.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://ycombinator.com"><img src="index-5.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="arc.html"><img src="index-6.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bel.html"><img src="index-7.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="lisp.html"><img src="index-8.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="spam.html"><img src="index-9.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="responses.html"><img src="index-10.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="faq.html"><img src="index-11.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="raq.html"><img src="index-12.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="quo.html"><img src="index-13.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="pgessays.rss"><img src="index-14.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bio.html"><img src="index-15.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://twitter.com/paulg"><img src="index-16.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://mas.to/@paulg"><img src="index-17.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+</td><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=1 width=28 border=0></td><td><a href="index.html"><img src="https://s.turbifycdn.com/aah/paulgraham/essays-6.gif" width=410 height=45 border=0 hspace=0 vspace=0></a><br><br>
+<table border=0 cellspacing=0 cellpadding=0 width=435><tr valign=top><td width=435><img src="https://s.turbifycdn.com/aah/paulgraham/the-roots-of-lisp-13.gif" width=71 height=769 align=left border=0 hspace=0 vspace=0><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=777 width=10 border=0 align=left><img src="the-roots-of-lisp-1.png" height=18 border=0 hspace=0 vspace=0 alt="The Roots of Lisp"><br><br>
+<font size=2 face="verdana">
+May 2001
+<p align=justif>
+<i>(I wrote this article to help myself understand exactly
+what McCarthy discovered.  You don't need to know this stuff
+to program in Lisp, but it should be helpful to 
+anyone who wants to
+understand the essence of Lisp — both in the sense of its
+origins and its semantic core.  The fact that it has such a core
+is one of Lisp's distinguishing features, and the reason why,
+unlike other languages, Lisp has dialects.)</i><br /><br />In 1960, <a href="http://www-formal.stanford.edu/jmc/index.html">John 
+McCarthy</a> published a remarkable paper in
+which he did for programming something like what Euclid did for
+geometry. He showed how, given a handful of simple
+operators and a notation for functions, you can
+build a whole programming language.
+He called this language Lisp, for "List Processing,"
+because one of his key ideas was to use a simple
+data structure called a <i>list</i> for both
+code and data.<br /><br />It's worth understanding what McCarthy discovered, not
+just as a landmark in the history of computers, but as
+a model for what programming is tending to become in
+our own time.  It seems to me that there have been
+two really clean, consistent models of programming so
+far: the C model and the Lisp model.
+These two seem points of high ground, with swampy lowlands
+between them.  As computers have grown more powerful,
+the new languages being developed have been <a href="diff.html">moving
+steadily</a> toward the Lisp model.  A popular recipe
+for new programming languages in the past 20 years 
+has been to take the C model of computing and add to
+it, piecemeal, parts taken from the Lisp model,
+like runtime typing and garbage collection.<br /><br />In this article I'm going to try to explain in the
+simplest possible terms what McCarthy discovered.
+The point is not just to learn about an interesting
+theoretical result someone figured out forty years ago,
+but to show where languages are heading.
+The unusual thing about Lisp — in fact, the defining
+quality of Lisp — is that it can be written in
+itself.  To understand what McCarthy meant by this,
+we're going to retrace his steps, with his mathematical
+notation translated into running Common Lisp code.<br /><br />
+<br clear="all" /></font></td></tr></table><table border=0 cellspacing=0 cellpadding=0 width=435><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=5 width=1 border=0></td></tr><tr valign=top><td width=421><img src="https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif" width=12 height=14 border=0 hspace=0 vspace=0 align=left><font size=2 face="verdana"><a href="https://sep.turbifycdn.com/ty/cdn/paulgraham/jmc.ps?t=1688221954&">Complete Article (Postscript)</a><br>
+</font></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=4 width=1 border=0></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=5 width=1 border=0></td></tr><tr valign=top><td width=421><img src="https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif" width=12 height=14 border=0 hspace=0 vspace=0 align=left><font size=2 face="verdana"><a href="http://paulgraham.com/diff.html">What Made Lisp Different</a><br>
+</font></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=4 width=1 border=0></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=5 width=1 border=0></td></tr><tr valign=top><td width=421><img src="https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif" width=12 height=14 border=0 hspace=0 vspace=0 align=left><font size=2 face="verdana"><a href="https://sep.turbifycdn.com/ty/cdn/paulgraham/jmc.lisp?t=1688221954&">The Code</a><br>
+</font></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=4 width=1 border=0></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=5 width=1 border=0></td></tr><tr valign=top><td width=421><img src="https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif" width=12 height=14 border=0 hspace=0 vspace=0 align=left><font size=2 face="verdana"><a href="http://daiyuwen.freeshell.org/gb/rol/roots_of_lisp.html">Chinese Translation</a><br>
+</font></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=4 width=1 border=0></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=5 width=1 border=0></td></tr><tr valign=top><td width=421><img src="https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif" width=12 height=14 border=0 hspace=0 vspace=0 align=left><font size=2 face="verdana"><a href="http://d.hatena.ne.jp/lionfan/20070202">Japanese Translation</a><br>
+</font></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=4 width=1 border=0></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=5 width=1 border=0></td></tr><tr valign=top><td width=421><img src="https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif" width=12 height=14 border=0 hspace=0 vspace=0 align=left><font size=2 face="verdana"><a href="http://www.ciul.ul.pt/~tca/pdf/rootsoflisp.pdf">Portuguese Translation</a><br>
+</font></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=4 width=1 border=0></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=5 width=1 border=0></td></tr><tr valign=top><td width=421><img src="https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif" width=12 height=14 border=0 hspace=0 vspace=0 align=left><font size=2 face="verdana"><a href="http://blog.java2game.com/270">Korean Translation</a><br>
+</font></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=4 width=1 border=0></td></tr></table><br><table border=0 cellspacing=0 cellpadding=0 width=435><tr><td><font size=2 face="verdana"><br><br>
+<hr></font></td></tr></table></td></tr></table></body></html>

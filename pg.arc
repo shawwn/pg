@@ -2,45 +2,63 @@
 
 (require (libpath "html.arc"))
 
-(or= pages* (obj)
-     rootdir* (expandpath ".")
-     pagesdir* (expandpath "pages"))
+(or= pages* (obj) rootdir* (expandpath "."))
 
 (def load-page (id)
-  (w/param cwd pagesdir*
-    (zap sym id)
-    (fromfile (cat id ".page")
-      (with p (eval `(obj ,@(read)))
-        (= p!id id
-           p!counter 0
-           p!text (multisubst (list
-                                (list "\n\n" "<br /><br />")
-                                )
-                    (allchars))
-           (pages* id) p)))))
+  (zap sym id)
+  (fromfile (cat id ".page")
+    (with p (eval `(obj ,@(read)))
+      (= p!id id
+         p!counter 0
+         p!text (multisubst (list
+                              (list "\n\n" "<br /><br />")
+                              )
+                  (allchars))
+         (pages* id) p)
+      (or= p!template (or @!default-template 'page)))))
 
-(def load-pages ()
-  (= site* (assert (load-page 'index)))
-  (each name (sort < (dir pagesdir*))
-    (when (endmatch ".page" name)
+(def load-pages ((o pagesdir))
+  (w/param cwd (or pagesdir (cwd))
+    (= site* (assert (load-page 'index)))
+    (each name (sort < (glob "*.page"))
       (let id (sym:cut name 0 -5)
-        (unless (is id "index")
+        (unless (is id 'index)
           (load-page id))))))
 
 (or= site* nil self* (make-param nil false 'self*))
 
-(mac with-object (id . body)
-  `(w/param self* (assert (pages* ,id))
+(def as-object (x)
+  (if (null x)
+       x
+      (isa!sym x)
+       (assert (pages* x))
+      (isa!table x)
+       x
+       (err "Can't use as object" x)))
+
+(mac with-object (x . body)
+  `(w/param self* (as-object ,x)
      ,@body))
 
+(mac each-object (lst . body)
+  (w/uniq var
+    `(each ,var ,lst
+       (when ,var
+         (with-object ,var
+           ,@body)))))
+
 (def @ (prop (o fail))
-  (assert site*)
   (let x (aand (self*) (it prop))
     (if (~null x) x
-      (site* prop fail))))
+        site*     (site* prop fail)
+                  fail)))
+
+(def current-object ()
+  (or (self*) site*))
 
 (def set-prop (prop value)
-  (= ((or (self*) site*) prop) value))
+  (def me (or (self*) site*))
+  (= (me prop) value))
 
 (defset @ (prop (o fail))
   (w/uniq p
@@ -68,6 +86,7 @@
   (cat dest ".html"))
 
 (def to (dest)
+  (assert dest)
   (if (isa!sym dest)
       (html-file dest)
       dest))
@@ -220,26 +239,31 @@
     (prn "  <link>" @!site-url "</link>")
     (prn "  <description>" (or @!rss-desc "") "</description>")
     (with-object 'articles
-      (each x @!contents
-        (with-object x
-          (prn "  <item>")
-          (prn "    <link>" @!site-url (to @!id) "</link>")
-          (prn "    <title>" @!title "</title>")
-          (prn "  </item>"))))
+      (each-object @!contents
+        (prn "  <item>")
+        (prn "    <link>" @!site-url (to @!id) "</link>")
+        (prn "    <title>" @!title "</title>")
+        (prn "  </item>")))
     (prn "</channel></rss>")))
 
 (def render-object (x)
+  (ero 'render-object x)
   (if (isa!sym x)
       (with-object x
+        (ero 'link @!title @!id)
         (link @!title (to @!id)))
       (isa!table x)
       (case x!type
-        image (let v (tostring:gentag img src x!src
-                                      width x!width height x!height align x!align
-                                      border (or x!border 0) hspace (or x!hspace 0) vspace (or x!vspace 0)
-                                      alt (or x!alt "Click to enlarge"))
-                (aif x!destination (link v it) (pr v)))
-        link (link x!title x!src)
+        image (withs (url (or x!src x!url)
+                      width (or x!width (imwidth url))
+                      height (or x!height (imheight url)))
+                (let v (tostring
+                         (gentag img src url
+                                 width width height height align x!align
+                                 border (or x!border 0) hspace (or x!hspace 0) vspace (or x!vspace 0)
+                                 alt (or x!alt (if x!destination "Click to enlarge"))))
+                  (aif x!destination (link v it) (pr v))))
+        link (link (assert (or x!label x!title)) x!url)
         (err "Don't know how to render" x))
       (isa!string x)
       (pr (multisubst (list (list "\n\n" "<br /><br />"))
@@ -262,6 +286,10 @@
               alt text))
     (br 2)))
 
+(def bullet (:align)
+  (gentag img src @!bullet-url
+          width @!bullet-width height 14 border 0 hspace 0 vspace 0 align align))
+
 (def gen-section ()
   (page @!id @!title
     (link (tostring:gentag img src "https://s.turbifycdn.com/aah/paulgraham/essays-6.gif"
@@ -273,30 +301,45 @@
       (tag (tr valign 'top)
         (tag (td width 435)
           (awhen @!image
-            (render-object it)
-            (shim (+ it!height 8) 10 align: 'left))
+            (let im (if (isa!string it) (inst 'image url: it destination: it) it)
+              (render-object im)
+              (if (is im!align 'left)
+                  (shim (+ (or im!height (imheight im!url)) 8) 10 align: 'left)
+                  (br 2))))
           (display-text (or @!headline @!title))
           (tag (font size 2 face 'verdana)
             (pr @!text)
             (when @!image
-              (tag (br clear 'all)))))))
+              ;(tag (br clear 'all)) ; incorrect: <br clear=all></br>
+              (pr "<br clear=\"all\" />")
+              )))))
+    (only&pr @!caption)
     (when @!contents
-      (br)
       (sitetable 435
-        (each cols (tuples @!contents (either @!columns 1))
+        (defs n   (either @!columns 1)
+              wid (either @!column-width (if (> n 1) 210 421)))
+        (each cols (segments n @!contents)
           (rowshim (either @!margin-top 5))
           (tag (tr valign 'top)
             (on x cols
               (unless (is index 0)
                 (td (shim 8)))
-              (tag (td width (either @!column-width (if (> (either @!columns 1) 1) 210 421)))
-                (gentag img src "https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif"
-                        width 12 height 14 align 'left border 0 hspace 0 vspace 0)
+              (unless @!bullet-inline
+                (tag (td width (assert @!bullet-width))
+                  (tag center
+                    (bullet)))
+                (tag (td width 8)
+                  (shim 8)))
+              (tag (td width wid)
+                (when @!bullet-inline
+                  (bullet align: 'left))
                 (tag (font size 2 face 'verdana)
                   (render-object x)
-                  (shim 2)))))
+                  (br)
+                  (unless @!bullet-inline
+                    (shim 2))))))
           (rowshim (either @!margin-bottom 8)))))
-    (br)
+    (only&pr @!final-text)
     (unless @!nofoot
       (sitetable 435
         (trtd
@@ -310,8 +353,7 @@
             ))))))
 
 (def gen-site ((o pagesdir (expandpath "pages")))
-  (= pagesdir* pagesdir)
-  (load-pages)
+  (load-pages pagesdir)
   (gen-contents)
   (gen-index)
   (gen-rss)
@@ -329,10 +371,14 @@
 (def render-image-name ()
   (withs (name (clean-name (or @!title (cat @!id)))
           n (++ (@ 'counter 0)))
-    (cat name "-" n ".png")))
+    (ero (cat name "-" n ".png") 'image-name)))
 
 (def render-color (col)
   (if (isa!sym col) (cat col) (cat "#" (hexrep col))))
+
+(def escaped (x)
+  (multisubst (list (list "\\n" "\n"))
+    (tostring:write x)))
 
 (def render-text (text
                    (o :text-color black)
@@ -347,25 +393,31 @@
            '-pointsize font-size
            '-kerning kerning
            '-gravity "west"
-           '-size "1500x@(round font-size)"
+           '-size "1500x@(* (round font-size) (len:lines text))"
+           '-interline-spacing -3
            '-fill (render-color text-color)
            "xc:"
            '-background (render-color background-color)
            ;"label:@text"
-           '-draw "text 0,-1 @(tostring:write text)"
+           '-draw "text 0,-1 @(escaped text)"
            '-define' "trim:edges=east,west" '-trim '+repage
            img)))
 
 (def imsize (img)
-  (map int (tokens (shell 'identify '-format "%w %h" img))))
+  (if (valid-url img)
+      (fromstring (GET img :bytes)
+        (imsize "-"))
+      (map int (tokens (shell 'identify '-format "%w %h" img)))))
 
-(def imwidth (img)
+(defmemo imwidth (img)
   (car (imsize img)))
 
-(def imheight (img)
+(defmemo imheight (img)
   (cadr (imsize img)))
 
 (defmemo imtitle (text)
+  (= text (multisubst (list (list "-" "–"))
+                      text))
   (render-text text
                font: (+ rootdir* "assets/fonts/metaplusbook-caps.ttf")
                ;kerning: 0.28
@@ -394,8 +446,20 @@
            '-frame "2x2+2+0"
            img)))
 
-(def navbutton (text dest)
-  (link (tostring:gentag img src (imbutton text)
+(def maxim (im height width)
+  (with img (render-image-name)
+    (shell 'convert im
+           '-resize "@{width}x@{height}>"
+           img)))
+
+(def shown-image ()
+  (if @!template
+      (or @!icon @!image)
+      (or @!image @!icon)))
+
+(def navbutton ((o text @!title) (o dest (or @!url @!id)))
+  (link (tostring:gentag img src (with-object 'index
+                                   (imbutton text))
                          width 67 height 21
                          border 0 hspace 0 vspace 0)
         (to dest))
@@ -410,13 +474,19 @@
     (if (is id 'index)
         (do (shim 21 69) (br))
         (pr it)))
-  (each (name dest) @!buttons
-    (navbutton name dest))
+  (each-object @!buttons
+    (navbutton))
   (awhen (tostring
            (navbutton "Index" 'ind)
            (navbutton "Email" 'info))
     (when (is id 'index)
       (pr it)))
   nil)
+
+(def make-link (title url)
+  (inst 'link :title :url))
+
+(def segments (n seq)
+  (tuples seq n))
 
 gen-site

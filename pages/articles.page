@@ -8,6 +8,7 @@
    'road
  )
  margin-bottom: false
+ bullet-inline: true
  bottom-text: "<br><br>
 <a href=\"pgessays.rss\">RSS</a> feed
 <br><br>"

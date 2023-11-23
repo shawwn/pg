@@ -1,10 +1,19 @@
 (title: "Taste for Makers"
  footer: (filechars "hpfooter.html")
+ image: "https://s.turbifycdn.com/aah/paulgraham/taste-for-makers-12.gif"
  contents: (list
-   (obj type: 'link title: "Japanese Translation" src: "http://www.shiro.dreamhost.com/scheme/trans/taste-j.html")
+   (make-link "Japanese Translation"     "http://www.shiro.dreamhost.com/scheme/trans/taste-j.html")
+   (make-link "Chinese Translation"      "http://daiyuwen.freeshell.org/gb/taste/taste.html")
+   (make-link "Slovenian Translation"    "http://janezsvetlin.naspletu.com/okus2.html")
+   (make-link "German Translation"       "http://www.magplot.de/TasteForMakers.php")
+   (make-link "Interview: Milton Glaser" "http://www.believermag.com/issues/200309/?read=interview_glaser")
+   (make-link "Russian Translation"      "http://pujib.livejournal.com/492.html")
  )
+ bullet-url: @!bullet-thin-url
+ bullet-width: @!bullet-thin-width
  columns: 2
  column-width: 196
+ margin-bottom: 3
 )
 February 2002
 
@@ -667,3 +676,5 @@ architects meant.
 
 Stephen G. Brush, "Why was Relativity Accepted?"
 <i>Phys. Perspect. 1 (1999) 184-214.
+
+

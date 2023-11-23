@@ -1,12 +1,19 @@
 (title: "Arc"
- image: (obj type: 'image
-             src: "https://s.turbifycdn.com/aah/paulgraham/arc-13.gif"
-             destination: "https://s.turbifycdn.com/aah/paulgraham/arc-12.gif"
-             width: 49 height: 50 align: 'left)
+ image: (inst 'image
+               url: "https://s.turbifycdn.com/aah/paulgraham/arc-13.gif"
+               destination: "https://s.turbifycdn.com/aah/paulgraham/arc-12.gif"
+               width: 49 height: 50 align: 'left)
+
+ ; bullet-url: @!bullet-thin-url
+ ; bullet-width: @!bullet-thin-width
+ bullet-inline: t
+ 
  contents: (list
-             (tostring:link "Forum" "http://arclanguage.org/forum")
-             (tostring:link "Tutorial" "http://ycombinator.com/arc/tut.txt")
-           )
+   (make-link "Forum" "http://arclanguage.org/forum")
+   (make-link "Tutorial" "http://ycombinator.com/arc/tut.txt")
+   (make-link "Get Arc" "http://arclanguage.org/install")
+   (make-link "Arc's Out" "http://paulgraham.com/arc0.html")
+ )
 )
 Arc is a new dialect of Lisp we're working on.   You can 
 find an early release and ask questions at 

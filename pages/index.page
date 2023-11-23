@@ -6,28 +6,36 @@
  rss-url: "pgessays.rss"
  rss-desc: "Scraped feed provided by aaronsw.com"
  text-color: black
- link-color: (color 0 0 0x99)
+ link-color: (color 0 0 0x66)
  visited-link-color: (color 0x46 0x46 0x46)
  site-image: (obj url:    "https://user-images.githubusercontent.com/59632/213842621-78c527ed-c657-4126-b27d-2670f35fb053.png"
                   type:   "image/png"
                   width:  512
                   height: 512)
+ bullet-url:        "https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif"
+ bullet-width:      12
+ bullet-thin-url:   "https://s.turbifycdn.com/aah/paulgraham/serious-2.gif"
+ bullet-thin-width: 6
+
+ caption: "<br>"
+ final-text: "<br>"
+
  buttons: (list
-  (list "Essays" 'articles)
-  (list "H&P" "http://www.amazon.com/gp/product/0596006624")
-  (list "Books" "books.html")
-  (list "YC" "https://ycombinator.com")
-  (list "Arc" 'arc)
-  (list "Bel" 'bel)
-  (list "Lisp" "lisp.html")
-  (list "Spam" "spam.html")
-  (list "Responses" "responses.html")
-  (list "FAQs" "faq.html")
-  (list "RAQs" "raq.html")
-  (list "Quotes" "quo.html")
-  (list "RSS" "pgessays.rss")
-  (list "Bio" 'bio)
-  (list "Twitter" "https://twitter.com/paulg")
-  (list "Mastodon" "https://mas.to/@@paulg")
+  'articles
+  (make-link "H&P" "http://www.amazon.com/gp/product/0596006624")
+  (make-link "Books" "books.html")
+  (make-link "YC" "https://ycombinator.com")
+  'arc
+  'bel
+  (make-link "Lisp" "lisp.html")
+  (make-link "Spam" "spam.html")
+  (make-link "Responses" "responses.html")
+  (make-link "FAQs" "faq.html")
+  (make-link "RAQs" "raq.html")
+  'quo
+  (make-link "RSS" "pgessays.rss")
+  'bio
+  (make-link "Twitter" "https://twitter.com/paulg")
+  (make-link "Mastodon" "https://mas.to/@@paulg")
  )
 )

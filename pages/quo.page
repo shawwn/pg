@@ -1,6 +1,12 @@
 (title: "Quotes"
  column-width: 421
  margin-bottom: 15
+
+ bullet-url: @!bullet-thin-url
+ bullet-width: @!bullet-thin-width
+
+ caption: ""
+ 
  contents: (list
 
  "\"The less confident you are, the more serious you have to act.\"
