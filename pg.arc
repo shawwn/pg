@@ -34,18 +34,21 @@
        (assert (pages* x) "Page '@x' doesn't exist")
       (isa!table x)
        x
+      (isa!fn x)
+       (as-object (x (current-object)))
        (err "Can't use as object" x)))
 
 (mac with-object (x . body)
-  `(w/param self* (as-object ,x)
-     ,@body))
+  (w/uniq v
+    `(whenlet ,v (as-object ,x)
+       (w/param self* ,v
+         ,@body))))
 
 (mac each-object (lst . body)
   (w/uniq var
     `(each ,var ,lst
-       (when ,var
-         (with-object ,var
-           ,@body)))))
+       (with-object ,var
+         ,@body))))
 
 (def @ (prop (o fail))
   (let x (aand (self*) (it prop))
@@ -57,7 +60,7 @@
   (or (self*) site*))
 
 (def set-prop (prop value)
-  (def me (or (self*) site*))
+  (def me (current-object))
   (= (me prop) value))
 
 (defset @ (prop (o fail))
@@ -212,17 +215,19 @@
       (br))
     ))
 
-(def gen-index ()
-  (page 'ind (cat @!site-name " Index")
-    (gentag img src "https://s.turbifycdn.com/aah/paulgraham/essays-6.gif"
-            width 410 height 45
-            border 0 hspace 0 vspace 0)
-    (br 2)
-    (sitetable 435
-      (trtd
-        (each i (all-items)
-          (link i!title (to i!id))
-          (br))))))
+(def gen-sitemap ()
+  (with-object (copy site*)
+    (= @!id 'ind @!title (cat @!site-name " Index"))
+    (page @!id @!title
+      (gentag img src "https://s.turbifycdn.com/aah/paulgraham/essays-6.gif"
+              width 410 height 45
+              border 0 hspace 0 vspace 0)
+      (br 2)
+      (sitetable 435
+        (trtd
+          (each-object (all-items)
+            (link @!title (to @!id))
+            (br)))))))
 
 (def all-items ((o sections (keys pages*)))
   (let tems nil
@@ -355,7 +360,7 @@
 (def gen-site ((o pagesdir (expandpath "pages")))
   (load-pages pagesdir)
   (gen-contents)
-  (gen-index)
+  (gen-sitemap)
   (gen-rss)
   (each (k v) pages*
     (unless (is k 'index)
@@ -477,11 +482,6 @@
         (pr it)))
   (each-object @!buttons
     (navbutton))
-  (awhen (tostring
-           (navbutton "Index" 'ind)
-           (navbutton "Email" 'info))
-    (when (is id 'index)
-      (pr it)))
   nil)
 
 (def make-link (title url)

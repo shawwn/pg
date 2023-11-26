@@ -37,5 +37,7 @@
   'bio
   (make-link "Twitter" "https://twitter.com/paulg")
   (make-link "Mastodon" "https://mas.to/@@paulg")
+  [if (is @!id 'index) (make-link "Index" "ind.html")]
+  [if (is @!id 'index) (make-link "Email" "info.html")]
  )
 )
