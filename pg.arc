@@ -419,7 +419,7 @@
   (= text (multisubst (list (list "-" "–"))
                       text))
   (render-text text
-               font: (+ rootdir* "assets/fonts/metaplusbook-caps.ttf")
+               font: (expandpath "assets/fonts/metaplusbook-caps.ttf" rootdir*)
                ;kerning: 0.28
                font-size: 17.5
                text-color: (color 0x7f 0x1b 0x16)))
@@ -431,7 +431,7 @@
            '-background 'none
            "xc:"
            '-gravity 'west
-           '-font (+ rootdir* "assets/fonts/metaplusbold-roman.ttf")
+           '-font (expandpath "assets/fonts/metaplusbold-roman.ttf" rootdir*)
            '-fill (render-color (color 0xf7 0xf7 0xf7))
            '-pointsize "11.95" '-kerning 0.0
            '-draw (+ "text 2,-1 " (tostring:write text))
