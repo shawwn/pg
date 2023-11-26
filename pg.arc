@@ -31,7 +31,7 @@
   (if (null x)
        x
       (isa!sym x)
-       (assert (pages* x))
+       (assert (pages* x) "Page '@x' doesn't exist")
       (isa!table x)
        x
        (err "Can't use as object" x)))
