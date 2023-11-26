@@ -458,6 +458,7 @@
       (or @!image @!icon)))
 
 (def navbutton ((o text @!title) (o dest (or @!url @!id)))
+  (assert text "navbutton: @@!title not set")
   (link (tostring:gentag img src (with-object 'index
                                    (imbutton text))
                          width 67 height 21
