@@ -5,6 +5,7 @@
 (or= pages* (obj) rootdir* (expandpath "."))
 
 (def load-page (id)
+  (ero 'load-page id)
   (zap sym id)
   (fromfile (cat id ".page")
     (with p (eval `(obj ,@(read)))
