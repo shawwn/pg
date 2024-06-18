@@ -103,7 +103,7 @@
      ,@body))
 
 (mac page (name title . body)
-  (w/uniq (go ti)
+  (w/uniq ti
     `(tofile (html-file ,name)
        (let ,ti ,title
          (tag html
