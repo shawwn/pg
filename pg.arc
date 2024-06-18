@@ -247,7 +247,7 @@
     (prn "  <description>" (or @!rss-desc "") "</description>")
     (with-object 'articles
       (each-object @!contents
-        (unless @!hidden
+        (unless (or @!hidden (is @!type 'link))
           (prn "  <item>")
           (prn "    <link>" @!site-url (to @!id) "</link>")
           (prn "    <title>" @!title "</title>")
