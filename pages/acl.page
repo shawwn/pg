@@ -1,8 +1,20 @@
 (title: "ANSI Common Lisp"
- image: (obj type: 'image
-             src: "https://s.turbifycdn.com/aah/paulgraham/ansi-common-lisp-20.gif"
-             destination: "https://s.turbifycdn.com/aah/paulgraham/ansi-common-lisp-19.gif"
-             width: 70 height: 106 align: 'left border: 0 hspace: 0 vspace: 0)
+ image: (inst 'image url: "https://s.turbifycdn.com/aah/paulgraham/ansi-common-lisp-20.gif"
+               destination: "https://s.turbifycdn.com/aah/paulgraham/ansi-common-lisp-19.gif"
+               align: 'left)
+
+ bullet-inline: t
+ margin-bottom: 5
+ contents: (list
+  (make-link "Chapter 1" "https://sep.turbifycdn.com/ty/cdn/paulgraham/acl1.txt?t=1688221954&")
+  (make-link "Chapter 2" "https://sep.turbifycdn.com/ty/cdn/paulgraham/acl2.txt?t=1688221954&")
+  (make-link "Amazon" "http://www.amazon.com/exec/obidos/ASIN/0133708756")
+  (make-link "Code" "https://sep.turbifycdn.com/ty/cdn/paulgraham/acl2.lisp?t=1688221954&")
+  (make-link "Errata" "https://paulgraham.com/ancomliser.html")
+  (make-link "Japanese Translation" "http://www.pearsoned.co.jp/washo/prog/wa_pro58-j.html")
+  (make-link "Chapter 1, Chinese Translation" "http://daiyuwen.freeshell.org/gb/acl1/acl1.html")
+  (make-link "Chapter 2, Chinese Translation" "http://daiyuwen.freeshell.org/gb/acl2/acl2.html")
+ )
 )
 <i>ANSI Common Lisp</i> combines an introduction to Lisp programming, and a
 convenient, up-to-date reference manual for ANSI Common Lisp.
@@ -90,4 +102,3 @@ those who have never programmed before."
 
 - Amazon.Com
 
-<br clear="all" />
