@@ -102,6 +102,18 @@
   `(tag (table border 0 cellspacing 0 cellpadding 0 width ,width)
      ,@body))
 
+(def gtag (id)
+  (prn "
+<!-- Google tag (gtag.js) -->
+<script async src=\"https://www.googletagmanager.com/gtag/js?id=@id\"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '@id');
+</script>"))
+
 (mac page (name title . body)
   (w/uniq ti
     `(tofile (html-file ,name)
@@ -124,9 +136,8 @@
                (gentag meta property 'og:image:height     content it!height))
 
              (tag title (pr ,ti))
-             
-             (awhen @!favicon-url
-               (gentag link rel "shortcut icon" href it))
+             (aif @!favicon-url (gentag link rel "shortcut icon" href it))
+             (aif @!site-gtag-id (gtag it))
              )
            (tag (body text @!text-color
                       link @!link-color
