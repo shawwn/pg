@@ -262,7 +262,7 @@
         (link @!title (to @!id)))
       (isa!table x)
       (case x!type
-        image (withs (url (or x!src x!url)
+        image (withs (url x!url
                       width (or x!width (imwidth url))
                       height (or x!height (imheight url)))
                 (let v (tostring

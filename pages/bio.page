@@ -1,8 +1,7 @@
 (title: "Bio"
- image: (obj type: 'image
-             src: "https://s.turbifycdn.com/aah/paulgraham/bio-12.gif"
-             destination: "https://s.turbifycdn.com/aah/paulgraham/bio-11.gif"
-             width: 109 height: 97 align: 'left border: 0 hspace: 0 vspace: 0)
+ image: (inst 'image url: "https://s.turbifycdn.com/aah/paulgraham/bio-12.gif"
+               destination: "https://s.turbifycdn.com/aah/paulgraham/bio-11.gif"
+               align: 'left)
  footer: "<font size=1 color=#aaaaaa>Photo by Dave Thomas, released under the 
 Attribution Creative Commons license.
 Click for full-size version.
