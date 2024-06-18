@@ -14,11 +14,12 @@
   (zap sym id)
   (fromfile (cat id ".page")
     (with p (eval `(obj ,@(read)))
-      (= p!id id
-         p!counter 0
-         p!text (allchars)
-         (pages* id) p)
-      (or= p!template (or @!default-template 'page)))))
+      (unless p!disabled
+        (= p!id id
+           p!counter 0
+           p!text (allchars)
+           (pages* id) p)
+        (or= p!template (or @!default-template 'page))))))
 
 (def load-pages ((o pagesdir))
   (w/param cwd (or pagesdir (cwd))
