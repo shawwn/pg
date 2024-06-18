@@ -16,7 +16,7 @@
     (with p (eval `(obj ,@(read)))
       (= p!id id
          p!counter 0
-         p!text (load-text (allchars))
+         p!text (allchars)
          (pages* id) p)
       (or= p!template (or @!default-template 'page)))))
 
@@ -316,7 +316,7 @@
                   (br 2))))
           (display-text (or @!headline @!title))
           (tag (font size 2 face 'verdana)
-            (pr @!text)
+            (pr (load-text @!text))
             (when @!image
               ;(tag (br clear 'all)) ; incorrect: <br clear=all></br>
               (pr "<br clear=\"all\" />")
