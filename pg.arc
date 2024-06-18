@@ -134,7 +134,7 @@
              (sitetable nil
                (tag (tr valign 'top)
                  (td (navbuttons ,name))
-                 (td (shim 1 28))
+                 (td (shim 1 26))
                  (td ,@body)))))))))
 
 (def romandigit (n (o chars "ivx"))
@@ -171,10 +171,7 @@
 (def gen-contents ()
   (page 'index @!site-name
     (tag (font size 2 face 'verdana)
-      (gentag img src "https://s.turbifycdn.com/aah/paulgraham/essays-6.gif"
-              width 410 height 45
-              border 0 hspace 0 vspace 0)
-      (br 2)
+      (site-banner)
       (gentag img src "https://s.turbifycdn.com/aah/paulgraham/index-14.gif"
               width 410 height 308
               border 0 hspace 0 vspace 0)
@@ -221,10 +218,7 @@
   (with-object (copy site*)
     (= @!id 'ind @!title (cat @!site-name " Index"))
     (page @!id @!title
-      (gentag img src "https://s.turbifycdn.com/aah/paulgraham/essays-6.gif"
-              width 410 height 45
-              border 0 hspace 0 vspace 0)
-      (br 2)
+      (site-banner)
       (sitetable 435
         (trtd
           (each-object (all-items)
@@ -295,17 +289,25 @@
               alt text))
     (br 2)))
 
+(def site-banner ((o text @!site-name))
+  (unless (empty text)
+    (let im (imbanner (downcase text))
+      (tag-if (isnt @!id 'index) a href: (to 'index)
+        ;(gentag img src "https://s.turbifycdn.com/aah/paulgraham/essays-6.gif"
+        ;        width 410 height 45
+        ;        border 0 hspace 0 vspace 0)
+        (gentag img src im
+                width (imwidth im) height (imheight im)
+                border 0 hspace 0 vspace 0)))
+    (br 2)))
+
 (def bullet (:align)
   (gentag img src @!bullet-url
           width @!bullet-width height 14 border 0 hspace 0 vspace 0 align align))
 
 (def gen-section ()
   (page @!id @!title
-    (link (tostring:gentag img src "https://s.turbifycdn.com/aah/paulgraham/essays-6.gif"
-                           width 410 height 45
-                           border 0 hspace 0 vspace 0)
-          (to 'index))
-    (br 2)
+    (site-banner)
     (sitetable 435
       (tag (tr valign 'top)
         (tag (td width 435)
@@ -395,21 +397,23 @@
                    (o :background-color 'none)
                    (o :font 'verdana)
                    (o :kerning 0)
-                   (o :font-size 18))
+                   (o :font-size 18)
+                   (o :gravity "west")
+                   (o :trim-edges "east,west")
+                   (o :size "1500x@(* (round font-size) (len:lines text))"))
   (with img (render-image-name)
     (shell 'convert
            '-font font
            '-pointsize font-size
            '-kerning kerning
-           '-gravity "west"
-           '-size "1500x@(* (round font-size) (len:lines text))"
+           '-gravity gravity
+           '-size size
            '-interline-spacing -3
            '-fill (render-color text-color)
            "xc:"
            '-background (render-color background-color)
-           ;"label:@text"
            '-draw "text 0,-1 @(escaped text)"
-           '-define' "trim:edges=east,west" '-trim '+repage
+           '-define "trim:edges=@trim-edges" '-trim '+repage
            img)))
 
 (def imsize (img)
@@ -432,6 +436,16 @@
                ;kerning: 0.28
                font-size: 17.5
                text-color: (color 0x7f 0x1b 0x16)))
+
+(defmemo imbanner (text)
+  (render-text text
+               kerning: (or @!banner-kerning 6.5)
+               font-size: (or @!banner-size 62)
+               size: "1500x45"
+               gravity: 'south
+               font: (expandpath "assets/fonts/metaplusbook-caps.ttf" rootdir*)
+               trim-edges: "east,west,north"
+               text-color: (color 247 247 252)))
 
 (defmemo imbutton (text)
   (with img (render-image-name)

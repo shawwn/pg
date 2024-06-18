@@ -2,6 +2,8 @@
  site-desc: "Paul Graham: Essays"
  site-url: "https://shawwn.github.io/pg/"
  author: "pg"
+ banner-size:    62
+ banner-kerning: 6.5
  ;favicon-url: "http://ycombinator.com/arc/arc.png"
  favicon-url: "favicon.ico"
  rss-url: "pgessays.rss"
