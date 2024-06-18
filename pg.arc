@@ -213,7 +213,7 @@
             (br)
             (tag (font size 1)
               (tag (font color (color 0xcc 0xcc 0xcc))
-                (pr "&copy; " (romannum:car:date) " pg")))))
+                (pr "&copy; " (romannum:car:date) " " (or @!author "pg"))))))
         )
       (br))
     ))

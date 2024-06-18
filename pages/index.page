@@ -1,6 +1,7 @@
 (site-name: "Paul Graham"
  site-desc: "Paul Graham: Essays"
  site-url: "https://shawwn.github.io/pg/"
+ author: "pg"
  ;favicon-url: "http://ycombinator.com/arc/arc.png"
  favicon-url: "favicon.ico"
  rss-url: "pgessays.rss"
