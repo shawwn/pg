@@ -1531,7 +1531,7 @@ are hard to duplicate, but that could change.
 
 [<a name="f27n"><font color=#000000>27</font></a>]
 This is false when the work the other people have to do is
-very constrained, as with SETI@home or Bitcoin. It may be possible
+very constrained, as with SETI@@home or Bitcoin. It may be possible
 to expand the area in which it's false by defining similarly
 restricted protocols with more freedom of action in the nodes.
 

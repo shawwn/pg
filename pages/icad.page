@@ -691,7 +691,7 @@ In Common Lisp this would be
 and in Perl 5,
 <font face=courier><xmp>
 sub foo {  
-  my ($n) = @_;
+  my ($n) = @@_;
   sub {$n += shift}
 }
 </xmp></font>

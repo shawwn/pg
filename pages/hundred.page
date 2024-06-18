@@ -561,7 +561,7 @@ on how close you are to the core.  Sort routines you can
 write now.  But it would be
 hard to predict now what kinds of libraries might be needed in
 a hundred years.  Presumably many libraries will be for domains that
-don't even exist yet.  If SETI@home works, for example, we'll  
+don't even exist yet.  If SETI@@home works, for example, we'll  
 need libraries for communicating with aliens.  Unless of course
 they are sufficiently advanced that they already communicate
 in XML.

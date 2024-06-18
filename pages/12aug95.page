@@ -8,8 +8,8 @@ we demoed it to potential investors a few days later.
 win. -->
 
 <pre>
-From rtm@uun.org Sat Aug 12 13:49:39 1995
-To: pg@garage.uun.org
+From rtm@@uun.org Sat Aug 12 13:49:39 1995
+To: pg@@garage.uun.org
 Subject: score: 2
 
 I have clisp installed, and it has a (shell "...") command.
@@ -18,16 +18,16 @@ The sink works now.
 
 
 
-From rtm@eecs.harvard.edu Sat Aug 12 16:26:39 1995
-To: pg@eecs.harvard.edu
+From rtm@@eecs.harvard.edu Sat Aug 12 16:26:39 1995
+To: pg@@eecs.harvard.edu
 Subject: clisp
 
 It loads now. It's running (gen-site)... I think I'll get some coffee.
 
 
 
-From pg@das.harvard.edu Sat Aug 12 23:25:29 1995
-To: gino@webgen.com, jlw@webgen.com
+From pg@@das.harvard.edu Sat Aug 12 23:25:29 1995
+To: gino@@webgen.com, jlw@@webgen.com
 Subject: it works!
 Cc: pg, rtm
 

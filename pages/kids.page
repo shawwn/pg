@@ -1,7 +1,7 @@
 (title: "Having Kids"
  contents: (list
-  (tostring:link "Arabic Translation" "https://tldrarabiccontents.blogspot.com/2020/02/blog-post_3.html")
-  (tostring:link "Slovak Translation" "https://otcom.sk/paul-graham-mat-deti/")
+  (make-link "Arabic Translation" "https://tldrarabiccontents.blogspot.com/2020/02/blog-post_3.html")
+  (make-link "Slovak Translation" "https://otcom.sk/paul-graham-mat-deti/")
  )
  columns: 2
 )

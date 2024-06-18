@@ -4,6 +4,11 @@
 
 (or= pages* (obj) rootdir* (expandpath "."))
 
+(def load-text (text)
+  (aand (multisubst (list (list "\n\n" "<br /><br />"))
+                    text)
+        (eval `(string ,@(codestring it)))))
+
 (def load-page (id)
   (ero 'load-page id)
   (zap sym id)
@@ -11,10 +16,7 @@
     (with p (eval `(obj ,@(read)))
       (= p!id id
          p!counter 0
-         p!text (multisubst (list
-                              (list "\n\n" "<br /><br />")
-                              )
-                  (allchars))
+         p!text (load-text (allchars))
          (pages* id) p)
       (or= p!template (or @!default-template 'page)))))
 
@@ -227,8 +229,9 @@
       (sitetable 435
         (trtd
           (each-object (all-items)
-            (link @!title (to @!id))
-            (br)))))))
+            (unless @!hidden
+              (link @!title (to @!id))
+              (br))))))))
 
 (def all-items ((o sections (keys pages*)))
   (let tems nil
@@ -238,11 +241,6 @@
           (pushnew (self*) tems (compare is !title)))))
     (sort (compare < !title) tems)))
 
-(def contents ()
-  (each-object @!contents
-    (unless @!hidden
-      (out @!id))))
-
 (def gen-rss ()
   (tofile (rss-url)
     (prn "<rss version=\"2.0\" xmlns:content=\"http://purl.org/rss/1.0/modules/content/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><channel>")
@@ -250,11 +248,12 @@
     (prn "  <link>" @!site-url "</link>")
     (prn "  <description>" (or @!rss-desc "") "</description>")
     (with-object 'articles
-      (each-object (contents)
-        (prn "  <item>")
-        (prn "    <link>" @!site-url (to @!id) "</link>")
-        (prn "    <title>" @!title "</title>")
-        (prn "  </item>")))
+      (each-object @!contents
+        (unless @!hidden
+          (prn "  <item>")
+          (prn "    <link>" @!site-url (to @!id) "</link>")
+          (prn "    <title>" @!title "</title>")
+          (prn "  </item>"))))
     (prn "</channel></rss>")))
 
 (def render-object (x)
@@ -325,11 +324,11 @@
               (pr "<br clear=\"all\" />")
               )))))
     (only&pr @!caption)
-    (when (contents)
+    (when @!contents
       (sitetable 435
         (defs n   (either @!columns 1)
               wid (either @!column-width (if (> n 1) 210 421)))
-        (each cols (segments n (contents))
+        (each cols (segments n @!contents)
           (rowshim (either @!margin-top 5))
           (tag (tr valign 'top)
             (on x cols
