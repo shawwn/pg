@@ -109,14 +109,14 @@
          (tag html
            (tag head
              ;(gentag meta name 'viewport content "width=device-width, initial-scale=1.0")
-             (gentag meta name 'description             content @!site-desc)
+             ;(gentag meta name 'description             content @!site-desc)
              ;(gentag meta name 'theme-color             content "#@(hexrep teal)")
              ;(gentag meta name 'msapplication-TileColor content "#@(hexrep orangered)")
              
              (gentag meta property 'og:type             content "website")
              (gentag meta property 'og:title            content ,ti)
              (gentag meta property 'og:site_name        content @!site-name)
-             (gentag meta property 'og:description      content @!site-desc)
+             ;(gentag meta property 'og:description      content @!site-desc)
              (awhen @!site-image
                (gentag meta property 'og:image            content it!url)
                (gentag meta property 'og:image:type       content it!type)
