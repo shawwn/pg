@@ -102,17 +102,30 @@
   `(tag (table border 0 cellspacing 0 cellpadding 0 width ,width)
      ,@body))
 
-(def gtag (id)
-  (prn "
-<!-- Google tag (gtag.js) -->
-<script async src=\"https://www.googletagmanager.com/gtag/js?id=@id\"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+(def read-template (id (o dir))
+  (defs path (cat "_" id ".html")
+        data (let (param cwd) (or dir ".")
+               (trim (filechars path) 'end)))
+    (#'codestring data))
 
-  gtag('config', '@id');
-</script>"))
+(def template-vars (tm)
+  (dedup:map cadr (keep acons tm)))
+
+(def pr-template (tm)
+  (each x tm
+    (if (acons x)
+        (let (_ var) x
+          (assert (isa!sym var))
+          (pr (assert (@ var) "Site variable @{var} not set")))
+        (do (assert (isa!string x))
+            (pr x)))))
+
+(def template (id (o dir))
+  (pr-template (read-template id dir)))
+
+(def gtag () (template 'gtag (+ rootdir* "templates")))
+
+(def matomo () (template 'matomo (+ rootdir* "templates")))
 
 (mac page (name title . body)
   (w/uniq ti
@@ -137,8 +150,11 @@
 
              (tag title (pr ,ti))
              (aif @!favicon-url (gentag link rel "shortcut icon" href it))
-             (aif @!site-gtag-id (gtag it))
-             )
+
+             (when (or @!gtag @!matomo) (prn))
+             (when @!gtag (gtag) (prn))
+             (when @!matomo (matomo) (prn))
+           )
            (tag (body text @!text-color
                       link @!link-color
                       vlink @!visited-link-color)
