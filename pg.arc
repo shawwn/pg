@@ -2,34 +2,45 @@
 
 (require (libpath "html.arc"))
 
-(or= pages* (obj) rootdir* (expandpath "."))
+(or= pages* (obj) site* nil rootdir* (expandpath "."))
+
+(deftem item
+  id       nil
+  title    nil
+  text     nil
+  contents nil
+  counter  0)
+
+(mac defitem (id title text :kwargs . body)
+  `(= (pages* ,id)
+      (inst 'item
+            'id       ,id
+            'title    ,title
+            'text     ,text
+            'contents (list ,@body)
+            ,@kwargs)))
 
 (def load-text (text)
   (aand (multisubst (list (list "\n\n" "<br /><br />"))
                     text)
-        (eval `(string ,@(codestring it)))))
+        (eval it)))
 
 (def load-page (id)
   (ero 'load-page id)
   (zap sym id)
   (fromfile (cat id ".page")
-    (with p (eval `(obj ,@(read)))
+    (with p (eval `(inst 'item id: ',id ,@(read) text: ',(allchars)))
+      (or= p!template (or @!default-template 'page))
       (unless p!disabled
-        (= p!id id
-           p!counter 0
-           p!text (allchars)
-           (pages* id) p)
-        (or= p!template (or @!default-template 'page))))))
+        (= (pages* id) p)))))
 
 (def load-pages ((o pagesdir))
-  (w/param cwd (or pagesdir (cwd))
+  (w/param cwd pagesdir
     (= site* (assert (load-page 'index)))
     (each name (sort < (glob "*.page"))
       (let id (sym:cut name 0 -5)
         (unless (is id 'index)
           (load-page id))))))
-
-(or= site* nil self* (make-param nil false 'self*))
 
 (def as-object (x)
   (if (null x)
@@ -41,6 +52,8 @@
       (isa!fn x)
        (as-object (x (current-object)))
        (err "Can't use as object" x)))
+
+(defvar self*)
 
 (mac with-object (x . body)
   (w/uniq v
@@ -73,40 +86,24 @@
           `(@ ,prop ,fail)
           `(fn (val) (set-prop ,p val)))))
 
-(deftem item
-  id       nil
-  title    nil
-  text     nil
-  contents nil
-  counter  0)
-
-(mac defitem (id title text :kwargs . body)
-  `(= (pages* ,id)
-      (inst 'item
-            'id       ,id
-            'title    ,title
-            'text     ,text
-            'contents (list ,@body)
-            ,@kwargs)))
-
 (def html-file (dest)
   (cat dest ".html"))
 
 (def to (dest)
-  (assert dest)
   (if (isa!sym dest)
       (html-file dest)
-      dest))
+      (assert dest)))
 
 (mac sitetable (width . body)
   `(tag (table border 0 cellspacing 0 cellpadding 0 width ,width)
      ,@body))
 
 (def read-template (id (o dir))
-  (defs path (cat "_" id ".html")
-        data (let (param cwd) (or dir ".")
-               (trim (filechars path) 'end)))
-    (#'codestring data))
+  (aand (cat "_" id ".html")
+        (w/param cwd dir
+          (filechars it))
+        (trim it 'end)
+        (#'codestring it)))
 
 (def template-vars (tm)
   (dedup:map cadr (keep acons tm)))
@@ -121,7 +118,7 @@
             (pr x)))))
 
 (def template (id (o dir))
-  (pr-template (read-template id dir)))
+  (pr-template:read-template id dir))
 
 (def gtag () (template 'gtag (+ rootdir* "templates")))
 
@@ -153,8 +150,7 @@
 
              (when (or @!gtag @!matomo) (prn))
              (when @!gtag (gtag) (prn))
-             (when @!matomo (matomo) (prn))
-           )
+             (when @!matomo (matomo) (prn)))
            (tag (body text @!text-color
                       link @!link-color
                       vlink @!visited-link-color)
@@ -165,25 +161,25 @@
                  (td ,@body)))))))))
 
 (def romandigit (n (o chars "ivx"))
-  (defs one (chars 0) five (chars 1) ten (chars 2))
-  (case n
-    0 (cat)
-    1 (cat one)
-    2 (cat one one)
-    3 (cat one one one)
-    4 (cat one five)
-    5 (cat five)
-    6 (cat five one)
-    7 (cat five one one)
-    8 (cat five one one one)
-    9 (cat one ten)
-    (err "Bad digit")))
+  (let (one five ten) (as!cons chars)
+    (case n
+      0 (cat)
+      1 (cat one)
+      2 (cat one one)
+      3 (cat one one one)
+      4 (cat one five)
+      5 (cat five)
+      6 (cat five one)
+      7 (cat five one one)
+      8 (cat five one one one)
+      9 (cat one ten)
+      (err "Bad digit"))))
 
 (def romannum (n)
-  (def ones (mod n 10)) (= n (trunc:/ n 10))
-  (def tens (mod n 10)) (= n (trunc:/ n 10))
-  (def hund (mod n 10)) (= n (trunc:/ n 10))
-  (def thou (mod n 10)) (= n (trunc:/ n 10))
+  (def ones (mod n 10)) (zap int:/ n 10)
+  (def tens (mod n 10)) (zap int:/ n 10)
+  (def hund (mod n 10)) (zap int:/ n 10)
+  (def thou (mod n 10)) (zap int:/ n 10)
   (cat (romandigit thou "m??")
        (romandigit hund "cdm")
        (romandigit tens "xlc")
@@ -227,8 +223,7 @@
                   (br)
                   (spacer 5))))
             (br 2)
-            (gentag link rel "alternate" type "application/rss+xml" title "RSS" href (rss-url))
-            )))
+            (gentag link rel "alternate" type "application/rss+xml" title "RSS" href (rss-url)))))
       (br)
       (sitetable 435
         (trtd
@@ -236,10 +231,8 @@
             (br)
             (tag (font size 1)
               (tag (font color (color 0xcc 0xcc 0xcc))
-                (pr "&copy; " (romannum:car:date) " " (or @!author "pg"))))))
-        )
-      (br))
-    ))
+                (pr "&copy; " (romannum:car:date) " " (or @!author "pg")))))))
+      (br))))
 
 (def gen-sitemap ()
   (with-object (copy site*)
@@ -261,19 +254,20 @@
           (pushnew (self*) tems (compare is !title)))))
     (sort (compare < !title) tems)))
 
-(def gen-rss ()
+(def gen-rss ((o id 'articles))
   (tofile (rss-url)
     (prn "<rss version=\"2.0\" xmlns:content=\"http://purl.org/rss/1.0/modules/content/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><channel>")
     (prn "  <title>" (or @!site-desc @!site-name) "</title>")
     (prn "  <link>" @!site-url "</link>")
     (prn "  <description>" (or @!rss-desc "") "</description>")
-    (with-object 'articles
+    (with-object id
       (each-object @!contents
-        (unless (or @!hidden (is @!type 'link))
-          (prn "  <item>")
-          (prn "    <link>" @!site-url (to @!id) "</link>")
-          (prn "    <title>" @!title "</title>")
-          (prn "  </item>"))))
+        (when (is @!type 'item)
+          (unless @!hidden
+            (prn "  <item>")
+            (prn "    <link>" @!site-url (to @!id) "</link>")
+            (prn "    <title>" @!title "</title>")
+            (prn "  </item>")))))
     (prn "</channel></rss>")))
 
 (def render-object (x)
@@ -395,21 +389,18 @@
   (gen-contents)
   (gen-sitemap)
   (gen-rss)
-  (each (k v) pages*
-    (unless (is k 'index)
-      (with-object k
-        (gen-section)))))
-
+  (each-object (keys pages*)
+    (unless (is @!id 'index)
+      (gen-section))))
 
 (def clean-name (name)
-  (multisubst (list (list "--" "-"))
-              (map [if (alphadig _) _ #\-]
-                   (downcase name))))
+  (map [if (alphadig _) _ #\-]
+       (downcase name)))
 
 (def render-image-name ()
-  (withs (name (clean-name (or @!title (cat @!id)))
-          n (++ (@ 'counter 0)))
-    (ero (cat name "-" n ".png") 'image-name)))
+  (defs name (clean-name (or @!title (cat @!id)))
+        n    (++ (@ 'counter 0)))
+  (ero (cat name "-" n ".png") 'image-name))
 
 (def render-color (col)
   (if (isa!sym col) (cat col) (cat "#" (hexrep col))))
