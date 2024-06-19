@@ -43,7 +43,7 @@ And when language and
 program fit one another well, you end up with code which is
 clear, small, and efficient.
 
-<font color=#880000>
+<xfont color=#880000>
 It's worth emphasizing that bottom-up design doesn't mean
 just writing the same program in a different order.  When you
 work bottom-up, you usually end up with a different program.
@@ -51,7 +51,7 @@ Instead of a single, monolithic program,
 you will get a larger language with more abstract operators,   
 and a smaller program written in it.  Instead of a lintel,
 you'll get an arch.
-</font>
+</xfont>
 
 In typical code, once you abstract out the parts which are
 merely bookkeeping, what's left is much shorter;
