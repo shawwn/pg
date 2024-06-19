@@ -511,7 +511,11 @@
   (assert text "navbutton: @@!title not set")
   (link (tostring:gentag img src (with-object 'index
                                    (imbutton text))
-                         alt text
+                         ; alt text on nav buttons ends up causing
+                         ; problems with long-press on mobile (e.g.
+                         ; opening in a new tab) since the button is
+                         ; selected as text instead of as a link.
+                         ;alt text 
                          width 67 height 21
                          border 0 hspace 0 vspace 0)
         (to dest))
