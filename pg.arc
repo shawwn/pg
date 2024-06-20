@@ -1,8 +1,51 @@
-#!/usr/bin/env arc
+#!/usr/bin/env sparc
 
 (require (libpath "html.arc"))
 
 (or= pages* (obj) site* nil rootdir* (expandpath "."))
+
+(defvar self*)
+
+(def current-object ()
+  (or (self*) site*))
+
+(def @ (prop (o fail))
+  (let x (aand (self*) (it prop))
+    (if (~null x) x
+        site*     (site* prop fail)
+                  fail)))
+
+(defset @ (prop (o fail))
+  (w/uniq p
+    (list (list p prop)
+          `(@ ,prop ,fail)
+          `(fn (val) (set-prop ,p val)))))
+
+(def set-prop (prop value)
+  (= ((current-object) prop) value))
+
+(mac with-object (x . body)
+  (w/uniq v
+    `(whenlet ,v (as-object ,x)
+       (w/param self* ,v
+         ,@body))))
+
+(def as-object (x)
+  (if (null x)
+       x
+      (isa!sym x)
+       (assert (pages* x) "Page '@x' doesn't exist")
+      (isa!table x)
+       x
+      (isa!fn x)
+       (as-object (x (current-object)))
+       (err "Can't use as object" x)))
+
+(mac each-object (lst . body)
+  (w/uniq v
+    `(each ,v ,lst
+       (with-object ,v
+         ,@body))))
 
 (deftem item
   id       nil
@@ -35,6 +78,7 @@
         (= (pages* id) p)))))
 
 (def load-pages ((o pagesdir))
+  (aif (file-exists "init.arc") (load it))
   (w/param cwd pagesdir
     (= site* (assert (load-page 'index)))
     (each name (sort < (glob "*.page"))
@@ -42,49 +86,14 @@
         (unless (is id 'index)
           (load-page id))))))
 
-(def as-object (x)
-  (if (null x)
-       x
-      (isa!sym x)
-       (assert (pages* x) "Page '@x' doesn't exist")
-      (isa!table x)
-       x
-      (isa!fn x)
-       (as-object (x (current-object)))
-       (err "Can't use as object" x)))
-
-(defvar self*)
-
-(mac with-object (x . body)
-  (w/uniq v
-    `(whenlet ,v (as-object ,x)
-       (w/param self* ,v
-         ,@body))))
-
-(mac each-object (lst . body)
-  (w/uniq var
-    `(each ,var ,lst
-       (with-object ,var
-         ,@body))))
-
-(def @ (prop (o fail))
-  (let x (aand (self*) (it prop))
-    (if (~null x) x
-        site*     (site* prop fail)
-                  fail)))
-
-(def current-object ()
-  (or (self*) site*))
-
-(def set-prop (prop value)
-  (def me (current-object))
-  (= (me prop) value))
-
-(defset @ (prop (o fail))
-  (w/uniq p
-    (list (list p prop)
-          `(@ ,prop ,fail)
-          `(fn (val) (set-prop ,p val)))))
+(def gen-site ((o pagesdir "pages"))
+  (load-pages pagesdir)
+  (gen-contents)
+  (gen-sitemap)
+  (gen-rss)
+  (each-object (keys pages*)
+    (unless (is @!id 'index)
+      (gen-section))))
 
 (def html-file (dest)
   (cat dest ".html"))
@@ -97,6 +106,41 @@
 (mac sitetable (width . body)
   `(tag (table border 0 cellspacing 0 cellpadding 0 width ,width)
      ,@body))
+
+(mac page (name title . body)
+  (w/uniq (tn ti)
+    `(withs (,tn ,name ,ti ,title)
+       (tofile (html-file ,tn)
+         (tag html
+           (tag head
+             ;(gentag meta name 'viewport content "width=device-width, initial-scale=1.0")
+             ;(gentag meta name 'description             content @!site-desc)
+             ;(gentag meta name 'theme-color             content "#@(hexrep teal)")
+             ;(gentag meta name 'msapplication-TileColor content "#@(hexrep orangered)")
+             
+             (gentag meta property 'og:type             content "website")
+             (gentag meta property 'og:title            content ,ti)
+             (gentag meta property 'og:site_name        content @!site-name)
+             ;(gentag meta property 'og:description      content @!site-desc)
+             (awhen @!site-image
+               (gentag meta property 'og:image            content it!url)
+               (gentag meta property 'og:image:type       content it!type)
+               (gentag meta property 'og:image:width      content it!width)
+               (gentag meta property 'og:image:height     content it!height))
+
+             (tag title (pr ,ti))
+             (aif @!favicon-url (gentag link rel "shortcut icon" href it))
+
+             (when (or @!gtag @!matomo) (prn))
+             (when @!gtag (gtag) (prn))
+             (when @!matomo (matomo) (prn))
+
+             (hook 'head))
+           (tag (body text @!text-color
+                      link @!link-color
+                      vlink @!visited-link-color)
+             (sitetable nil
+               (row valign: 'top (navbuttons ,tn) (shim 1 26) (do ,@body)))))))))
 
 (def read-template (id (o dir))
   (aand (cat "_" id ".html")
@@ -124,41 +168,70 @@
 
 (def matomo () (template 'matomo (+ rootdir* "templates")))
 
-(mac page (name title . body)
-  (w/uniq ti
-    `(tofile (html-file ,name)
-       (let ,ti ,title
-         (tag html
-           (tag head
-             ;(gentag meta name 'viewport content "width=device-width, initial-scale=1.0")
-             ;(gentag meta name 'description             content @!site-desc)
-             ;(gentag meta name 'theme-color             content "#@(hexrep teal)")
-             ;(gentag meta name 'msapplication-TileColor content "#@(hexrep orangered)")
-             
-             (gentag meta property 'og:type             content "website")
-             (gentag meta property 'og:title            content ,ti)
-             (gentag meta property 'og:site_name        content @!site-name)
-             ;(gentag meta property 'og:description      content @!site-desc)
-             (awhen @!site-image
-               (gentag meta property 'og:image            content it!url)
-               (gentag meta property 'og:image:type       content it!type)
-               (gentag meta property 'og:image:width      content it!width)
-               (gentag meta property 'og:image:height     content it!height))
+(def spacer (height (o width 1))
+  (gentag img src "http://www.virtumundo.com/images/spacer.gif" :height :width))
 
-             (tag title (pr ,ti))
-             (aif @!favicon-url (gentag link rel "shortcut icon" href it))
+(def rss-url ()
+  (or @!rss-url "essays.rss"))
 
-             (when (or @!gtag @!matomo) (prn))
-             (when @!gtag (gtag) (prn))
-             (when @!matomo (matomo) (prn)))
-           (tag (body text @!text-color
-                      link @!link-color
-                      vlink @!visited-link-color)
-             (sitetable nil
-               (tag (tr valign 'top)
-                 (td (navbuttons ,name))
-                 (td (shim 1 26))
-                 (td ,@body)))))))))
+(def gen-rss ((o id 'articles))
+  (tofile (rss-url)
+    (prn "<rss version=\"2.0\" xmlns:content=\"http://purl.org/rss/1.0/modules/content/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><channel>")
+    (prn "  <title>" (or @!site-desc @!site-name) "</title>")
+    (prn "  <link>" @!site-url "</link>")
+    (prn "  <description>" (or @!rss-desc "") "</description>")
+    (with-object id
+      (each-object @!contents
+        (when (is @!type 'item)
+          (unless @!hidden
+            (prn "  <item>")
+            (prn "    <link>" @!site-url (to @!id) "</link>")
+            (prn "    <title>" @!title "</title>")
+            (prn "  </item>")))))
+    (prn "</channel></rss>")))
+
+(def gen-contents ()
+  (page 'index @!site-name
+    (tag (font size 2 face 'verdana)
+      (site-banner)
+      (gentag img src "https://s.turbifycdn.com/aah/paulgraham/index-14.gif"
+              width 410 height 308
+              border 0 hspace 0 vspace 0)
+      (br 2)
+      (sitetable 435
+        (trtd
+          (tag (font size 2 face 'verdana)
+            (tag (table width 410 cellspacing 0)
+              (tr
+                (tdcolor (color 0xff 0xcc 0x33)
+                  (spacer 15)
+                  (tag font size: 2 (prn)
+                    (tag b "New:") (prn)
+                    (link "How to Start Google" "google.html") (prn " |")
+                    (link "Best Essay" "best.html") (prn " |")
+                    (link "Superlinear" "superlinear.html") (prn))
+                  (br)
+                  (spacer 5))))
+            (tag (table width 410 cellspacing 0)
+              (tr
+                (tdcolor (color 0xff 0x99 0x22)
+                  (spacer 15)
+                  (tag font size: 2 (prn)
+                    (tag b "Want to start a startup?") (prn " Get funded by ")
+                    (link "Y Combinator" "http://ycombinator.com/apply.html") (prn "."))
+                  (br)
+                  (spacer 5))))
+            (br 2)
+            (gentag link rel "alternate" type "application/rss+xml" title "RSS" href (rss-url)))))
+      (br)
+      (sitetable 435
+        (trtd
+          (tag (font size 2 face 'verdana)
+            (br)
+            (tag font size: 1
+              (tag font color: (color 0xcc 0xcc 0xcc)
+                (pr "&copy; " (romannum:car:date) " " (or @!author "pg")))))))
+      (br))))
 
 (def romandigit (n (o chars "ivx"))
   (let (one five ten) (as!cons chars)
@@ -185,55 +258,6 @@
        (romandigit tens "xlc")
        (romandigit ones "ivx")))
 
-(def spacer (height (o width 1))
-  (gentag img src "http://www.virtumundo.com/images/spacer.gif" height height width width))
-
-(def rss-url ()
-  (or @!rss-url "essays.rss"))
-
-(def gen-contents ()
-  (page 'index @!site-name
-    (tag (font size 2 face 'verdana)
-      (site-banner)
-      (gentag img src "https://s.turbifycdn.com/aah/paulgraham/index-14.gif"
-              width 410 height 308
-              border 0 hspace 0 vspace 0)
-      (br 2)
-      (sitetable 435
-        (trtd
-          (tag (font size 2 face 'verdana)
-            (tag (table width 410 cellspacing 0)
-              (tr
-                (tdcolor (color 0xff 0xcc 0x33)
-                  (spacer 15)
-                  (tag (font size 2) (prn)
-                    (tag b "New:") (prn)
-                    (link "How to Start Google" "google.html") (prn " |")
-                    (link "Best Essay" "best.html") (prn " |")
-                    (link "Superlinear" "superlinear.html") (prn))
-                  (br)
-                  (spacer 5))))
-            (tag (table width 410 cellspacing 0)
-              (tr
-                (tdcolor (color 0xff 0x99 0x22)
-                  (spacer 15)
-                  (tag (font size 2) (prn)
-                    (tag b "Want to start a startup?") (prn " Get funded by ")
-                    (link "Y Combinator" "http://ycombinator.com/apply.html") (prn "."))
-                  (br)
-                  (spacer 5))))
-            (br 2)
-            (gentag link rel "alternate" type "application/rss+xml" title "RSS" href (rss-url)))))
-      (br)
-      (sitetable 435
-        (trtd
-          (tag (font size 2 face 'verdana)
-            (br)
-            (tag (font size 1)
-              (tag (font color (color 0xcc 0xcc 0xcc))
-                (pr "&copy; " (romannum:car:date) " " (or @!author "pg")))))))
-      (br))))
-
 (def gen-sitemap ()
   (with-object (copy site*)
     (= @!id 'ind @!title (cat @!site-name " Index"))
@@ -253,22 +277,6 @@
         (when @!title
           (pushnew (self*) tems (compare is !title)))))
     (sort (compare < !title) tems)))
-
-(def gen-rss ((o id 'articles))
-  (tofile (rss-url)
-    (prn "<rss version=\"2.0\" xmlns:content=\"http://purl.org/rss/1.0/modules/content/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><channel>")
-    (prn "  <title>" (or @!site-desc @!site-name) "</title>")
-    (prn "  <link>" @!site-url "</link>")
-    (prn "  <description>" (or @!rss-desc "") "</description>")
-    (with-object id
-      (each-object @!contents
-        (when (is @!type 'item)
-          (unless @!hidden
-            (prn "  <item>")
-            (prn "    <link>" @!site-url (to @!id) "</link>")
-            (prn "    <title>" @!title "</title>")
-            (prn "  </item>")))))
-    (prn "</channel></rss>")))
 
 (def render-object (x)
   (ero 'render-object x)
@@ -330,8 +338,8 @@
   (page @!id @!title
     (site-banner)
     (sitetable 435
-      (tag (tr valign 'top)
-        (tag (td width 435)
+      (tag tr valign: 'top
+        (tag td width: 435
           (awhen @!image
             (let im (if (isa!string it) (inst 'image url: it destination: it) it)
               (render-object im)
@@ -342,7 +350,7 @@
           (tag (font size 2 face 'verdana)
             (pr (load-text @!text))
             (when @!image
-              ;(tag (br clear 'all)) ; incorrect: <br clear=all></br>
+              ;(tag br clear: 'all) ; incorrect: <br clear=all></br>
               (pr "<br clear=\"all\" />")
               )))))
     (only&pr @!caption)
@@ -352,17 +360,17 @@
               wid (either @!column-width (if (> n 1) 210 421)))
         (each cols (segments n @!contents)
           (rowshim (either @!margin-top 5))
-          (tag (tr valign 'top)
+          (tag tr valign: 'top
             (on x cols
               (unless (is index 0)
                 (td (shim 8)))
               (unless @!bullet-inline
-                (tag (td width (assert @!bullet-width))
+                (tag td width: (assert @!bullet-width)
                   (tag center
                     (bullet)))
-                (tag (td width 8)
+                (tag td width: 8
                   (shim 8)))
-              (tag (td width wid)
+              (tag td width: wid
                 (when @!bullet-inline
                   (bullet align: 'left))
                 (tag (font size 2 face 'verdana)
@@ -383,15 +391,6 @@
             (gentag hr)
             (only&pr @!footer)
             ))))))
-
-(def gen-site ((o pagesdir (expandpath "pages")))
-  (load-pages pagesdir)
-  (gen-contents)
-  (gen-sitemap)
-  (gen-rss)
-  (each-object (keys pages*)
-    (unless (is @!id 'index)
-      (gen-section))))
 
 (def clean-name (name)
   (map [if (alphadig _) _ #\-]
