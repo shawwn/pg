@@ -420,7 +420,7 @@
                    (o :trim-edges "east,west")
                    (o :size "1500x@(* (round font-size) (len:lines text))"))
   (with img (render-image-name)
-    (shell 'convert
+    (shell 'magick
            '-font font
            '-pointsize font-size
            '-kerning kerning
@@ -467,7 +467,7 @@
 
 (defmemo imbutton (text)
   (with img (render-image-name)
-    (shell 'convert
+    (shell 'magick
            '-size '62x15
            '-background 'none
            "xc:"
@@ -489,7 +489,7 @@
 
 (def maxim (im height width)
   (with img (render-image-name)
-    (shell 'convert im
+    (shell 'magick im
            '-resize "@{width}x@{height}>"
            img)))
 
