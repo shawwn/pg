@@ -408,7 +408,7 @@
   (multisubst (list (list "\\n" "\n"))
     (tostring:write x)))
 
-(def render-text (text
+(defmemo render-text (text
                    (o :text-color black)
                    (o :text-align 'left)
                    (o :background-color 'none)
@@ -445,7 +445,7 @@
 (defmemo imheight (img)
   (cadr (imsize img)))
 
-(defmemo imtitle (text)
+(def imtitle (text)
   (= text (multisubst (list (list "-" "–"))
                       text))
   (render-text text
@@ -454,7 +454,7 @@
                font-size: 17.5
                text-color: (color 0x7f 0x1b 0x16)))
 
-(defmemo imbanner (text)
+(def imbanner (text)
   (render-text text
                kerning: (or @!banner-kerning 6.5)
                font-size: (or @!banner-size 62)
