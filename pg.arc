@@ -409,18 +409,18 @@
     (tostring:write x)))
 
 (defmemo render-text (text
-                   (o :text-color black)
-                   (o :text-align 'left)
-                   (o :background-color 'none)
-                   (o :font 'verdana)
-                   (o :kerning 0)
-                   (o :font-size 18)
-                   (o :gravity "west")
-                   (o :trim-edges "east,west")
-                   (o :size "1500x@(* (round font-size) (len:lines text))"))
+                       (o :text-color black)
+                       (o :text-align 'left)
+                       (o :background-color 'none)
+                       (o :font 'verdana)
+                       (o :kerning 0)
+                       (o :font-size 18)
+                       (o :gravity "west")
+                       (o :trim-edges "east,west")
+                       (o :size "1500x@(* (round font-size) (len:lines text))"))
   (with img (render-image-name)
     (shell 'magick
-           '-font font
+           '-font (find-font font)
            '-pointsize font-size
            '-kerning kerning
            '-gravity gravity
@@ -432,6 +432,14 @@
            '-draw "text 0,-1 @(escaped text)"
            '-define "trim:edges=@trim-edges" '-trim '+repage
            img)))
+
+(defmemo find-font (font)
+  (zap sym:downcase:str font)
+  (or (each file (dir (expandpath "assets/fonts" rootdir*))
+        (let name (sym:cut (downcase file) 0 (pos #\. file))
+          (when (is name font)
+            (break (expandpath (+ "assets/fonts/" file) rootdir*)))))
+      font))
 
 (def imsize (img)
   (if (valid-url img)
@@ -449,7 +457,7 @@
   (= text (multisubst (list (list "-" "–"))
                       text))
   (render-text text
-               font: (expandpath "assets/fonts/metaplusbook-caps.ttf" rootdir*)
+               font: 'metaplusbook-caps
                ;kerning: 0.28
                font-size: 17.5
                text-color: (color 0x7f 0x1b 0x16)))
@@ -460,7 +468,7 @@
                font-size: (or @!banner-size 62)
                size: "1500x45"
                gravity: 'south
-               font: (expandpath "assets/fonts/metaplusbook-caps.ttf" rootdir*)
+               font: 'metaplusbook-caps
                trim-edges: "east,west,north"
                text-color: (color 247 247 252)))
 
@@ -471,7 +479,7 @@
            '-background 'none
            "xc:"
            '-gravity 'west
-           '-font (expandpath "assets/fonts/metaplusbold-roman.ttf" rootdir*)
+           '-font (find-font 'metaplusbold-roman)
            '-fill (render-color (color 0xf7 0xf7 0xf7))
            '-pointsize "11.95" '-kerning 0.0
            '-draw (+ "text 2,-1 " (tostring:write text))
