@@ -12,6 +12,7 @@
    'wisdom
    'icad
    'taste
+   'noop
    'road
    'avg
    (make-link "Chapter 1 of Ansi Common Lisp" "https://sep.turbifycdn.com/ty/cdn/paulgraham/acl1.txt?t=1717323540&")

@@ -18,6 +18,7 @@
    'arcfaq
    'helpus
    'design
+   'noop
  )
 )
 Arc is a new dialect of Lisp we're working on.   You can 

@@ -1,0 +1,102 @@
+<html><head><meta property="og:type" content="website"><meta property="og:title" content="Why Arc Isn't Especially Object-Oriented"><meta property="og:site_name" content="Paul Graham"><meta property="og:image" content="https://user-images.githubusercontent.com/59632/213842621-78c527ed-c657-4126-b27d-2670f35fb053.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="512"><meta property="og:image:height" content="512"><title>Why Arc Isn't Especially Object-Oriented</title><link rel="shortcut icon" href="favicon.ico">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VSSBKPV516"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VSSBKPV516');
+</script>
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://shawwn.matomo.cloud/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '2']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src='https://cdn.matomo.cloud/shawwn.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img referrerpolicy="no-referrer-when-downgrade" src="https://shawwn.matomo.cloud/matomo.php?idsite=2&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+<!-- End Matomo Code -->
+</head><body text=#000000 link=#000066 vlink=#464646><table border=0 cellspacing=0 cellpadding=0><tr valign=top><td><a href="index.html"><img src="index-1.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="articles.html"><img src="index-2.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="http://www.amazon.com/gp/product/0596006624"><img src="index-3.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="books.html"><img src="index-4.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://ycombinator.com"><img src="index-5.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="arc.html"><img src="index-6.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bel.html"><img src="index-7.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="lisp.html"><img src="index-8.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="spam.html"><img src="index-9.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="responses.html"><img src="index-10.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="faq.html"><img src="index-11.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="raq.html"><img src="index-12.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="quo.html"><img src="index-13.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="pgessays.rss"><img src="index-14.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bio.html"><img src="index-15.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://twitter.com/paulg"><img src="index-16.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://mas.to/@paulg"><img src="index-17.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+</td><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=1 width=28 border=0></td><td><a href="index.html"><img src="index-20.png" width=408 height=45 border=0 hspace=0 vspace=0></a><br><br>
+<table border=0 cellspacing=0 cellpadding=0 width=435><tr valign=top><td width=435><img src="why-arc-isn-t-especially-object-oriented-1.png" height=18 border=0 hspace=0 vspace=0 alt="Why Arc Isn't Especially Object-Oriented"><br><br>
+<font size=2 face="verdana">
+<p align=justif>
+There is a kind of mania for object-oriented programming at the moment, but
+<!-- it seems to peak with medium-quality programmers.  -->
+some of the <a href="reesoo.html">smartest programmers</a> I know are some of the least excited about it.<br /><br />My own feeling is that object-oriented
+programming is a useful technique in some
+cases, but it isn't something that has to pervade every program you
+write.  You should be able to define new types,
+but you shouldn't have to express every program as the
+definition of new types.<br /><br />I think there are five reasons people like object-oriented   
+programming, and three and a half of them are bad:<br /><br /><ol>
+<li> Object-oriented programming is exciting   
+if you have a statically-typed language without 
+lexical closures or macros.  To some degree, it offers a way around these
+limitations.  (See <a href="quotes.html">Greenspun's Tenth Rule</a>.)<br /><br /><li> Object-oriented programming is popular in big companies,
+because it suits the way they write software.  At big companies,
+software tends to be written by large (and frequently changing)  
+teams of
+mediocre programmers.  Object-oriented programming imposes a
+discipline on these programmers that prevents any one of them
+from doing too much damage.  The price is that the resulting
+code is bloated with protocols and full of duplication.  
+This is not too high a price for big companies, because their
+software is probably going to be bloated and full of 
+duplication anyway.<br /><br /><li> Object-oriented
+programming generates a lot of what looks like work.
+Back in the days of fanfold, there was a type of programmer who
+would only put five or ten lines of code on a page, preceded
+by twenty lines of elaborately formatted comments. 
+Object-oriented programming is like crack for these people: it lets
+you incorporate all this scaffolding right into your source
+code.  Something that a Lisp hacker might handle by pushing
+a symbol onto a list becomes a whole file of classes and
+methods.  So it is a good tool if you want to convince yourself,
+or someone else, that you are doing a lot of work.<br /><br /><li> If a language is itself an object-oriented program, it can
+be extended by users.  Well, maybe.  Or maybe you can do
+even better by offering the sub-concepts
+of object-oriented programming a la carte.  Overloading, 
+for example, is not intrinsically tied to classes.  We'll see.<br /><br /><li> Object-oriented abstractions map neatly onto the domains
+of  certain specific kinds of programs, like simulations and CAD
+systems.                                        
+</ol>
+<p align=justif>
+I personally have never needed object-oriented abstractions.
+Common Lisp has an enormously powerful object system and I've
+never used it once.  I've done a lot of things (e.g. making         
+hash tables full of closures) that would have required 
+object-oriented techniques to do in wimpier languages, but
+I have never had to use CLOS.<br /><br />Maybe I'm just stupid, or have worked on some limited subset
+of applications.  There is a danger in designing a language
+based on one's own experience of programming.  But it seems
+more dangerous to put stuff in that you've never needed 
+because it's thought to be a good idea.<br /><br /></font></td></tr></table><br><table border=0 cellspacing=0 cellpadding=0 width=435><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=5 width=1 border=0></td></tr><tr valign=top><td width=421><img src="https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif" width=12 height=14 border=0 hspace=0 vspace=0 align=left><font size=2 face="verdana"><a href="reesoo.html">Rees Re: OO</a><br>
+</font></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=5 width=1 border=0></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=5 width=1 border=0></td></tr><tr valign=top><td width=421><img src="https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif" width=12 height=14 border=0 hspace=0 vspace=0 align=left><font size=2 face="verdana"><a href="http://www.cibercalli.com/erick/hackingnews/porque-arc-no-es-especialmente-orientado-a-objetos">Spanish Translation</a><br>
+</font></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=5 width=1 border=0></td></tr></table><br><table border=0 cellspacing=0 cellpadding=0 width=435><tr><td><font size=2 face="verdana"><br><br>
+<hr></font></td></tr></table></td></tr></table></body></html>

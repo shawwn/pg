@@ -1,0 +1,136 @@
+<html><head><meta property="og:type" content="website"><meta property="og:title" content="Rees Re: OO"><meta property="og:site_name" content="Paul Graham"><meta property="og:image" content="https://user-images.githubusercontent.com/59632/213842621-78c527ed-c657-4126-b27d-2670f35fb053.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="512"><meta property="og:image:height" content="512"><title>Rees Re: OO</title><link rel="shortcut icon" href="favicon.ico">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VSSBKPV516"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VSSBKPV516');
+</script>
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://shawwn.matomo.cloud/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '2']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src='https://cdn.matomo.cloud/shawwn.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img referrerpolicy="no-referrer-when-downgrade" src="https://shawwn.matomo.cloud/matomo.php?idsite=2&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+<!-- End Matomo Code -->
+</head><body text=#000000 link=#000066 vlink=#464646><table border=0 cellspacing=0 cellpadding=0><tr valign=top><td><a href="index.html"><img src="index-1.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="articles.html"><img src="index-2.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="http://www.amazon.com/gp/product/0596006624"><img src="index-3.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="books.html"><img src="index-4.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://ycombinator.com"><img src="index-5.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="arc.html"><img src="index-6.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bel.html"><img src="index-7.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="lisp.html"><img src="index-8.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="spam.html"><img src="index-9.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="responses.html"><img src="index-10.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="faq.html"><img src="index-11.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="raq.html"><img src="index-12.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="quo.html"><img src="index-13.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="pgessays.rss"><img src="index-14.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bio.html"><img src="index-15.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://twitter.com/paulg"><img src="index-16.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://mas.to/@paulg"><img src="index-17.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+</td><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=1 width=28 border=0></td><td><a href="index.html"><img src="index-20.png" width=408 height=45 border=0 hspace=0 vspace=0></a><br><br>
+<table border=0 cellspacing=0 cellpadding=0 width=435><tr valign=top><td width=435><img src="rees-re--oo-1.png" height=18 border=0 hspace=0 vspace=0 alt="Rees Re: OO"><br><br>
+<font size=2 face="verdana">
+<p align=justif>
+<i>(Jonathan Rees had a really interesting response to <a href="noop.html">Why
+Arc isn't Especially Object-Oriented</a>, which he has allowed me to reproduce
+here.)</i><br /><br />Here is an a la carte menu of features or properties that are related
+                    to these terms; I have heard OO defined to be many different subsets
+                    of this list.<br /><br /><ol>
+<li> Encapsulation - the ability to syntactically hide the
+                       implementation of a type.  E.g. in C or Pascal you always know
+                       whether something is a struct or an array, but in CLU and Java you
+                       can hide the difference.<br /><br /><li> Protection - the inability of the client of a type to detect its
+                       implementation.  This guarantees that a behavior-preserving change
+                       to an implementation will not break its clients, and also makes
+                       sure that things like passwords don't leak out.<br /><br /><li> Ad hoc polymorphism - functions and data structures with parameters 
+                       that can take on values of many different types.<br /><br /><li> Parametric polymorphism - functions and data structures that
+                       parameterize over arbitrary values (e.g. list of anything).
+                       ML and Lisp both have this.  Java doesn't quite because of
+                       its non-Object types.<br /><br /><li> Everything is an object - all values are objects.  True in Smalltalk
+                       (?) but not in Java (because of int and friends).<br /><br /><li> All you can do is send a message (AYCDISAM) = Actors model - there
+                       is no direct manipulation of objects, only communication with (or
+                       invocation of) them.  The presence of fields in Java violates this.<br /><br /><li> Specification inheritance = subtyping - there are distinct
+                       types known to the language with the property that a value of
+                       one type is as good as a value of another for the purposes of type
+                       correctness.  (E.g. Java interface inheritance.)<br /><br /><li> Implementation inheritance/reuse - having written one pile of code,
+                       a similar pile (e.g. a superset) can be generated in a controlled
+                       manner, i.e. the code doesn't have to be copied and edited.  A
+                       limited and peculiar kind of abstraction.  (E.g. Java class
+                       inheritance.)<br /><br /><li> Sum-of-product-of-function pattern - objects are (in effect)
+                       restricted to be functions that take as first argument a
+                       distinguished method key argument that is drawn from a finite set
+                       of simple names.
+</ol>
+<p align=justif>
+                    So OO is not a well defined concept.  Some people (eg. Abelson and
+                    Sussman?) say Lisp is OO, by which they mean {3,4,5,7} (with the
+                    proviso that all types are in the programmers' heads).  Java is
+                    supposed to be OO because of {1,2,3,7,8,9}.  E is supposed to be more
+                    OO than Java because it has {1,2,3,4,5,7,9} and almost has 6; 8
+                    (subclassing) is seen as antagonistic to E's goals and not necessary
+                    for OO.<br /><br />The conventional Simula 67-like pattern of class and instance will get
+                    you {1,3,7,9}, and I think many people take this as a definition of
+                    OO.<br /><br />Because OO is a moving target, OO zealots will choose some subset of
+                    this menu by whim and then use it to try to convince you that you are
+                    a loser.<br /><br />Perhaps part of the confusion - and you say this in a different way in
+                    your little <a href="noop.html">memo</a> - is that the C/C++ folks see OO as a liberation from
+                    a world that has nothing resembling a first-class functions, while
+                    Lisp folks see OO as a prison since it limits their use of
+                    functions/objects to the style of (9.).  In that case, the only way OO
+                    can be defended is in the same manner as any other game or discipline
+                    -- by arguing that by giving something up (e.g. the freedom to throw
+                    eggs at your neighbor's house) you gain something that you want
+                    (assurance that your neighbor won't put you in jail).<br /><br />This is related to Lisp being oriented to the solitary hacker and
+                    discipline-imposing languages being oriented to social packs, another
+                    point you mention.  In a pack you want to restrict everyone else's
+                    freedom as much as possible to reduce their ability to interfere with
+                    and take advantage of you, and the only way to do that is by either
+                    becoming chief (dangerous and unlikely) or by submitting to the same
+                    rules that they do.  If you submit to rules, you then want the rules
+                    to be liberal so that you have a chance of doing most of what you want
+                    to do, but not so liberal that others nail you.<br /><br />In such a pack-programming world, the language is a constitution or
+                    set of by-laws, and the interpreter/compiler/QA dept. acts in part as
+                    a rule checker/enforcer/police force.  Co-programmers want to know: If
+                    I work with your code, will this help me or hurt me?  Correctness is
+                    undecidable (and generally unenforceable), so managers go with
+                    whatever rule set (static type system, language restrictions, "lint"
+                    program, etc.) shows up at the door when the project starts.<br /><br />I recently contributed to a discussion of anti-OO on the e-lang list.
+                    My main anti-OO message (actually it only attacks points 5/6)
+                    was
+<a href="http://www.eros-os.org/pipermail/e-lang/2001-October/005852.html"
+> http://www.eros-os.org/pipermail/e-lang/2001-October/005852.html</a>.
+                    The followups are interesting but I don't think they're all threaded
+                    properly.<br /><br />(Here are the pet definitions of terms used above:<br /><br /><ul>
+<li> Value = something that can be passed to some function (abstraction).
+                      (I exclude exotic compile-time things like parameters to
+                      macros and to parameterized types and modules.)<br /><br /><li> Object = a value that has function-like behavior, i.e. you can
+                      invoke a method on it or call it or send it a message or something
+                      like that.  Some people define object more strictly along the lines
+                      of 9. above, while others (e.g. CLTL) are more liberal.  This is
+                      what makes "everything is an object" a vacuous statement in the
+                      absence of clear definitions.<br /><br />In some languages the "call" is curried and the key-to-method
+                      mapping can sometimes be done at compile time.  This technicality
+                      can cloud discussions of OO in C++ and related languages.<br /><br /><li> Function = something that can be combined with particular
+                      parameter(s) to produce some result.  Might or might not be the same
+                      as object depending on the language.<br /><br /><li> Type = a description of the space of values over which a function is
+                      meaningfully parameterized.  I include both types known to the
+                      language and types that exist in the programmer's mind or
+                      in documentation.
+</ul>)<br /><br /></font></td></tr></table><br><table border=0 cellspacing=0 cellpadding=0 width=435><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=5 width=1 border=0></td></tr><tr valign=top><td width=6><center><img src="https://s.turbifycdn.com/aah/paulgraham/serious-2.gif" width=6 height=14 border=0 hspace=0 vspace=0></center></td><td width=8><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=8 width=1 border=0></td><td width=421><font size=2 face="verdana"><a href="http://mumble.net/jar/articles/oo.html">Complete Exchange</a><br>
+<img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=2 width=1 border=0></font></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=8 width=1 border=0></td></tr></table><br><table border=0 cellspacing=0 cellpadding=0 width=435><tr><td><font size=2 face="verdana"><br><br>
+<hr></font></td></tr></table></td></tr></table></body></html>
