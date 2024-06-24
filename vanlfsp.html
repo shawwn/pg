@@ -1,0 +1,105 @@
+<html><head><meta property="og:type" content="website"><meta property="og:title" content="LFM and LFSP"><meta property="og:site_name" content="Paul Graham"><meta property="og:image" content="https://user-images.githubusercontent.com/59632/213842621-78c527ed-c657-4126-b27d-2670f35fb053.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="512"><meta property="og:image:height" content="512"><title>LFM and LFSP</title><link rel="shortcut icon" href="favicon.ico">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VSSBKPV516"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VSSBKPV516');
+</script>
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://shawwn.matomo.cloud/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '2']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src='https://cdn.matomo.cloud/shawwn.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img referrerpolicy="no-referrer-when-downgrade" src="https://shawwn.matomo.cloud/matomo.php?idsite=2&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+<!-- End Matomo Code -->
+</head><body text=#000000 link=#000066 vlink=#464646><table border=0 cellspacing=0 cellpadding=0><tr valign=top><td><a href="index.html"><img src="index-1.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="articles.html"><img src="index-2.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="http://www.amazon.com/gp/product/0596006624"><img src="index-3.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="books.html"><img src="index-4.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://ycombinator.com"><img src="index-5.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="arc.html"><img src="index-6.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bel.html"><img src="index-7.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="lisp.html"><img src="index-8.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="spam.html"><img src="index-9.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="responses.html"><img src="index-10.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="faq.html"><img src="index-11.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="raq.html"><img src="index-12.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="quo.html"><img src="index-13.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="pgessays.rss"><img src="index-14.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bio.html"><img src="index-15.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://twitter.com/paulg"><img src="index-16.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://mas.to/@paulg"><img src="index-17.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+</td><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=1 width=28 border=0></td><td><a href="index.html"><img src="index-20.png" width=408 height=45 border=0 hspace=0 vspace=0></a><br><br>
+<table border=0 cellspacing=0 cellpadding=0 width=435><tr valign=top><td width=435><img src="lfm-and-lfsp-1.png" height=18 border=0 hspace=0 vspace=0 alt="Michael Vanier: LFM and LFSP"><br><br>
+<font size=2 face="verdana">
+<i>(This is from an email sent by Mike Vanier.  It is such a well-written description
+of the problems hackers face that I thought everyone should see it.)</i><br /><br />My Ph.D. research involved writing very complex simulations of nervous
+systems.  I used a
+simulation package that was written in C and had its own 
+scripting language, all written in-house.  I extended the hell out
+of it, but the experience was so painful I don't think I can ever work on a
+large C project again.<br /><br />Since I want to continue working in this field, and
+since I love to hack, I want to re-write the simulator "the right way".
+However, I've been dithering on the choice of language.  It's pretty clear
+that the core simulation objects have to be written in C++.  C is too
+painful, and anything else is going to give an unacceptable hit in speed
+(simulation is one of those rare fields where it is impossible to have too
+much speed).  But this is probably less than 50% of the code, maybe much
+less.  The rest is infrastructure; scripting interface as well as a lot of
+support code.<br /><br />For scripting I want to use Scheme or some Lisp dialect.
+But the language choice for infrastructure is unclear.  I could use C++,
+but that's unnecessarily painful especially since the infrastructure is not
+speed-critical.  So I'd decided to use Java; it's fast enough, there are a
+lot of libraries, and a lot of people know it so I could conceivably get
+others to work on it as well.  After making this decision, my interest
+waned and I started another (unrelated) project.<br /><br />In the process of working on that other project (which involves Scheme and
+Objective Caml (Ocaml), an ML dialect), it occurred to me that Ocaml would
+be a better choice than Java for the intermediate layer.  It's faster, has
+better type-checking, is much more powerful, and can even be used as its
+own scripting language because of the type inference and interactive REPL.
+If necessary, I could write a simple Lisp-like language on top of Ocaml
+with little difficulty.  The C interface to Ocaml is also quite mature, and
+there is a good-sized standard library (though nothing like the enormous
+Java libraries).  Also, it's much lighter weight than Java.  But here is
+the most important reason: it's a hell of a lot more fun to program in than
+Java.<br /><br />Writing Java code, though not particulary painful in the sense that
+C is painful (core dumps etc.), puts me to sleep.  Writing Ocaml (which is
+a "language designed for smart people" if there ever was one) is exciting.
+My motivation to tackle the project has tripled overnight.  The interesting
+question is: why is Ocaml so much more fun than Java?  Why are "languages
+designed for smart people" (LFSPs) so much more fun to program in than
+"languages designed for the masses" (LFMs)?<br /><br />One possibility is that LFSPs tend to be more unusual, and hence are more
+novel.  I'll admit that this is part of the answer, but it misses the main
+point.  <i>Any</i> new language is going to be novel, but the novelty usually
+wears off quickly.  The real point is that LFSPs have a much greater
+support for abstraction, and in particular for defining your <i>own</i>
+abstractions, than LFMs.<br /><br />This is not accidental; LFMs <i>deliberately</i>
+restrict the abstractive power of the language, because of the feeling that
+users "can't handle" that much power.  This means that there is a glass
+ceiling of abstraction; your designs can only get this abstract and no
+more.  This is reassuring to Joe Average, because he knows that he isn't
+going to see any code he can't understand.  It is reassuring to Joe Boss,
+because he knows that he can always fire you and hire another programmer to
+maintain and extend your code.  But it is incredibly frustrating to Joe
+Wizard Hacker, because he knows that his design can be made N times more
+general and more abstract but the language forces him to do the Same Old
+Thing again and again.<br /><br />This grinds you down after a while; if I had a
+nickel for every time I've written "for (i = 0; i < N; i++)" in C I'd be a
+millionaire.  I've known several programmers who after only a few years of
+hardcore hacking get burned out to the point where they say they never want
+to code again.  This is really tragic, and I think part of it is that
+they're using LFMs when they should be using LFSPs.<br /><br /></font></td></tr></table><table border=0 cellspacing=0 cellpadding=0 width=435><tr><td><font size=2 face="verdana"><br><br>
+<hr></font></td></tr></table></td></tr></table></body></html>

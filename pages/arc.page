@@ -19,6 +19,9 @@
    'helpus
    'design
    'noop
+   'vanlfsp
+   (make-link "Ideas People Have Sent Us" "http://www.archub.org/arcsug.txt")
+   (make-link "Old Arc Stuff" "https://paulgraham.com/arcold.html")
  )
 )
 Arc is a new dialect of Lisp we're working on.   You can 
