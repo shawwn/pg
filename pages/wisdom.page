@@ -1,4 +1,16 @@
-(title: "Is It Worth Being Wise?")
+(title: "Is It Worth Being Wise?"
+ contents: (list
+  (make-link "Polish Translation" "http://duch.mimuw.edu.pl/~matmis/blog/static.php?page=static070223-191923")
+  (make-link "French Translation" "http://www.jscoron.fr/misc/sagesse.html")
+  (make-link "Russian Translation" "http://evilnero.blogspot.com/2008/08/blog-post.html")
+  (make-link "Russian Translation" "http://ryba4.com/translations/wisdom")
+ )
+ bullet-url: @!bullet-thin-url
+ bullet-width: @!bullet-thin-width
+ columns: 2
+ column-width: 196
+ margin-bottom: 3
+)
 February 2007
 
 A few days ago I finally figured out something I've wondered about
