@@ -1,0 +1,97 @@
+<html><head><meta property="og:type" content="website"><meta property="og:title" content="Arc FAQ"><meta property="og:site_name" content="Paul Graham"><meta property="og:image" content="https://user-images.githubusercontent.com/59632/213842621-78c527ed-c657-4126-b27d-2670f35fb053.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="512"><meta property="og:image:height" content="512"><title>Arc FAQ</title><link rel="shortcut icon" href="favicon.ico">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VSSBKPV516"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VSSBKPV516');
+</script>
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://shawwn.matomo.cloud/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '2']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src='https://cdn.matomo.cloud/shawwn.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img referrerpolicy="no-referrer-when-downgrade" src="https://shawwn.matomo.cloud/matomo.php?idsite=2&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+<!-- End Matomo Code -->
+</head><body text=#000000 link=#000066 vlink=#464646><table border=0 cellspacing=0 cellpadding=0><tr valign=top><td><a href="index.html"><img src="index-1.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="articles.html"><img src="index-2.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="http://www.amazon.com/gp/product/0596006624"><img src="index-3.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="books.html"><img src="index-4.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://ycombinator.com"><img src="index-5.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="arc.html"><img src="index-6.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bel.html"><img src="index-7.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="lisp.html"><img src="index-8.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="spam.html"><img src="index-9.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="responses.html"><img src="index-10.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="faq.html"><img src="index-11.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="raq.html"><img src="index-12.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="quo.html"><img src="index-13.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="pgessays.rss"><img src="index-14.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bio.html"><img src="index-15.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://twitter.com/paulg"><img src="index-16.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://mas.to/@paulg"><img src="index-17.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+</td><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=1 width=28 border=0></td><td><a href="index.html"><img src="index-20.png" width=408 height=45 border=0 hspace=0 vspace=0></a><br><br>
+<table border=0 cellspacing=0 cellpadding=0 width=435><tr valign=top><td width=435><img src="arc-faq-1.png" height=18 border=0 hspace=0 vspace=0 alt="Arc FAQ"><br><br>
+<font size=2 face="verdana">
+<b>Where do I get it?</b><br /><br /><a href="http://arclanguage.org">Arclanguage.org</a>.<br /><br />
+<b>Why do you need to design a new language?</b><br /><br />It would be surprising if we <i>didn't</i> still need to design more languages.
+That would amount to saying that programming language design is now
+a solved problem, and that the final, perfect language has now been
+designed. It does not seem that way to me-- not by a long shot.
+The number of still open questions makes my head spin.<br /><br /><b>Why is it called Arc?</b><br /><br />The name is a reference to <a href="progbot.html">bottom-up programming</a>.  
+This means customizing the language to suit your application,
+yielding a program shaped like an arch, rather than a lintel.  
+Since brevity is another aim, we lopped off the h.<br /><br /><b>Why did you keep car and cdr?</b><br /><br />Because we couldn't think of any better alternatives.
+It would have been misleading to use first and rest or head and
+tail, because conses are fundamentally pairs; lists are one thing
+you can build with them, but not the only thing.<br /><br />There's no conventional name in English for the first and second
+halves of a pair.  If you have to make up names, car and cdr
+are pretty good choices, because they're short and the same length
+and naturally composable (e.g. cadr).<br /><br />
+<b>Is Arc object-oriented?</b><br /><br />The phrase "object-oriented" means a lot of things.  Half 
+are obvious, and the other half are <a href="noop.html">mistakes</a>.<br /><br />We believe Lisp should let you define new types that
+are treated just like the built-in types-- just as it lets you define
+new functions that are treated just like the built-in functions.
+We don't believe that every program should 
+consist of defining new types.
+<!-- So far, Arc's object system is basically a cleaned-up defstruct.  That, at 
+least, is something we know we need to have.  
+We want Arc to be both simple and powerful.  Since features rarely get 
+removed from programming languages, the only way you can get a 
+simple language is to err on the side of simplicity, and then add more as
+you need it.  
+We might well add multiple inheritance, for example, if it turns out to be really
+useful.
+--><br /><br /><b>Why not use some other delimiter than parentheses?</b><br /><br />We tried various
+possibilities.  Square and curly brackets lose because they are less directional
+than parens (left and right differ in fewer pixels);  < and > lose because
+they don't wrap around enough to enclose expressions longer than tokens.<br /><br /><b>Won't allowing &lt;new possibility&gt; confuse people reading code?</b><br /><br />E.g.  (a i) could be a function call or an array reference.<br /><br />If you make a language terser, you necessarily have
+more possibilities for what an expression
+might mean.  For example, because functions are a
+data type in Lisp, someone new to Lisp might complain
+that he can't tell whether a parameter x is a function
+or an integer.  This is an inevitable consequence of
+making a language more powerful.  It is up to the
+programmer (as it always is) to avoid using the
+language in a way that confuses readers.<br /><br /><b>Why not build Arc on top of Java/Parrot/.NET?</b><br /><br />We're trying to make something for the long
+term in Arc, something that will be useful to people in, say, 100 years.  (If that
+sounds crazy, remember that we're already up to 
+<a href="diff.html">50</a>.)
+So (a) we're not in a hurry to save effort; when
+you're trying to make something that will last 100 years,
+there is plenty of time to work on it, and (b) we don't
+want to adhere to anything that isn't timeless, lest the
+whole project curl up like a bimetallic strip.<br /><br /></font></td></tr></table><table border=0 cellspacing=0 cellpadding=0 width=435><tr><td><font size=2 face="verdana"><br><br>
+<hr></font></td></tr></table></td></tr></table></body></html>

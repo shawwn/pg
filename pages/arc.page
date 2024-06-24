@@ -15,6 +15,7 @@
    'arc0
    'arcchallenge
    'core
+   'arcfaq
  )
 )
 Arc is a new dialect of Lisp we're working on.   You can 
