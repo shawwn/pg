@@ -1,0 +1,49 @@
+(title: "Design Philosophy"
+ final-text: ""
+ caption: ""
+ nofoot: t
+)
+We've been criticized for designing Arc as a language for
+good programmers.  <a href="taste.html">Good design</a>, the argument goes, means
+understanding the needs of your users, and most programmers  
+are not good programmers.
+
+So let's consider two cars: the 1973 Cadillac Coupe de Ville
+and the 1973 Porsche 911.  The Cadillac was carefully designed
+to appeal to the average driver. The 911 was designed for
+performance.  Which one is better design?
+
+</font></td></tr></table><br /><table border="0" cellspacing="0" cellpadding="0" width="435"><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height="5" width="1" border="0" /></td></tr><tr valign="bottom"><td width="435"><center><a href="https://s.turbifycdn.com/aah/paulgraham/1973-cadillac-coupe-de-ville-7.gif"><img src="https://s.turbifycdn.com/aah/paulgraham/1973-cadillac-coupe-de-ville-8.gif" width="410" height="247" border="0" hspace="0" vspace="0" /></a></center></td></tr><tr valign="top"><td width="435"><font size="2" face="verdana"><center><b>1973 Cadillac Coupe de Ville</b><br /><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height="2" width="1" border="0" /><br /></center></font></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height="3" width="1" border="0" /></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height="5" width="1" border="0" /></td></tr><tr valign="bottom"><td width="435"><center><a href="https://s.turbifycdn.com/aah/paulgraham/1973-porsche-911e-7.gif"><img src="https://s.turbifycdn.com/aah/paulgraham/1973-porsche-911e-8.gif" width="410" height="260" border="0" hspace="0" vspace="0" /></a></center></td></tr><tr valign="top"><td width="435"><font size="2" face="verdana"><center><b>1973 Porsche 911E</b><br /><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height="2" width="1" border="0" /><br /></center></font></td></tr><tr><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height="3" width="1" border="0" /></td></tr></table><br /><table border="0" cellspacing="0" cellpadding="0" width="435"><tr><td><font size="2" face="verdana"><p align=justif>
+I chose images from 1973 deliberately.  It's easier to tell
+good design from bad when you're not looking at current
+fashions.  (Try looking at the haircuts in an old high school 
+yearbook.)
+
+Good design is timeless, and if you want something timeless
+you can't pander to the limitations of some hypothetical
+"average" user.   It's too vague a target.  It's also a 
+moving target: the average 
+user might not be as stupid as you think.
+
+Look what happened with the 911.  It's  
+so obviously superior to the Cadillac that a child could
+tell it's better.  And so,
+by the 1980s, even the 
+drug dealers that the
+Cadillac was designed for wanted 
+<a href="https://sep.turbifycdn.com/ty/cdn/paulgraham/speedster.jpg?t=1688221954&">911s</a> instead.
+
+The same thing happens in languages.  The great languages
+have been the ones that good programmers designed for
+their own use-- C, Smalltalk, Lisp.  The languages that were consciously designed for "average" 
+programmers (Cobol, Pascal, Ada) have tended to be 
+evolutionary dead ends.
+
+The only reliable plan is to design for performance.  Performance
+doesn't mean speed; that's taking the metaphor too literally.
+Speed counts, but a programming language is first of all a tool
+for thinking in.  We want thinking in Arc to feel like driving a 911.
+
+(I'm not claiming it <i>will</i>, just that that's the target.)
+
+<br><br><hr>
