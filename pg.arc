@@ -369,7 +369,7 @@
                   (tag center
                     (bullet)))
                 (tag td width: 8
-                  (shim 8)))
+                  (shim 1 8)))
               (tag td width: wid
                 (when @!bullet-inline
                   (bullet align: 'left))
