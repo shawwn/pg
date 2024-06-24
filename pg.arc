@@ -140,7 +140,7 @@
                       link @!link-color
                       vlink @!visited-link-color)
              (sitetable nil
-               (row valign: 'top (navbuttons ,tn) (shim 1 26) (do ,@body)))))))))
+               (row valign: 'top (navbuttons ,tn) (shim 1 28) (do ,@body)))))))))
 
 (def read-template (id (o dir))
   (aand (cat "_" id ".html")
@@ -526,7 +526,7 @@
   (awhen (tostring
            (navbutton "Home" 'index))
     (if (is id 'index)
-        (do (shim 21 69) (br))
+        (do (shim 21 67) (br))
         (pr it)))
   (each-object @!buttons
     (navbutton))
