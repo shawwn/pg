@@ -12,7 +12,8 @@
    (make-link "Forum" "http://arclanguage.org/forum")
    (make-link "Tutorial" "http://ycombinator.com/arc/tut.txt")
    (make-link "Get Arc" "http://arclanguage.org/install")
-   (make-link "Arc's Out" "http://paulgraham.com/arc0.html")
+   'arc0
+   'arcchallenge
  )
 )
 Arc is a new dialect of Lisp we're working on.   You can 
@@ -48,4 +49,5 @@ anyone. So please don't send us mail asking what
 Arc's status is or when it will be done.
 (When it's done, we'll tell you.)
 -->
-<br>
+
+

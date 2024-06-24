@@ -1,0 +1,223 @@
+(title: "Take the Arc Challenge"
+ final-text: ""
+ caption: ""
+)
+February 2008
+
+Arc's been out for a few days now.  Everyone seems to have an opinion
+about it.  The low end are much the same as the low end of opinions
+about anything online.  There's no high end yet, because no one has
+had enough time yet to be able to speak from experience about what
+it's like to program in Arc.  Those are the responses I'm really
+interested in.  But in the meantime, we have the medium-level
+responses: the opinions of people who have some understanding of
+the issues involved, but who are writing based on first impressions.
+
+I've noticed a strange pattern in these. The main fault they find
+with Arc is that I don't seem to have had to work hard enough writing
+it.  Ron Garret 
+<a href="http://rondam.blogspot.com/2008/01/my-take-on-arc.html">writes</a>:
+<blockquote>
+  And that is my main gripe about Arc: it has been so long in the
+  making and set such lofty goals and then it seems to pretty much
+  punt on all the hard problems of language design.
+</blockquote>
+I don't usually refute criticisms directly.  Refutations tend to
+be more gratifying to write than to read.  But in this case I'm
+going to, because in this case Ron & Co are mistaken in an illuminating
+way.  Explaining why will clarify some important issues about
+language design.
+
+Ron's right.  I didn't decide what problems to work on based on how
+hard they were.  Instead I used what might seem a rather mundane
+test: I worked on things that would make programs shorter.
+
+Why would I do that?  Because making programs short is what high
+level languages are for.  It may not be 100% accurate to say the
+power of a programming language is in inverse proportion to the
+length of programs written in it, but it's damned close.  Imagine
+how preposterous it would sound if someone said "The program is 10 
+lines of code in your language and 50 in my language, but my language 
+is more powerful."  You'd be thinking: what does he mean by power,
+then?
+
+I'm not claiming that power is the only criterion by which to judge
+programming languages.  It would also be a legitimate goal, for
+example, to design a language to be easy for kids to learn, or to compile
+efficiently (though this is less common than it used to be), or to
+limit the damage that can be done by individual bad programmers
+within a group.  But power is the test of languages not designed 
+for such special purposes.
+
+So working on what makes programs short rather than what's hard 
+to implement translates to:
+<blockquote>
+  I chose what to work on based on the value to the user,
+  rather than the cost to me. 
+</blockquote>
+Surely this is the right order of priorities to have in designing
+not just programming languages, but anything meant to be used
+by other people.
+
+This is not to say none of the stuff I did was hard.  Some of it
+seemed hard to me.  But in language design, solving problems, whether
+hard or easy, is not the goal.  Making a good language is.  The
+real test of Arc&mdash;and any other general-purpose high level language&mdash;is not
+whether it contains feature x or solves problem y, but <i>how long
+programs are in it</i>.
+
+The programs that get shorter should be the ones users actually 
+need to write.  So my m.o. while working on Arc was to write
+applications in it, then comb through them line by line trying to
+imagine language features that would make them shorter.  Then I'd
+implement those features, rewrite the program to use them, and 
+start over.  Here's a comment from the source of 
+<a href="http://news.ycombinator.com">Hacker News</a> where I
+occasionally kept track:
+<font face=courier><pre>
+; results of (codetree "news.arc"):
+; 8787, 8760, 8738, 8726, 8823, 8755, 8703, 8628, 8587, 8565
+; 8633, 8573, 8552, 8520, 8510, 8498, 8549, 8515, 8684, 9025
+; 9573, 12196, 12469, 12648, 12373
+</pre></font>
+(The numbers go up sometimes because I'd added features to News.)
+
+This is one reason the source code of Arc itself is so short,
+incidentally.  I did the same thing to it.  But my first priority
+was making applications shorter, not the language.  There are
+features, most notably Prolog-style pattern-matching, that seem to
+promise great savings in length, but turn out only to be useful for
+writing a few basic sequence operations like append, remove, and
+so on.  Prolog is a great language for writing append; after that
+it's all downhill.
+
+Another goal I had while writing Arc was to continue as long as
+possible in the mode in which McCarthy began.  In his original 1960
+paper he built Lisp up from "axioms" like car, cdr, and cons, through
+"theorems" like assoc and mapcar.
+<font color=#999999>[<a href="#f1n"><font color=#999999>1</font></a>]</font>
+  There must be some optimal path
+all the way up to a complete language.  What is it?  McCarthy didn't
+get very far along it in his paper.  And after that the language
+passed into the hands of his grad students, who at the time were
+more worried about the exigencies of making an interpreter run on
+the IBM 704 than continuing McCarthy's axiomatic approach.  We've been
+living with their hacks ever since.  Steele and Sussman tried to
+start over when they first began working on Scheme, but they seem
+to have been practically the only ones.  And they made, at least
+from the point of view of brevity/power, some serious mistakes early
+on.
+
+This seemed a territory worth exploring.  And I hoped that with the
+axioms pushing from below and the demands of brevity in real
+applications pushing from above, I'd be able to grow an optimal
+core of operators.   I'm not claiming I have yet, just that that's
+the goal: to find an optimal path from a small number of axioms
+up to a complete language for everyday use.  I've made compromises
+for efficiency.  I'm not using Church numerals. 
+<font color=#999999>[<a href="#f2n"><font color=#999999>2</font></a>]</font>
+But I've tried to preserve
+as much of the spirit of the original 1960 paper as I could.
+
+Building up the language from axioms is not an end in itself either.
+I'm only doing it because I suspect that's the way to get
+maximum expressive power.
+
+How well does Arc deliver so far?  Does it make programs shorter
+than they'd be in other languages?  Let's try measuring.
+
+I'm going to propose a simple problem as a challenge.
+We'll collect solutions in each of the popular languages, and 
+compare their lengths.  Here it is:
+<blockquote>
+  Write a program that causes the url said 
+  (e.g. http://localhost:port/said) to produce a page
+  with an input field and a submit button.  When the submit
+  button is pressed, that should produce a second page with
+  a single link saying "click here."  When that is clicked
+  it should lead to a third page that says "you said: ..."
+  where ... is whatever the user typed in the original 
+  input field.  The third page must only show what the
+  user actually typed.  I.e. the value entered in the
+  input field must not be passed in the url, or it would
+  be possible to change the behavior of the final page
+  by editing the url.
+</blockquote>
+Though simple, as such tests have to be, this is not a contrived
+example.  Web apps have to do this sort of thing all the time.  Nor
+does it depend on some sort of esoteric libraries that Arc has and
+other languages don't; this is all stuff that any language used to
+write Web apps would have to have already.
+
+Here's the answer in Arc:
+<font face=courier><pre>
+(defop said req
+  (aform [w/link (pr "you said: " (arg _ "foo"))
+           (pr "click here")]
+    (input "foo") 
+    (submit)))
+</pre></font>
+If you're not used to Arc you'll have to take my word for it, but
+this is not code that has been compressed using coding tricks.  This
+would be the standard way to write it in Arc.
+
+The most meaningful test of the length of a program is not lines
+or characters but the size of the codetree-- the tree you'd need
+to represent the source.  The Arc example has a codetree of 23
+nodes: 15 leaves/tokens + 8 interior nodes.  How long is it in your
+favorite language?
+
+(Code to import standard libraries doesn't count, of course; you
+can assume those are already loaded.)
+
+I've posted this problem on the Arc Forum at <a href="http://arclanguage.org/item?id=722">http://arclanguage.org/item?id=722</a>.
+If you have a solution in a language that's not yet represented,
+or a shorter or more correct solution for a language that is, please
+add it.  It will be interesting to compare languages not just to
+Arc but to one another.
+
+
+
+<b>Update: May 2009</b>
+
+The Arc version would now be slightly shorter:
+<font face=courier><pre>
+(defop said req
+  (aform [onlink "click here" (pr "you said: " (arg _ "foo"))]
+    (input "foo") 
+    (submit)))
+</pre></font>
+This is 21 nodes: 14 leaves + 7 interior.
+
+
+
+
+
+<b>Notes</b>
+
+[<a name="f1n"><font color=#000000>1</font></a>]
+"Recursive Functions of Symbolic Expressions and Their Computation
+by Machine, Part I," CACM, April 1960.
+
+http://www-formal.stanford.edu/jmc/recursive/recursive.html
+
+[<a name="f2n"><font color=#000000>2</font></a>]
+I did once try representing the integer n as a list of 
+length n, with horrifying results.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
