@@ -1,6 +1,7 @@
 (title: "The Hundred-Year Language"
  footer: (filechars "hpfooter.html")
  image: "https://s.turbifycdn.com/aah/paulgraham/the-hundred-year-language-12.gif"
+ final-text: ""
  caption: ""
 )
 April 2003
@@ -634,3 +635,4 @@ seems to have been the first to state this explicitly.
 <b>Thanks</b> to Trevor Blackwell, Robert Morris, and Dan Giffin for
 reading drafts of this, and to Guido van Rossum, Jeremy Hylton, and the
 rest of the Python crew for inviting me to speak at PyCon.
+
