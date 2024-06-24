@@ -14,6 +14,7 @@ at MIT on May 10, 2001.)</i>
 
 
 @(display-text "Guiding Philosophy")
+
 <b>1. Programming Languages Are for People.</b>
 
 Programming languages
@@ -135,6 +136,7 @@ about.
 
 
 @(display-text "Open Problems")
+
 <b>1. How to Organize Big Libraries?</b>
 
 Libraries are becoming an
@@ -197,6 +199,7 @@ looking.
 
 
 @(display-text "Little-Known Secrets")
+
 <b>1. You Can Use Whatever Language You Want.</b>
 
 Writing application
@@ -287,6 +290,7 @@ overloaded operator and a function call.
 
 
 @(display-text "Ideas Whose Time Has Returned")
+
 <b>1. New Programming Languages.</b>
 
 Back in the 1970s
@@ -332,6 +336,7 @@ whole battleground gets bypassed.  That would be kind of amusing.
 
 
 @(display-text "Pitfalls and Gotchas")
+
 <b>1. Clients.</b>
 
 This is just a guess, but my guess is that

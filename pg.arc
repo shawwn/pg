@@ -316,7 +316,7 @@
       (gentag img src im
               height (imheight im) border 0 hspace 0 vspace 0
               alt text))
-    (br 2)))
+    nil))
 
 (def site-banner ((o text @!site-name))
   (unless (empty text)
@@ -347,6 +347,7 @@
                   (shim (+ (or im!height (imheight im!url)) 8) 10 align: 'left)
                   (br 2))))
           (display-text (or @!headline @!title))
+          (br 2)
           (tag (font size 2 face 'verdana)
             (pr (load-text @!text))
             (when @!image
