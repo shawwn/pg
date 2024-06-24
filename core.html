@@ -1,0 +1,109 @@
+<html><head><meta property="og:type" content="website"><meta property="og:title" content="First Priority: Core Language"><meta property="og:site_name" content="Paul Graham"><meta property="og:image" content="https://user-images.githubusercontent.com/59632/213842621-78c527ed-c657-4126-b27d-2670f35fb053.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="512"><meta property="og:image:height" content="512"><title>First Priority: Core Language</title><link rel="shortcut icon" href="favicon.ico">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VSSBKPV516"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VSSBKPV516');
+</script>
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://shawwn.matomo.cloud/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '2']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src='https://cdn.matomo.cloud/shawwn.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img referrerpolicy="no-referrer-when-downgrade" src="https://shawwn.matomo.cloud/matomo.php?idsite=2&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+<!-- End Matomo Code -->
+</head><body text=#000000 link=#000066 vlink=#464646><table border=0 cellspacing=0 cellpadding=0><tr valign=top><td><a href="index.html"><img src="index-1.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="articles.html"><img src="index-2.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="http://www.amazon.com/gp/product/0596006624"><img src="index-3.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="books.html"><img src="index-4.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://ycombinator.com"><img src="index-5.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="arc.html"><img src="index-6.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bel.html"><img src="index-7.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="lisp.html"><img src="index-8.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="spam.html"><img src="index-9.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="responses.html"><img src="index-10.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="faq.html"><img src="index-11.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="raq.html"><img src="index-12.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="quo.html"><img src="index-13.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="pgessays.rss"><img src="index-14.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bio.html"><img src="index-15.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://twitter.com/paulg"><img src="index-16.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://mas.to/@paulg"><img src="index-17.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+</td><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=1 width=28 border=0></td><td><a href="index.html"><img src="index-20.png" width=408 height=45 border=0 hspace=0 vspace=0></a><br><br>
+<table border=0 cellspacing=0 cellpadding=0 width=435><tr valign=top><td width=435><img src="first-priority--core-language-1.png" height=18 border=0 hspace=0 vspace=0 alt="First Priority: Core Language"><br><br>
+<font size=2 face="verdana">
+February 2008<br /><br />My first priority with Arc right now is the core language&mdash;those
+operators that are neither primitives like car and cdr, nor
+special-purpose library functions.  I mean operators like CL's
+mapcar, let, remove-if-not, and so on.<br /><br />As I said in the <a href="arcchallenge.html">Arc
+Challenge</a>, there has to be at least one optimal path up from
+axioms to a complete language for everyday programming, and the
+goal of Arc is to try to discover one.<br /><br />I'm not against changing the axioms.  If it's possible to do that
+in a useful way, so much the better.  But that is not the kind of
+idea one has every day.<br /><br />The reason I'm focusing on the region between axioms and libraries
+is that, from the programmer's point of view, these operators are
+the language.  These are what your programs are made of.  If Lisp
+were a house, these operators would be the front door, the living
+room sofa, the kitchen table.  Small variations in their design can
+greatly affect how well the language works.<br /><br />I've taken a lot of heat for focusing on this, but I think
+it's both an important problem and a difficult one.  One sign
+of its difficulty is that although Lisp is almost 50 years old, the
+core operators in all the Lisp dialects I know are so far from
+optimal.  The cond macro, for example.  It had all those gratuitous
+parentheses in it since Lisp 1, and no one did anything about it.
+I wouldn't be surprised if someone had already discovered the Arc
+trick of collapsing if and cond into one operator, but it was
+certainly not common knowledge.  I was pleased when I realized it 
+could be done.<br /><br />One reason Lisp cores evolve so slowly is that we get used to them.
+You start to think in the operators that already exist.  It takes
+a conscious effort to imagine how your code might be rewritten using
+operators that don't.<br /><br />That's part of why I focus on code size.  Length is an external
+constraint.  If you start looking at code thinking "what is the
+lower bound on how long this has to be?" you're one step from
+discovering the new operator that will make it that short.<br /><br />The other reason Lisp cores have evolved so slowly is that it's a
+<a href="desres.html">design</a> problem more than an implementation
+problem, and most hackers have neither the ability nor the inclination
+to work on that sort of thing.  It won't impress your hacker pals;
+it won't get you tenure; instead of pumping out 500 lines of code
+a day, you consider yourself lucky if you write -20. But it's not
+a frivolous thing to work on.  Indeed, I think one of the reasons
+Lisp has persisted so long is that McCarthy was a great designer.
+At a time when other people were creating languages compromised by
+the hardware of the day or by ill-considered attempts to make
+programming languages like natural languages, he made something
+tiny and timeless.  A lot of what's good about Lisp is that brilliance,
+showing up through the murk of successive less talented designers.<br /><br />Some of the people who flamed Arc on its initial release joked about
+it as "the second coming of McCarthy."  I'm sure they didn't mean
+it this way, but in fact I do want to restart the kind of language
+design he was doing at the point where he left off.<br /><br />So I want to ask a favor from Arc users: I want to ask for tolerance
+when I break and change things in what may seem to be arbitrary,
+small ways.  I consider the whole core to be written in pencil at
+this point, and I hope to be able to change it a lot.  This will
+make Arc a pain in the ass to write programs on top of, I know, but
+the end result should be something worth having.<br /><br />While Arc includes some handy libraries for writing web 
+apps&mdash;libraries so powerful, apparently, that it's cheating to compare
+Arc to other languages using a problem that requires saving a string
+on the server&mdash;that is not the focus right now.  I only wrote all
+the web stuff to create the pressure of real applications pushing
+down on the core.  So while I'm interested in new ideas
+for web apps, the kind of ideas I'd really like to hear about are
+new things to do in the language core.<br /><br />It's harder to think of new ideas down in this highly compressed
+and thoroughly picked over territory, but it's very rewarding work.
+And we know what we're looking for must exist.  By definition, there
+is <i>some</i> optimal path from axioms up to a complete language.
+The Platonic form of Lisp is somewhere inside the block of marble.
+All we have to do is chip away till we get at it.<br /><br /></font></td></tr></table><table border=0 cellspacing=0 cellpadding=0 width=435><tr><td><font size=2 face="verdana"><br><br>
+<hr></font></td></tr></table></td></tr></table></body></html>

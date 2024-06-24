@@ -14,6 +14,7 @@
    (make-link "Get Arc" "http://arclanguage.org/install")
    'arc0
    'arcchallenge
+   'core
  )
 )
 Arc is a new dialect of Lisp we're working on.   You can 

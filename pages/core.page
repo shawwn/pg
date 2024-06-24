@@ -1,0 +1,90 @@
+(title: "First Priority: Core Language"
+ final-text: ""
+ caption: ""
+)
+February 2008
+
+My first priority with Arc right now is the core language&mdash;those
+operators that are neither primitives like car and cdr, nor
+special-purpose library functions.  I mean operators like CL's
+mapcar, let, remove-if-not, and so on.
+
+As I said in the <a href="arcchallenge.html">Arc
+Challenge</a>, there has to be at least one optimal path up from
+axioms to a complete language for everyday programming, and the
+goal of Arc is to try to discover one.
+
+I'm not against changing the axioms.  If it's possible to do that
+in a useful way, so much the better.  But that is not the kind of
+idea one has every day.
+
+The reason I'm focusing on the region between axioms and libraries
+is that, from the programmer's point of view, these operators are
+the language.  These are what your programs are made of.  If Lisp
+were a house, these operators would be the front door, the living
+room sofa, the kitchen table.  Small variations in their design can
+greatly affect how well the language works.
+
+I've taken a lot of heat for focusing on this, but I think
+it's both an important problem and a difficult one.  One sign
+of its difficulty is that although Lisp is almost 50 years old, the
+core operators in all the Lisp dialects I know are so far from
+optimal.  The cond macro, for example.  It had all those gratuitous
+parentheses in it since Lisp 1, and no one did anything about it.
+I wouldn't be surprised if someone had already discovered the Arc
+trick of collapsing if and cond into one operator, but it was
+certainly not common knowledge.  I was pleased when I realized it 
+could be done.
+
+One reason Lisp cores evolve so slowly is that we get used to them.
+You start to think in the operators that already exist.  It takes
+a conscious effort to imagine how your code might be rewritten using
+operators that don't.
+
+That's part of why I focus on code size.  Length is an external
+constraint.  If you start looking at code thinking "what is the
+lower bound on how long this has to be?" you're one step from
+discovering the new operator that will make it that short.
+
+The other reason Lisp cores have evolved so slowly is that it's a
+<a href="desres.html">design</a> problem more than an implementation
+problem, and most hackers have neither the ability nor the inclination
+to work on that sort of thing.  It won't impress your hacker pals;
+it won't get you tenure; instead of pumping out 500 lines of code
+a day, you consider yourself lucky if you write -20. But it's not
+a frivolous thing to work on.  Indeed, I think one of the reasons
+Lisp has persisted so long is that McCarthy was a great designer.
+At a time when other people were creating languages compromised by
+the hardware of the day or by ill-considered attempts to make
+programming languages like natural languages, he made something
+tiny and timeless.  A lot of what's good about Lisp is that brilliance,
+showing up through the murk of successive less talented designers.
+
+Some of the people who flamed Arc on its initial release joked about
+it as "the second coming of McCarthy."  I'm sure they didn't mean
+it this way, but in fact I do want to restart the kind of language
+design he was doing at the point where he left off.
+
+So I want to ask a favor from Arc users: I want to ask for tolerance
+when I break and change things in what may seem to be arbitrary,
+small ways.  I consider the whole core to be written in pencil at
+this point, and I hope to be able to change it a lot.  This will
+make Arc a pain in the ass to write programs on top of, I know, but
+the end result should be something worth having.
+
+While Arc includes some handy libraries for writing web 
+apps&mdash;libraries so powerful, apparently, that it's cheating to compare
+Arc to other languages using a problem that requires saving a string
+on the server&mdash;that is not the focus right now.  I only wrote all
+the web stuff to create the pressure of real applications pushing
+down on the core.  So while I'm interested in new ideas
+for web apps, the kind of ideas I'd really like to hear about are
+new things to do in the language core.
+
+It's harder to think of new ideas down in this highly compressed
+and thoroughly picked over territory, but it's very rewarding work.
+And we know what we're looking for must exist.  By definition, there
+is <i>some</i> optimal path from axioms up to a complete language.
+The Platonic form of Lisp is somewhere inside the block of marble.
+All we have to do is chip away till we get at it.
+
