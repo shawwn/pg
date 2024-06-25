@@ -332,8 +332,14 @@
             ))))))
 
 (def clean-name (name)
-  (map [if (alphadig _) _ #\-]
-       (downcase name)))
+  (def prev nil)
+  (aand (each c (downcase name)
+          (if (~alphadig c) (= c #\-))
+          (if (or (isnt prev c)
+                  (isnt prev #\-))
+              (out c))
+          (= prev c))
+        (trim (str it) 'both #\-)))
 
 (def render-image-name ()
   (defs name (clean-name (or @!title (cat @!id)))
