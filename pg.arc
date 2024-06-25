@@ -77,9 +77,9 @@
       (unless p!disabled
         (= (pages* id) p)))))
 
-(def load-pages ((o pagesdir))
-  (aif (file-exists "init.arc") (load it))
+(def load-pages (pagesdir)
   (w/param cwd pagesdir
+    (aif (file-exists "init.arc") (load it))
     (= site* (assert (load-page 'index)))
     (each name (sort < (glob "*.page"))
       (let id (sym:cut name 0 -5)
