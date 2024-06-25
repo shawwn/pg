@@ -1,28 +1,30 @@
-(site-name: "Paul Graham"
- site-desc: "Paul Graham: Essays"
- site-url: "https://shawwn.github.io/pg/"
- author: "pg"
-
- gtag: t
- gtag-site-id: "G-VSSBKPV516"
-
- matomo: t
- matomo-cloud-id: "shawwn"
- matomo-site-id: "2"
+(site-name:   "Paul Graham"
+ site-desc:   "Paul Graham: Essays"
+ site-url:    "https://shawwn.github.io/pg/"
+ favicon-url: "favicon.ico" ; "http://ycombinator.com/arc/arc.png"
+ rss-url:     "pgessays.rss"
+ rss-desc:    "Scraped feed provided by aaronsw.com"
+ author:      "pg"
 
  banner-size:    62
  banner-kerning: 6.5
- ;favicon-url: "http://ycombinator.com/arc/arc.png"
- favicon-url: "favicon.ico"
- rss-url: "pgessays.rss"
- rss-desc: "Scraped feed provided by aaronsw.com"
- text-color: black
- link-color: (color 0 0 0x66)
+
+ text-color:         black
+ link-color:         (color 0 0 0x66)
  visited-link-color: (color 0x46 0x46 0x46)
+
+ gtag:         t
+ gtag-site-id: "G-VSSBKPV516"
+
+ matomo:          t
+ matomo-cloud-id: "shawwn"
+ matomo-site-id:  "2"
+
  site-image: (obj url:    "https://user-images.githubusercontent.com/59632/213842621-78c527ed-c657-4126-b27d-2670f35fb053.png"
                   type:   "image/png"
                   width:  512
                   height: 512)
+
  bullet-url:        "https://s.turbifycdn.com/aah/paulgraham/how-to-get-new-ideas-5.gif"
  bullet-width:      12
  bullet-thin-url:   "https://s.turbifycdn.com/aah/paulgraham/serious-2.gif"
@@ -44,7 +46,7 @@
   (make-link "FAQs" "faq.html")
   (make-link "RAQs" "raq.html")
   'quo
-  (make-link "RSS" "pgessays.rss")
+  [make-link "RSS" (rss-url)]
   'bio
   (make-link "Twitter" "https://twitter.com/paulg")
   (make-link "Mastodon" "https://mas.to/@@paulg")
@@ -52,3 +54,43 @@
   [if (is @!id 'index) (make-link "Email" "info.html")]
  )
 )
+@(tag (font size 2 face 'verdana)
+   (site-banner)
+   (gentag img src "https://s.turbifycdn.com/aah/paulgraham/index-14.gif"
+           width 410 height 308
+           border 0 hspace 0 vspace 0)
+   (br 2)
+   (sitetable 435
+     (trtd
+       (tag (font size 2 face 'verdana)
+         (tag (table width 410 cellspacing 0)
+           (tr
+             (tdcolor (color 0xff 0xcc 0x33)
+               (spacer 15)
+               (tag font size: 2 (prn)
+                 (tag b "New:") (prn)
+                 (link "How to Start Google" "google.html") (prn " |")
+                 (link "Best Essay" "best.html") (prn " |")
+                 (link "Superlinear" "superlinear.html") (prn))
+               (br)
+               (spacer 5))))
+         (tag (table width 410 cellspacing 0)
+           (tr
+             (tdcolor (color 0xff 0x99 0x22)
+               (spacer 15)
+               (tag font size: 2 (prn)
+                 (tag b "Want to start a startup?") (prn " Get funded by ")
+                 (link "Y Combinator" "http://ycombinator.com/apply.html") (prn "."))
+               (br)
+               (spacer 5))))
+         (br 2)
+         (gentag link rel "alternate" type "application/rss+xml" title "RSS" href (rss-url)))))
+   (br)
+   (sitetable 435
+     (trtd
+       (tag (font size 2 face 'verdana)
+         (br)
+         (tag font size: 1
+           (tag font color: (color 0xcc 0xcc 0xcc)
+             (pr "&copy; " (romannum:car:date) " " (or @!author "pg")))))))
+   (br))

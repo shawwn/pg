@@ -194,71 +194,7 @@
 
 (def gen-contents ()
   (page 'index @!site-name
-    (tag (font size 2 face 'verdana)
-      (site-banner)
-      (gentag img src "https://s.turbifycdn.com/aah/paulgraham/index-14.gif"
-              width 410 height 308
-              border 0 hspace 0 vspace 0)
-      (br 2)
-      (sitetable 435
-        (trtd
-          (tag (font size 2 face 'verdana)
-            (tag (table width 410 cellspacing 0)
-              (tr
-                (tdcolor (color 0xff 0xcc 0x33)
-                  (spacer 15)
-                  (tag font size: 2 (prn)
-                    (tag b "New:") (prn)
-                    (link "How to Start Google" "google.html") (prn " |")
-                    (link "Best Essay" "best.html") (prn " |")
-                    (link "Superlinear" "superlinear.html") (prn))
-                  (br)
-                  (spacer 5))))
-            (tag (table width 410 cellspacing 0)
-              (tr
-                (tdcolor (color 0xff 0x99 0x22)
-                  (spacer 15)
-                  (tag font size: 2 (prn)
-                    (tag b "Want to start a startup?") (prn " Get funded by ")
-                    (link "Y Combinator" "http://ycombinator.com/apply.html") (prn "."))
-                  (br)
-                  (spacer 5))))
-            (br 2)
-            (gentag link rel "alternate" type "application/rss+xml" title "RSS" href (rss-url)))))
-      (br)
-      (sitetable 435
-        (trtd
-          (tag (font size 2 face 'verdana)
-            (br)
-            (tag font size: 1
-              (tag font color: (color 0xcc 0xcc 0xcc)
-                (pr "&copy; " (romannum:car:date) " " (or @!author "pg")))))))
-      (br))))
-
-(def romandigit (n (o chars "ivx"))
-  (let (one five ten) (as!cons chars)
-    (case n
-      0 (cat)
-      1 (cat one)
-      2 (cat one one)
-      3 (cat one one one)
-      4 (cat one five)
-      5 (cat five)
-      6 (cat five one)
-      7 (cat five one one)
-      8 (cat five one one one)
-      9 (cat one ten)
-      (err "Bad digit"))))
-
-(def romannum (n)
-  (def ones (mod n 10)) (zap int:/ n 10)
-  (def tens (mod n 10)) (zap int:/ n 10)
-  (def hund (mod n 10)) (zap int:/ n 10)
-  (def thou (mod n 10)) (zap int:/ n 10)
-  (cat (romandigit thou "m??")
-       (romandigit hund "cdm")
-       (romandigit tens "xlc")
-       (romandigit ones "ivx")))
+    (pr (load-text @!text))))
 
 (def gen-sitemap ()
   (with-object (copy site*)
