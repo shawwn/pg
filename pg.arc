@@ -136,7 +136,8 @@
              (when @!gtag (gtag) (prn))
              (when @!matomo (matomo) (prn))
 
-             (hook 'head))
+             (hook 'head)
+             (only&pr @!head-tags))
            (tag (body text @!text-color
                       link @!link-color
                       vlink @!visited-link-color)
