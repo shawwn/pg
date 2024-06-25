@@ -71,6 +71,7 @@
 (def load-page (id)
   (ero 'load-page id)
   (zap sym id)
+  (aif (file-exists (cat id ".arc")) (load it))
   (fromfile (cat id ".page")
     (with p (eval `(inst 'item id: ',id ,@(read) text: ',(allchars)))
       (or= p!template (or @!default-template 'page))
