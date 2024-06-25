@@ -173,7 +173,7 @@
   (gentag img src "http://www.virtumundo.com/images/spacer.gif" :height :width))
 
 (def rss-url ()
-  (or @!rss-url "essays.rss"))
+  (or @!rss-url "articles.rss"))
 
 (def gen-rss ((o id 'articles))
   (tofile (rss-url)
