@@ -286,7 +286,7 @@
                   (br 2))))
           (display-text (or @!headline @!title))
           (br 2)
-          (tag (font size 2 face 'verdana)
+          (tag (font size 2 face 'verdana id 'content)
             (pr (load-text @!text))
             (when @!image
               ;(tag br clear: 'all) ; incorrect: <br clear=all></br>
