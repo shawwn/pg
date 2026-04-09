@@ -113,6 +113,17 @@ Where `git-reset-perceptualdiff` is a part of
 That will revert all the images that are perceptually identical,
 resulting in a clean repository.
 
+# deploying to GitHub Pages
+
+Go to your repo's **Settings → Pages**, set the source to **Deploy from a branch**, choose `main`, and set the folder to `/ (root)`. Save it.
+
+After that, every `git push` to `main` will trigger a build. The site goes live at `https://<username>.github.io/<repo>/` within about 30 seconds.
+
+You can check build status with:
+```sh
+gh api repos/<owner>/<repo>/pages/builds --jq '.[0] | {status, error, updated_at}'
+```
+
 # customizing your site
 
 TODO. Stay tuned!
