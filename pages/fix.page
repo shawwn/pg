@@ -1,0 +1,80 @@
+(title: "What Languages Fix")
+<p align=justif>
+Kevin Kelleher suggested an interesting way to compare programming
+languages: to describe each in terms of the problem it
+fixes.  The surprising thing is how many, and how well, languages can be
+described this way.
+
+
+<p align=left>
+<b>Algol:</b> Assembly language is too low-level.
+
+<b>Pascal:</b> Algol doesn't have enough data types.
+
+<b>Modula:</b> Pascal is too wimpy for systems programming.
+
+<!-- <b>Python:</b> Modula-3 is scary.
+-->
+<b>Simula:</b> Algol isn't good enough at simulations.
+
+<b>Smalltalk:</b> Not everything in Simula is an object.
+
+<b>Fortran:</b> Assembly language is too low-level.
+
+<b>Cobol:</b> Fortran is scary.
+
+<b>PL/1:</b> Fortran doesn't have enough data types.
+
+<b>Ada:</b> Every existing language is missing something.
+
+<b>Basic:</b> Fortran is scary.
+
+<b>APL:</b> Fortran isn't good enough at manipulating arrays.
+
+<b>J:</b> APL requires its own character set.
+
+<b>C:</b> Assembly language is too low-level.
+
+<b>C++:</b> C is too low-level.
+
+<b>Java:</b> C++ is a kludge.  And Microsoft is going to crush us.
+
+<b>C#:</b> Java is controlled by Sun.
+<!--
+<b>Javascript:</b> Java is scary. -->
+
+<b>Lisp:</b> Turing Machines are an awkward way to describe computation.
+
+<b>Scheme:</b> MacLisp is a kludge.
+
+<b>T:</b> Scheme has no libraries.
+
+<b>Common Lisp:</b> There are too many dialects of Lisp.
+
+<b>Dylan:</b> Scheme has no libraries, and Lisp syntax is scary.
+
+<!-- <b>Curl:</b> Lisp syntax is scary, and XML is redundant.
+
+<b>Arc:</b> Scheme has no libraries, and both could be denser.
+-->
+<b>Perl:</b> Shell scripts/awk/sed are not enough like programming languages.
+
+<b>Python:</b> Perl is a kludge.
+
+<b>Ruby:</b> Perl is a kludge, and Lisp syntax is scary.
+
+<b>Prolog:</b> Programming is not enough like logic.
+
+
+
+
+<!-- There are a lot of languages I haven't been able to figure out
+how to describe this way.   Suggestions would be appreciated about any languages missing
+from the list.
+
+What I'm looking for is not exactly what
+motivated the language designer (Smalltalk was originally intended
+for children) but what niche the language first lodged in.  What was
+the appeal of the language to its first users?
+-->
+

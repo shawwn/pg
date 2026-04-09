@@ -1,0 +1,79 @@
+<html><head><meta property="og:type" content="website"><meta property="og:title" content="Weird Languages"><meta property="og:site_name" content="Paul Graham"><meta property="og:image" content="https://user-images.githubusercontent.com/59632/213842621-78c527ed-c657-4126-b27d-2670f35fb053.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="512"><meta property="og:image:height" content="512"><title>Weird Languages</title><link rel="shortcut icon" href="favicon.ico">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VSSBKPV516"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VSSBKPV516');
+</script>
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://shawwn.matomo.cloud/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '2']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src='https://cdn.matomo.cloud/shawwn.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img referrerpolicy="no-referrer-when-downgrade" src="https://shawwn.matomo.cloud/matomo.php?idsite=2&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+<!-- End Matomo Code -->
+</head><body text=#000000 link=#000066 vlink=#464646><table border=0 cellspacing=0 cellpadding=0><tr valign=top><td><a href="index.html"><img src="index-1.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="articles.html"><img src="index-2.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="http://www.amazon.com/gp/product/0596006624"><img src="index-3.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="books.html"><img src="index-4.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://ycombinator.com"><img src="index-5.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="arc.html"><img src="index-6.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bel.html"><img src="index-7.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="lisp.html"><img src="index-8.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="spam.html"><img src="index-9.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="responses.html"><img src="index-10.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="faq.html"><img src="index-11.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="raq.html"><img src="index-12.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="quo.html"><img src="index-13.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="pgessays.rss"><img src="index-14.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bio.html"><img src="index-15.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://twitter.com/paulg"><img src="index-16.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://mas.to/@paulg"><img src="index-17.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+</td><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=1 width=28 border=0></td><td><a href="index.html"><img src="index-20.png" width=408 height=45 border=0 hspace=0 vspace=0></a><br><br>
+<table border=0 cellspacing=0 cellpadding=0 width=435><tr valign=top><td width=435><img src="weird-languages-1.png" height=18 border=0 hspace=0 vspace=0 alt="Weird Languages"><br><br>
+<font size=2 face="verdana" id=content>
+August 2021<br /><br />When people say that in their experience all programming languages
+are basically equivalent, they're making a statement not about
+languages but about the kind of programming they've done.<br /><br />99.5% of programming consists of gluing together calls to library
+functions. All popular languages are equally good at this. So one
+can easily spend one's whole career operating in the intersection
+of popular programming languages.<br /><br />But the other .5% of programming is disproportionately interesting.
+If you want to learn what it consists of, the weirdness of weird
+languages is a good clue to follow.<br /><br />Weird languages aren't weird by accident. Not the good ones, at
+least. The weirdness of the good ones usually implies the existence
+of some form of programming that's not just the usual gluing together
+of library calls.<br /><br />A concrete example: Lisp macros. Lisp macros seem weird even to
+many Lisp programmers. They're not only not in the intersection of
+popular languages, but by their nature would be hard to implement
+properly in a language without turning it into a dialect of
+Lisp. And macros are definitely evidence of techniques that go
+beyond glue programming. For example, solving problems by first
+writing a language for problems of that type, and then writing
+your specific application in it. Nor is this all you can do with
+macros; it's just one region in a space of program-manipulating
+techniques that even now is far from fully explored.<br /><br />So if you want to expand your concept of what programming can be,
+one way to do it is by learning weird languages. Pick a language
+that most programmers consider weird but whose median user is smart,
+and then focus on the differences between this language and the
+intersection of popular languages. What can you say in this language
+that would be impossibly inconvenient to say in others? In the
+process of learning how to say things you couldn't previously say,
+you'll probably be learning how to think things you couldn't
+previously think.<br /><br /><br /><br /><br /><br /><br /><br /><font color="888888">
+<b>Thanks</b> to Trevor Blackwell, Patrick Collison, Daniel Gackle, Amjad
+Masad, and Robert Morris for reading drafts of this.
+</font><br /><br /></font></td></tr></table><br><br><table border=0 cellspacing=0 cellpadding=0 width=435><tr><td><font size=2 face="verdana"><br><br>
+<hr></font></td></tr></table></td></tr></table></body></html>

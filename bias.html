@@ -1,0 +1,102 @@
+<html><head><meta property="og:type" content="website"><meta property="og:title" content="A Way to Detect Bias"><meta property="og:site_name" content="Paul Graham"><meta property="og:image" content="https://user-images.githubusercontent.com/59632/213842621-78c527ed-c657-4126-b27d-2670f35fb053.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="512"><meta property="og:image:height" content="512"><title>A Way to Detect Bias</title><link rel="shortcut icon" href="favicon.ico">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VSSBKPV516"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VSSBKPV516');
+</script>
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://shawwn.matomo.cloud/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '2']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src='https://cdn.matomo.cloud/shawwn.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img referrerpolicy="no-referrer-when-downgrade" src="https://shawwn.matomo.cloud/matomo.php?idsite=2&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+<!-- End Matomo Code -->
+</head><body text=#000000 link=#000066 vlink=#464646><table border=0 cellspacing=0 cellpadding=0><tr valign=top><td><a href="index.html"><img src="index-1.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="articles.html"><img src="index-2.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="http://www.amazon.com/gp/product/0596006624"><img src="index-3.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="books.html"><img src="index-4.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://ycombinator.com"><img src="index-5.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="arc.html"><img src="index-6.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bel.html"><img src="index-7.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="lisp.html"><img src="index-8.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="spam.html"><img src="index-9.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="responses.html"><img src="index-10.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="faq.html"><img src="index-11.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="raq.html"><img src="index-12.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="quo.html"><img src="index-13.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="pgessays.rss"><img src="index-14.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="bio.html"><img src="index-15.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://twitter.com/paulg"><img src="index-16.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+<a href="https://mas.to/@paulg"><img src="index-17.png" width=67 height=21 border=0 hspace=0 vspace=0></a><br>
+</td><td><img src="https://sep.turbifycdn.com/ca/Img/trans_1x1.gif" height=1 width=28 border=0></td><td><a href="index.html"><img src="index-20.png" width=408 height=45 border=0 hspace=0 vspace=0></a><br><br>
+<table border=0 cellspacing=0 cellpadding=0 width=435><tr valign=top><td width=435><img src="a-way-to-detect-bias-1.png" height=18 border=0 hspace=0 vspace=0 alt="A Way to Detect Bias"><br><br>
+<font size=2 face="verdana" id=content>
+October 2015<br /><br />This will come as a surprise to a lot of people, but in some cases
+it's possible to detect bias in a selection process without knowing
+anything about the applicant pool.  Which is exciting because among
+other things it means third parties can use this technique to detect
+bias whether those doing the selecting want them to or not.<br /><br />You can use this technique whenever (a) you have at least
+a random sample of the applicants that were selected, (b) their
+subsequent performance is measured, and (c) the groups of
+applicants you're comparing have roughly equal distribution of ability.<br /><br />How does it work?  Think about what it means to be biased.  What
+it means for a selection process to be biased against applicants
+of type x is that it's harder for them to make it through.  Which
+means applicants of type x have to be better to get selected than
+applicants not of type x.
+<font color=#dddddd>[<a href="#f1n"><font color=#dddddd>1</font></a>]</font>
+Which means applicants of type x
+who do make it through the selection process will outperform other
+successful applicants.  And if the performance of all the successful
+applicants is measured, you'll know if they do.<br /><br />Of course, the test you use to measure performance must be a valid
+one.  And in particular it must not be invalidated by the bias you're
+trying to measure.
+But there are some domains where performance can be measured, and
+in those detecting bias is straightforward. Want to know if the
+selection process was biased against some type of applicant?  Check
+whether they outperform the others.  This is not just a heuristic
+for detecting bias.  It's what bias means.<br /><br />For example, many suspect that venture capital firms are biased
+against female founders. This would be easy to detect: among their
+portfolio companies, do startups with female founders outperform
+those without?  A couple months ago, one VC firm (almost certainly
+unintentionally) published a study showing bias of this type. First
+Round Capital found that among its portfolio companies, startups
+with female founders <a href="http://10years.firstround.com/#one"><u>outperformed</u></a>
+those without by 63%. 
+<font color=#dddddd>[<a href="#f2n"><font color=#dddddd>2</font></a>]</font><br /><br />The reason I began by saying that this technique would come as a
+surprise to many people is that we so rarely see analyses of this
+type.  I'm sure it will come as a surprise to First Round that they
+performed one. I doubt anyone there realized that by limiting their
+sample to their own portfolio, they were producing a study not of
+startup trends but of their own biases when selecting companies.<br /><br />I predict we'll see this technique used more in the future.  The
+information needed to conduct such studies is increasingly available.
+Data about who applies for things is usually closely guarded by the
+organizations selecting them, but nowadays data about who gets
+selected is often publicly available to anyone who takes the trouble
+to aggregate it.<br /><br /><br /><br /><br /><br /><br /><br />
+<b>Notes</b><br /><br />[<a name="f1n"><font color=#000000>1</font></a>]
+This technique wouldn't work if the selection process looked
+for different things from different types of applicants&mdash;for
+example, if an employer hired men based on their ability but women
+based on their appearance.<br /><br />[<a name="f2n"><font color=#000000>2</font></a>]
+As Paul Buchheit points out, First Round excluded their most 
+successful investment, Uber, from the study.  And while it 
+makes sense to exclude outliers from some types of studies, 
+studies of returns from startup investing, which is all about 
+hitting outliers, are not one of them.<br /><br />
+<b>Thanks</b> to Sam Altman, Jessica Livingston, and Geoff Ralston for reading
+drafts of this.<br /><br /></font></td></tr></table><br><br><table border=0 cellspacing=0 cellpadding=0 width=435><tr><td><font size=2 face="verdana"><br><br>
+<hr></font></td></tr></table></td></tr></table></body></html>

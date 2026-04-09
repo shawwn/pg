@@ -1,26 +1,236 @@
 (title: "Essays"
  contents: (list
    'brandage
+   'field
+   'goodwriting
+   'do
+   'woke
+   'writes
+   'when
+   'foundermode
+   'persistence
    'reddits
    'google
    'best
    'superlinear
    'greatwork
+   'getideas
+   'read
    'want
+   'alien
+   'users
    'heresy
+   'words
+   'goodtaste
+   'smart
+   'weird
+   'hwh
+   'own
+   'fn
+   'newideas
+   'nft
+   'real
+   'richnow
+   'simply
+   'donate
+   'worked
+   'earnest
+   'ace
+   'airbnbs
+   'think
+   'early
+   'wtax
+   'conformism
+   'orth
+   'cred
+   'useful
+   'noob
+   'fh
+   'mod
+   'fp
    'kids
+   'lesson
+   'nov
+   'genius
+   'sun
+   'pow
+   'disc
+   'pgh
+   'vb
+   'ineq
+   're
+   'jessica
+   'bias
+   'talk
+   'aord
+   'safe
+   'name
+   'altair
+   'ronco
+   'work
+   'corpdev
+   (sym "95")
+   'ecw
+   'know
+   'pinch
+   'mean
+   'before
+   'fr
+   'herd
+   'convince
+   'ds
+   'invtrend
+   'startupideas
+   'hw
+   'growth
+   'swan
+   'todo
+   'speak
+   'ycstart
+   'property
+   'ambitious
+   'word
+   'schlep
+   'vw
+   'hubs
+   'patentpledge
+   'airbnb
+   'control
+   'tablets
+   'founders
+   'superangels
+   'seesv
+   'hiresfund
+   'yahoo
+   'future
+   'addiction
+   'top
    'selfindulgence
+   'organic
+   'apple
+   'really
+   'discover
+   'publishing
+   'nthings
+   'determination
+   'kate
+   'segway
+   'ramenprofitable
+   'makersschedule
+   'revolution
+   'twitter
+   'foundervisa
+   (sym "5founders")
+   'relres
+   'angelinvesting
+   'convergence
+   'maybe
+   'hackernews
+   (sym "13sentences")
+   'identity
+   'credentials
+   'divergence
+   'highres
+   'artistsship
+   'badeconomy
+   'fundraising
+   'prcmc
+   'cities
+   'distraction
+   'lies
+   'good
+   'googles
+   'heroes
+   'disagree
+   'boss
+   'ycombinator
+   'trolls
+   'newthings
+   'startuphubs
+   'webstartups
+   'philosophy
+   'colleges
+   'die
+   'head
+   'stuff
+   'equity
+   'unions
+   'guidetoinvestors
+   'judgement
+   'microsoft
+   'notnot
    'wisdom
+   'foundersatwork
+   'goodart
+   'startupmistakes
+   'mit
+   'investors
+   'copy
+   'island
+   'marginal
+   'america
+   'siliconvalley
+   'startuplessons
+   'randomness
+   'softwarepatents
+   (sym "6631327")
+   'whyyc
+   'love
+   'procrastination
+   'web20
+   'startupfunding
+   'vcsqueeze
+   'ideas
+   'sfp
+   'inequality
+   'ladder
+   'opensource
+   'hiring
+   'submarine
+   'bronze
+   'mac
+   'writing44
+   'college
+   'venturecapital
+   'start
+   'hs
+   'usa
+   'charisma
+   'polls
+   'laundry
+   'bubble
+   'essay
+   'pypar
+   'gh
+   'gap
+   'wealth
+   'gba
+   'say
+   'ffb
+   'hp
+   'iflisp
+   'hundred
+   'nerds
+   'better
+   'desres
+   'spam
    'icad
+   'power
+   'fix
    'taste
    'noop
+   'diff
    'road
-   'avg
+   'rootsoflisp
    'langdes
    'popular
+   'javacover
+   'avg
+   'lwba
    (make-link "Chapter 1 of Ansi Common Lisp" "https://sep.turbifycdn.com/ty/cdn/paulgraham/acl1.txt?t=1717323540&")
    (make-link "Chapter 2 of Ansi Common Lisp" "https://sep.turbifycdn.com/ty/cdn/paulgraham/acl2.txt?t=1717323540&")
    'progbot
+   'prop62
  )
  margin-bottom: false
  bullet-inline: true
@@ -28,10 +238,10 @@
 <a href=\"pgessays.rss\">RSS</a> feed
 <br><br>"
 )
-If you're not sure which to read, try 
+If you're not sure which to read, try
 <a href="wisdom.html"><u>Is it Worth Being Wise?</u></a>,
 <a href="kids.html"><u>Having Kids</u></a>,
-or 
+or
 <a href="selfindulgence.html"><u>How to Lose Time and Money</u></a>.
 
 
