@@ -95,6 +95,24 @@ python3 -m http.server
 
 You should see something similar to the demo screenshot.
 
+# building the site
+
+Since pg.arc will spit out pngs that are perceptually identical but
+not byte-for-byte identical, every call to `./pg.arc` will cause all
+pngs in the repo to be marked as modified, even though they haven't
+changed visually. That's annoying.
+
+Instead, I run pg.arc like this:
+```
+./pg.arc && git-reset-perceptualdiff '*.png'
+```
+
+Where `git-reset-perceptualdiff` is a part of
+[scrap](https://github.com/shawwn/scrap).
+
+That will revert all the images that are perceptually identical,
+resulting in a clean repository.
+
 # customizing your site
 
 TODO. Stay tuned!
