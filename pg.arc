@@ -114,6 +114,7 @@
        (tofile (html-file ,tn)
          (tag html
            (tag head
+             ;(gentag meta charset "utf-8")
              ;(gentag meta name 'viewport content "width=device-width, initial-scale=1.0")
              ;(gentag meta name 'description             content @!site-desc)
              ;(gentag meta name 'theme-color             content "#@(hexrep teal)")
@@ -248,9 +249,18 @@
   (gentag img src "https://sep.turbifycdn.com/ca/Img/trans_1x1.gif"
           height height width width border 0 align align))
 
+(def smartquotes (text)
+  (let open t
+    (tostring
+      (each c text
+        (if (is c #\")
+            (do (pr (if open "\u201c" "\u201d"))
+                (zap no open))
+            (pr c))))))
+
 (def display-text (text)
   (unless (empty text)
-    (let im (imtitle text)
+    (let im (imtitle (smartquotes text))
       (gentag img src im
               height (imheight im) border 0 hspace 0 vspace 0
               alt text))
