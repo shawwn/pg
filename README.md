@@ -142,51 +142,6 @@ Then follow the above steps for `building the site`:
 ```
 ./pg.arc && git-reset-perceptualdiff '*.png'
 ```
-
-Incidentally, this caused an error for me, so I'll document my
-debugging process here:
-```
-load-page articles
-load-page avg
-load-page bel
-load-page best
-load-page bio
-load-page brandage
-bytes->string/utf-8: byte string is not a well-formed UTF-8 encoding
-  byte string: #"\nMarch 2026\n\nIn the early 1970s disaster struck the Swiss watch industry. Now\npeople call it the quartz crisis, but in fact it was a compound of\nthree separate disasters that all happened at about the same time.\n\nThe first was competition from ...
-  context...:
-   /Users/shawn/ml/pg/pg.arc:71:0:  load-page
-   /Users/shawn/ml/sparc/arc.arc:414:0:  across
-   /Users/shawn/ml/sparc/arc.arc:104:0:  map1
-   [repeats 11 more times]
-   /Users/shawn/ml/pg/pg.arc:81:0:  load-pages
-   /Users/shawn/ml/pg/pg.arc:90:0: body of top-level
-   /Users/shawn/ml/sparc/as.scm:17:0: arc-main
-   body of "/Users/shawn/ml/sparc/as.scm"
-```
-
-The problem is that `pages/brandage.page` contains some bytes that
-don't read as valid UTF-8.
-
-Asking Claude, it wrote a python script to locate the offending byte
-sequence. The problem is the accented character in `Gérald Genta`:
-```
-The next move was made by Audemars Piguet, who in 1970 commissioned
-the renowned designer Gérald Genta to design their own iconic watch,
-this one, daringly, in steel. The result, launched in 1972, was the
-...
-```
-
-We fix that by re-encoding `brandage.page` using `iconv` to convert
-from ISO-8859-1 to UTF-8:
-```
-iconv -f ISO-8859-1 -t UTF-8 pages/brandage.page | sponge pages/brandage.page
-```
-
-Now we re-run the site builder:
-```
-./pg.arc && git-reset-perceptualdiff '*.png'
-```
 The output can be [found
 here](https://gist.githubusercontent.com/shawwn/82246277f6cf8f80a66e959b9d72e41c/raw/7677a72716a085428e528f952a300185fc573d7b/gistfile1.txt).
 
@@ -221,12 +176,12 @@ The rest are expected changes: it added the article to
 RSS feed). Lastly, it made `brandage.html` and `the-brand-age-1.png`,
 the essay's title image displayed at the top of `brandage.html`.
 
-Now I commit and push:
+Now commit and push:
 ```
 git add .
 git commit -m "Add brandage.html"
 git push
 ```
 
-And the new essay showed up on the live site within a minute or so:
+And the new essay shows up on the live site within a minute or so:
 [https://shawwn.github.io/pg/brandage.html](https://shawwn.github.io/pg/brandage.html)
