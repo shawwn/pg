@@ -69,7 +69,7 @@
    'ronco
    'work
    'corpdev
-   (sym "95")
+   '|95|
    'ecw
    'know
    'pinch
@@ -120,13 +120,13 @@
    'revolution
    'twitter
    'foundervisa
-   (sym "5founders")
+   '5founders
    'relres
    'angelinvesting
    'convergence
    'maybe
    'hackernews
-   (sym "13sentences")
+   '13sentences
    'identity
    'credentials
    'divergence
@@ -173,7 +173,7 @@
    'startuplessons
    'randomness
    'softwarepatents
-   (sym "6631327")
+   '|6631327|
    'whyyc
    'love
    'procrastination
