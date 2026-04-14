@@ -38,7 +38,7 @@
           bottom-margin: 5
           crop: 'left))
 
-;; Called by group or item to create a page with a specific layout.             
+;; Called by group. or item. to create a page with a specific layout.
 ;; Sets up the HTML head (keywords meta tag, title, extra head tags)            
 ;; and body styling (background color/image, text color, link color). 
 
@@ -167,6 +167,237 @@
   )
 )
 
+(def item. ()
+  (CALL 'base-item.
+    'item))
+
+(def group. ()
+  (CALL 'base-item.
+    'group))
+
+;; This is the main template used by section and item pages. It is
+;; responsible for the main layout of the page.
+
+(def page. ()
+  (HEAD
+    (WHEN (VALUE id: (ID*)
+                 query: 'local
+                 property: 'keywords)
+      (META name: "Keywords"
+            content: @!keywords)
+    )
+    (TITLE (IF test: (NONEMPTY @!page-title)
+               then: @!page-title
+               else: @!name))
+    (TEXT @!head-tags)
+  )
+  (WITH= variable: vnav
+         value: (WHEN (EQUALS value1: @!page-format
+                              value2: 'side-buttons)
+                  (CALL 'nav-buttons.
+                    @!nav-buttons
+                    'vertical))
+    (WITH= variable: vnav-wid
+           value: (WIDTH vnav)
+      (BODY background-color: @!background-color
+            background-image: (OR @!background-image
+                                  (AND
+                                    vnav
+                                    (CALL 'side-stripe.
+                                      vnav-wid)))
+            text-color: @!text-color
+            link-color: @!link-color
+            visited-link-color: @!visited-link-color
+        (SWITCH @!page-format
+          'top-buttons
+          (CENTER
+            (WITH= variable: navbut
+                   value: (CALL 'nav-buttons.
+                            @!nav-buttons
+                            'horizontal)
+              (WITH= variable: wid
+                     value: (CALL 'apparent-width.
+                              navbut)
+                (WHEN @!name-image
+                  (WITH-LINK (TO 'index)
+                    (IMAGE source: (RENDER image: @!name-image))
+                  )
+                  (LINEBREAK)
+                )
+                (WHEN (> wid 0)
+                  (IMAGE source: navbut)
+                )
+                (CALL 'vspace.
+                  20)
+                (CALL 'body-switch.
+                  wid)
+              )
+            )
+          )
+          'side-buttons
+          (TABLE border: 0
+                 cellspacing: 0
+                 cellpadding: 0
+            (TABLE-ROW valign: 'top
+              (CALL 'side-nav.
+                vnav)
+              (TABLE-CELL
+                (WITH= variable: wid
+                       value: (- (- @!page-width 26) vnav-wid)
+                  (WITH= variable: banner
+                         value: (CALL 'page-name.
+                                  wid)
+                    (WITH-LINK (TO 'index)
+                      (IMAGE source: banner)
+                    )
+                    (LINEBREAK number: 2)
+                    (CALL 'body-switch.
+                      (MAXIMUM
+                        (IF test: banner
+                            then: (WIDTH banner)
+                            else: 0)
+                        wid
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+)
+
+;; This template creates a single icon-style button based on the type
+;; of button needed. The type is one of the selections of the buttons
+;; property of the home page or the nav-buttons variable (search,
+;; info, index, contents, etc.)
+
+(def nav-button. (type)
+  (ero `(nav-button. ,type))
+  (SWITCH type
+    'help
+    (CALL 'imbutton.
+          @!help-image
+          "Help"
+          (ACTION 'help)
+    )
+    'search
+    (CALL 'imbutton.
+      @!search-image
+      (WITH-OBJECT 'nsearch
+        @!name)
+      (TO 'nsearch)
+    )
+    'index
+    (CALL 'imbutton.
+      @!index-image
+      "Index"
+      (TO 'ind)
+    )
+    'info
+    (CALL 'imbutton.
+      @!info-image
+      @!info-text
+      (TO 'info)
+    )
+    'info
+    (CALL 'imbutton.
+      @!info-image
+      @!info-text
+      (TO 'info)
+    )
+    'privacypolicy
+    (CALL 'imbutton.
+      @!privacypolicy-image
+      @!privacypolicy-text
+      (TO 'privacypolicy)
+    )
+    'show-order
+    (CALL 'imbutton.
+      @!show-order-image
+      @!show-order-text
+      (ACTION 'show-order)
+    )
+    'mall
+    (CALL 'mall-button.
+      nil
+    )
+    'empty
+    (CALL 'text-nav-button.
+      type
+      nil
+    )
+    'up
+    (CALL 'imbutton.
+      @!up-image
+      "Up"
+      (TO (OR
+            (UP*)
+            'index
+          )
+      )
+    )
+    'next
+    (CALL 'imbutton.
+      @!next-image
+      "Next"
+      (TO (NEXT*))
+    )
+    'home
+    (CALL 'imbutton.
+      @!home-image
+      @!title
+      (TO 'index)
+    )
+    'request
+    (CALL 'imbutton.
+      @!request-image
+      @!request-text
+      (ACTION 'request)
+    )
+    'register
+    (CALL 'imbutton.
+      @!register-image
+      "Register"
+      (ACTION 'register)
+    )
+    'download
+    (CALL 'imbutton.
+      @!download-image
+      "Download"
+      (ACTION 'download)
+    )
+    'contents
+    (WITH-OBJECT 'index
+      (FOR-EACH-OBJECT @!contents
+        (IF test: @!icon
+            then: (RENDER image: @!icon
+                          destination: (TO (ID*)))
+            else: (CALL 'button.
+                    @!name
+                    (TO (ID*))
+                    3
+                    1
+                    @!button-padding
+                  )
+        )
+      )
+    )
+    'email
+    (WHEN (NONEMPTY @!email)
+      (CALL 'imbutton.
+        @!email-image
+        "Email"
+        (ACTION 'email)
+      )
+    )
+    (err (list 'unknown-nav-button type))
+  )
+)
+
 ;; This is the main "wrapper" template that generates the navigation bar        
 ;; (horizontal or vertical.) The first parameter, buttons, is a sequence        
 ;; containing the types of buttons to include. This is typically equals to      
@@ -204,12 +435,12 @@
                                       sequence: buttons))
                (IF test: home-pos
                    then: (FUSE axis: axis
-                               destination: (TO id)
+                               destination: (TO (ID*))
                                align: (SWITCH axis
                                         'horizontal
-                                        'vcenter
+                                         'vcenter
                                         'vertical
-                                        'left)
+                                         'left)
                             (WHEN (NOT (EQUALS value1: home-pos
                                                value2: 0))
                               (CALL 'nav-bar.
@@ -226,12 +457,12 @@
                            buttons
                            axis)))
       else: (FUSE axis: axis
-                  destination: (TO id)
+                  destination: (TO (ID*))
                   align: (SWITCH axis
                            'horizontal
-                           'vcenter
+                            'vcenter
                            'vertical
-                           'center)
+                            'center)
               (FOR-EACH var: but
                         sequence: buttons
                 (CALL 'nav-button.

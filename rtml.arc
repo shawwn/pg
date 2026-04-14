@@ -1,6 +1,8 @@
 (require (libpath "strings.arc")) ; for tokens
-(require (libpath "html.arc"))
 (require (libpath "app.arc")) ; for paras
+(require (libpath "html.arc"))
+
+(def transparent (obj r: 0 g: 0 b: 0 a: 0))
 
 (or= pages* (obj) site* nil rootdir* (expandpath "."))
 
@@ -226,8 +228,8 @@
 ;; Page-format variable is set to "Side-buttons", then the template will print
 ;; "You have side buttons."
 
-(mac SWITCH (expr . args)
-  `(SWITCH-let ,(uvar) ,expr ,@args))
+(mac SWITCH (expr . body)
+  `(SWITCH-let ,(uvar) ,expr ,@body))
 
 (mac SWITCH-let (var expr . args)
   (def ex (args)
@@ -319,8 +321,9 @@
 ;; string. This operator should only be used to test whether a text string is
 ;; empty or not. Do not use it with any other sequence.
 (def NONEMPTY (str)
-  (assert (isa!string str) "NONEMPTY expected a string")
-  (any str nonwhite))
+  (unless (is str nil)
+    (assert (isa!string str) "NONEMPTY expected a string")
+    (any str nonwhite)))
 
 ;; PARAGRAPHS takes a text string and returns a sequence in which each element
 ;; is a paragraph of the text string.
@@ -473,6 +476,25 @@
 ;;;
 ;;;
 
+;; Inserts a line break into the current page. LINEBREAK has two
+;; optional arguments: number and clear. When number is specified, it
+;; will cause that many number of line breaks inserted into the
+;; current document. The clear parameter can take one of the following
+;; values: :none (this is the default,) :left, :right, or :all. When
+;; specified, this parameter controls the flow of text around floating
+;; objects. Floating objects are typically tables or images whose
+;; align property is set.
+(def LINEBREAK ((o :number 1) (o :clear 'none))
+  (assert (in clear 'none 'left 'right 'all)
+          "LINEBREAK argument :clear should be 'none 'left 'right or 'all")
+  (while (> number 0)
+    (if (is clear 'none)
+        (TEXT "<br>")
+        (do (TEXT "<br clear=\"")
+            (TEXT clear)
+            (TEXT "\" />")))
+    (-- number)))
+
 (mac BODY ( ; the color used for the background of the page. Usually
             ; set to @!background-color.
             :background-color
@@ -539,6 +561,7 @@
      ,@body))
 
 (def CALL (f :kws . body)
+  (ero `(CALL ,f ,@kws ,@body))
   (kwapply f kws body))
 
 (mac CENTER body
@@ -889,6 +912,7 @@
              :top-margin :bottom-margin :left-margin :right-margin
              :max-height :min-height :max-width :min-width
              :thickness :intaglio :crop :expand)
+  (if expand (err 'todo-RENDER-expand))
   (or= text-align 'left background-color 'none font 'verdana font-size 18
        top-margin 0 bottom-margin 0 left-margin 0 right-margin 0)
   (let src
@@ -1046,3 +1070,42 @@
   `(with-object ,id
      ,@body))
 
+
+
+;;;
+;;;
+;;; misc
+;;;
+;;;
+
+(def MAXIMUM args
+  (apply max args))
+
+(def MINIMUM args
+  (apply min args))
+
+(def TO (x)
+  (when (is x id)
+    (= x @!id))
+  (assert (isa!sym x)
+          "TO expected a symbol")
+  (cat x ".html"))
+
+(defvar ID* 'index)
+(defvar UP* 'index)
+(defvar NEXT* 'index)
+(defvar PREV* 'index)
+
+;(def ID* ()
+;  @!id)
+
+;(def UP* ()
+;  @!up)
+
+;(def NEXT* ()
+;  (err 'todo-NEXT)
+;  @!next)
+
+;(def PREV* ()
+;  (err 'todo-PREV)
+;  @!prev)
