@@ -321,9 +321,8 @@
            '-gravity gravity
            '-size size
            '-interline-spacing -3
+           "xc:none"
            '-fill (render-color text-color)
-           "xc:"
-           '-background (render-color background-color)
            '-draw "text 0,-1 @(escaped text)"
            '-define "trim:edges=@trim-edges" '-trim '+repage
            img)))

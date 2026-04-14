@@ -502,23 +502,40 @@
                           max-width: max-width max-height: max-height
                           min-width: min-width min-height: min-height)
         text
-        ;; Text only: render text as PNG
-        (render-text text
-                     font: font font-size: font-size
-                     text-color: (or text-color black)
-                     background-color: background-color
-                     gravity: (case text-align
-                                left 'west center 'center right 'east 'west))
+        ;; Fixed-size button: render text directly onto a canvas of the target size.
+        ;; This avoids resize distortion and lets left-margin act as an x-offset.
+        (if (and min-width (is min-width max-width) min-height (is min-height max-height))
+            (let fixed (render-text-on-canvas text min-width min-height
+                                              text-color:  (or text-color black)
+                                              font:        font
+                                              font-size:   font-size
+                                              text-align:  text-align
+                                              left-margin: left-margin)
+              ;; Canvas is already the right size; skip resize and horizontal margins
+              (= min-width nil max-width nil min-height nil max-height nil left-margin 0)
+              fixed)
+            ;; Variable width: render transparently and trim
+            (render-text text
+                         font: font font-size: font-size
+                         text-color: (or text-color black)
+                         gravity: (case text-align
+                                    left 'west center 'center right 'east 'west)))
         (err "RENDER requires image: or text:"))
-    ;; Size constraints (when no image source to handle it above)
+    ;; intaglio: apply drop shadow while background is still transparent
+    (when (and text intaglio)
+      (zap apply-shadow src))
+    ;; Size constraints for variable-width text (fixed-size already handled above)
     (when (and (no image) (or max-width max-height min-width min-height))
       (zap [resize-rim _ max-width max-height min-width min-height] src))
+    ;; Merge transparent text onto solid background
+    (when (and text (~is background-color 'none))
+      (zap [add-background _ background-color] src))
     ;; Margins
     (when (or (> top-margin 0) (> bottom-margin 0)
               (> left-margin 0) (> right-margin 0))
       (zap [add-margins _ top-margin bottom-margin left-margin right-margin
                           background-color] src))
-    ;; Raised 3D border (button effect)
+    ;; Raised/sunken 3D border (button effect)
     (when thickness
       (zap [add-frame _ thickness background-color intaglio] src))
     (make-rim src destination: destination alt: (or alt text))))
@@ -571,13 +588,51 @@
                img)))
     img))
 
-;; Add a raised 3D frame around an image (button border effect).
+;; Render text onto a fixed-size transparent canvas at an explicit x offset.
+;; Used by RENDER when min-width=max-width and min-height=max-height (button case).
+(def render-text-on-canvas (text w h :text-color :font :font-size :text-align :left-margin)
+  (with img (render-image-name)
+    (shell 'magick
+           '-size (cat w "x" h) "xc:none"
+           '-gravity  (case text-align left 'west center 'center right 'east 'west)
+           '-font     (find-font (or font 'verdana))
+           '-pointsize (or font-size 18)
+           '-fill     (render-color (or text-color black))
+           '-annotate (cat "0x0+" (or left-margin 0) "+0") text
+           img)
+    img))
+
+;; Apply the imbutton-style drop shadow to a transparent-background text image.
+;; Shadow is black, 60% opacity, offset -1,-1 (upper-left), giving an embossed look.
+(def apply-shadow (src)
+  (with img (render-image-name)
+    (shell 'magick src
+           "(" '+clone '-background 'black '-shadow "60x0-1-1" ")"
+           '+swap
+           '-background 'none
+           '-layers 'merge
+           img)
+    img))
+
+;; Flatten a transparent-background image onto a solid colored canvas.
+(def add-background (src bgcolor)
+  (withs (img (render-image-name)
+          bg  (render-color bgcolor)
+          w   (imwidth src)
+          h   (imheight src))
+    (shell 'magick '-size (cat w "x" h) (cat "xc:" bg) src '-composite img)
+    img))
+
+;; Add a 3D frame around an image.
+;; intaglio: nil → raised bevel (+outer+0); t → sunken bevel (+0+inner).
 (def add-frame (src thickness bgcolor intaglio)
   (withs (img (render-image-name)
           t   (or thickness 2))
     (shell 'magick src
            '-mattecolor (render-color (or bgcolor 'silver))
-           '-frame (cat t "x" t "+" t "+0")
+           '-frame (if intaglio
+                       (cat t "x" t "+0+" t)   ; sunken
+                       (cat t "x" t "+" t "+0")) ; raised
            img)
     img))
 
