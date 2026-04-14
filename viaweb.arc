@@ -48,19 +48,124 @@
           content: @!keywords)
     (TITLE @!name)
     (TEXT @!head-tags))
-  (BODY
-    background-color: @!background-color
-    background-image: @!background-image
-    text-color: @!text-color
-    link-color: @!link-color
-    visited-link-color: @!visited-link-color
+  (BODY background-color: @!background-color
+        background-image: @!background-image
+        text-color: @!text-color
+        link-color: @!link-color
+        visited-link-color: @!visited-link-color
     (CENTER
       (WITH= variable: navbut
              value: (CALL 'nav-buttons.
                           @!nav-buttons
                           'horizontal)
-        (TEXT navbut)
-        (TEXT "hi")))))
+        (WITH= variable: wid
+               value: (WITH= variable: w
+                             value: (CALL 'apparent-width.
+                                      navbut)
+                        (AND
+                          (> w 0)
+                          w))
+          (WHEN wid
+            (IMAGE source: navbut))
+          (LINEBREAK number: 3)
+          (TABLE border: 0
+                 cellspacing: 0
+                 cellpadding: 0
+                 width: wid
+            (TABLE-ROW valign: 'top
+              (TABLE-CELL
+                (WITH= variable: im
+                       value: (AND
+                                @!image
+                                (RENDER image: @!image
+                                        max-height: @!item-height
+                                        max-width: @!item-width
+                                        expand: t))
+                  (WITH= variable: text
+                         value: (IF test: (NONEMPTY @!headline)
+                                    then: @!headline
+                                    else: @!name)
+                    (WITH= variable: label
+                           value: (CALL 'display-text.
+                                    text
+                                    'left)
+                      (WHEN im
+                        (WITH= variable: imwid
+                               value: (WIDTH im)
+                          (WITH= variable: labwid
+                                 value: (WIDTH label)
+                            (IF test: (AND
+                                        wid
+                                        (> (+ imwid labwid 8)
+                                           wid))
+                                then: (CENTER
+                                        (IMAGE source: im)
+                                        (LINEBREAK number: 2))
+                                else: (WITH= variable: height
+                                             value: (HEIGHT im)
+                                        (IMAGE source: im
+                                               align: 'left)
+                                        (SHIM height: (+ height 8)
+                                              width: 10
+                                              align: 'left))
+                            )
+                          )
+                        )
+                      )
+                      (IMAGE source: label
+                             alt: text)
+                    )
+                  )
+                  (LINEBREAK number: 2)
+                  (FONT size: @!text-size
+                        face: @!text-font
+                    (WHEN @!inset
+                      (CALL 'inset-image.
+                        @!inset
+                        'left))
+                    (FOR-EACH var: para
+                              sequence: (PARAGRAPHS @!caption)
+                      (TEXT para)
+                      (LINEBREAK number: 2)
+                    )
+                    (WHEN im
+                      (LINEBREAK clear: 'all)
+                    )
+                    (WHEN (EQUALS value1: use
+                                  value2: 'item)
+                      (CALL 'order.
+                        (IF test: (AND
+                                    (NONEMPTY @!headline)
+                                    (NONEMPTY @!code)
+                                    (OR
+                                      @!price
+                                      @!sale-price)
+                                  )
+                            then: @!name
+                            else: nil
+                        )
+                        nil
+                      )
+                      (FOR-EACH-OBJECT @!contents
+                        (CALL 'group-element.)
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+          (WHEN (NONEMPTY @!final-text)
+            (LINEBREAK)
+            (CALL 'paras-in-box.
+              @!final-text
+              wid)
+          )
+        )
+      )
+    )
+  )
+)
 
 ;; This is the main "wrapper" template that generates the navigation bar        
 ;; (horizontal or vertical.) The first parameter, buttons, is a sequence        

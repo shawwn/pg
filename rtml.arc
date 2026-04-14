@@ -820,7 +820,7 @@
   (tag img :class :id :style :title :alt :src))
 
 (def META (:name :content)
-  (err 'todo-META)) ; todo
+  (err 'todo-META))
 
 ;; RENDER creates an image from an image property, renders text as an image,
 ;; or both. Does not display the image itself — pass the result to IMAGE as
