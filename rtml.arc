@@ -57,6 +57,39 @@
 (def imheight (img)
   (cadr (imsize img)))
 
+
+(def clean-name (name)
+  (def prev nil)
+  (aand (each c (downcase name)
+          (if (~alphadig c) (= c #\-))
+          (if (or (isnt prev c)
+                  (isnt prev #\-))
+              (out c))
+          (= prev c))
+        (trim (str it) 'both #\-)))
+
+(def render-image-name ()
+  (defs name (clean-name (or @!title (cat @!id)))
+        n    (++ (@ 'counter 0)))
+  (ero (cat name "-" n ".png") 'image-name))
+
+
+;; A "rim" (rendered image) is what RENDER and FUSE return.
+;; Fields: type='rim, path, width, height, destination, alt, hotspots.
+;; hotspots is a list of (x y w h url) for image-map areas.
+(def make-rim (path (o :destination) (o :alt) (o :hotspots))
+  (obj type:        'rim
+       path:        path
+       width:       (imwidth path)
+       height:      (imheight path)
+       destination: destination
+       alt:         alt
+       hotspots:    (or hotspots nil)))
+
+(= unique-id* 0)
+(def unique-id ()
+  (cat (++ unique-id*)))
+
 ;; ----
 
 (mac AND args
@@ -223,7 +256,62 @@
 ;; See also: RENDER, IMAGE
 
 (mac FUSE (:axis :background-color :top-margin :bottom-margin :left-margin :right-margin :spacing :destination :align :thickness . body)
-  `(do (err 'todo-FUSE) ,@body))
+  `(fuse* axis:             ,axis
+          background-color: ,background-color
+          top-margin:       ,top-margin
+          bottom-margin:    ,bottom-margin
+          left-margin:      ,left-margin
+          right-margin:     ,right-margin
+          spacing:          ,spacing
+          destination:      ,destination
+          align:            ,align
+          thickness:        ,thickness
+          children:         (rem nil (list ,@body))))
+
+;; fuse* is the runtime function called by the FUSE macro.
+;; children is a list of rim objects (results of RENDER or nested FUSE).
+(def fuse* (:axis :background-color :top-margin :bottom-margin
+            :left-margin :right-margin :spacing :destination
+            :align :thickness :children)
+  (or= top-margin 0 bottom-margin 0 left-margin 0 right-margin 0 spacing 0)
+  (if (no children)
+      nil
+      (is (len children) 1)
+      (car children)
+      (withs (horiz    (is axis 'horizontal)
+              n        (len children)
+              sp       spacing
+              bg       (render-color (or background-color 'none))
+              ;; Total canvas size
+              cw       (if horiz
+                           (+ (apply + (map !width children))
+                              (* sp (- n 1)) left-margin right-margin)
+                           (+ (apply max (map !width children))
+                              left-margin right-margin))
+              ch       (if horiz
+                           (+ (apply max (map !height children))
+                              top-margin bottom-margin)
+                           (+ (apply + (map !height children))
+                              (* sp (- n 1)) top-margin bottom-margin))
+              img      (render-image-name)
+              hotspots nil
+              cx       left-margin
+              cy       top-margin)
+        ;; Create blank canvas
+        (shell 'magick '-size (cat cw "x" ch) (cat "xc:" bg) img)
+        ;; Composite each child onto canvas, tracking hotspot positions
+        (each child children
+          (when child!destination
+            (push (list cx cy child!width child!height child!destination) hotspots))
+          (shell 'magick img child!path
+                 '-geometry (cat "+" cx "+" cy)
+                 '-composite img)
+          (if horiz
+              (zap [+ _ child!width sp] cx)
+              (zap [+ _ child!height sp] cy)))
+        (when thickness
+          (zap [add-frame _ thickness background-color nil] img))
+        (make-rim img destination: destination hotspots: (rev hotspots)))))
 
 (mac HEAD body
   `(tag head
@@ -236,13 +324,93 @@
 ;; HEIGHT returns nil.
 
 (def HEIGHT (img)
-  (imheight img))
+  (if (and (isa img 'table) (is img!type 'rim))
+      img!height
+      (imheight img)))
 
 (mac IF (:test :then :else)
   `(if ,(assert test) ,(assert then) ,else))
 
+;;; IMAGE inserts an image into the current page. The source must be the
+;;; result of a RENDER or FUSE operator — a common mistake is to pass a         
+;;; variable or property of type image directly (e.g. @name-image). Takes       
+;;; 10 parameters:                                                              
+;;;                                                                             
+;;;   source: result of a RENDER or FUSE operator. Required.                    
+;;;                                                                             
+;;;   lowsource: a low-resolution version of the image (also a RENDER or        
+;;;     FUSE result), typically the same image in grayscale at lower            
+;;;     resolution or higher compression. The browser renders it first,         
+;;;     then gradually wipes it away as the full image loads. Only              
+;;;     noticeable on slow connections.                                         
+;;;                                                                             
+;;;   width, height: size of the image in pixels. Lets the browser reserve      
+;;;     space before the image loads. Does not scale the image — use the        
+;;;     sizing parameters of RENDER instead.
+;;;                                                                             
+;;;   align: :top, :middle, :bottom, :left, or :right. The first three
+;;;     align the image vertically relative to surrounding text. :left and      
+;;;     :right float the image to the side of the page; surrounding text        
+;;;     wraps around it.                                                        
+;;;                                                                             
+;;;   border: size of the border in pixels. If the image is hyperlinked,        
+;;;     set to 0 to suppress the default border. When not hyperlinked,          
+;;;     omitting border may also cause no border to appear.                     
+;;;                                                                             
+;;;   hspace, vspace: horizontal and vertical spacing around the image in       
+;;;     pixels. Useful for adding breathing room so surrounding text does       
+;;;     not flush against the image.                                            
+;;;
+;;;   alt: textual representation of the image. Used in three ways:             
+;;;     displayed in place of the image in non-graphical browsers or when       
+;;;     image loading is off; shown as a tooltip on mouseover; and indexed      
+;;;     by search engines.                                                      
+;;;                                                                             
+;;;   antialias-color: color used to anti-alias the image, blurring jagged      
+;;;     edges to create a more continuous border. Best results when it          
+;;;     matches the background behind the image. Most noticeable when using     
+;;;     RENDER to create text images.                                           
+;;;                                                                             
+;;; Example:                                                                    
+;;;   IMAGE source RENDER image @image                                          
+;;;                                                                             
+;;; See also: RENDER, FUSE
+
+(def IMAGE (:source :lowsource :width :height :align :border
+            :hspace :vspace :alt :antialias-color)
+  (when source
+    (assert (is source!type 'rim) "IMAGE source must be a RENDER or FUSE result")
+    (withs (path   source!path
+            w      (or width  source!width)
+            h      (or height source!height)
+            alt-s  (or alt source!alt "")
+            spots  source!hotspots
+            dest   source!destination
+            bdr    (or border 0))
+      (if (and spots (~empty spots))
+          ;; Image-map case: emit <map> then <img usemap="...">
+          (let map-id (cat "map-" (unique-id))
+            (tag map name: map-id
+              (each (sx sy sw sh url) spots
+                (gentag area shape 'rect
+                        coords (cat sx "," sy "," (+ sx sw) "," (+ sy sh))
+                        href url alt "")))
+            (gentag img src path width w height h
+                    usemap (cat "#" map-id)
+                    border bdr
+                    hspace (or hspace 0) vspace (or vspace 0)
+                    alt alt-s))
+          ;; Plain image, optionally wrapped in a link
+          (let img-tag (tostring:gentag img src path width w height h
+                                        align align border bdr
+                                        hspace (or hspace 0) vspace (or vspace 0)
+                                        alt alt-s)
+            (aif dest
+                 (link img-tag it)
+                 (pr img-tag)))))))
+
 (def META (:name :content)
-  nil) ; todo
+  (err 'todo-META)) ; todo
 
 (mac NOT (x)
   `(no ,x))
@@ -250,8 +418,165 @@
 (mac OR args
   `(or ,@args))
 
-(def RENDER (:kws)
-  (err 'todo-render))
+;;; RENDER creates an image from an image property, renders text as an image,
+;;; or both. Does not display the image itself — pass the result to IMAGE as
+;;; its source value. Has 20 parameters:
+;;;
+;;;   image: a property or variable of type image (e.g. @name-image or an
+;;;     object's image property). When specified, RENDER generates an image
+;;;     from that variable.
+;;;
+;;;   text: when specified, renders the text as an image. If both image and
+;;;     text are given, RENDER superimposes text over image, useful for
+;;;     generating uniform buttons.
+;;;
+;;;   text-align: :center, :left, or :right. Alignment of the text.
+;;;
+;;;   background-color: color for the image. Has no visible effect if image
+;;;     is specified. Must be a color variable, result of COLOR, or
+;;;     transparent.
+;;;
+;;;   font: font for rendering text. Must be a property or variable of type
+;;;     font (button-font or the name of one of Yahoo! Store's graphical
+;;;     fonts), in the format .font-name (e.g. .xsica). Note the colon
+;;;     before the period after the font name.
+;;;
+;;;   font-size: size of the font to use when rendering text as an image.
+;;;
+;;;   destination: a URL. When specified, the image will be hyperlinked to
+;;;     this URL. Can be entered as a string or obtained from TO or ACTION.
+;;;
+;;;   top-margin, bottom-margin, left-margin, right-margin: margins in
+;;;     pixels. Default 0.
+;;;
+;;;   max-height, min-height, max-width, min-width: used to resize the
+;;;     image. If neither is specified, image is rendered at original size.
+;;;     Resampling changes pixel count to match desired display size; a
+;;;     resampled image will appear "smooth".
+;;;
+;;;   thickness: if non-nil, draws a raised border, but only if thickness
+;;;     is specified and background-color is other than transparent. Causes
+;;;     RENDER to create a button image out of text.
+;;;
+;;;   intaglio: when set, causes text to have a "chiseled" or "incised"
+;;;     appearance.
+;;;
+;;;   crop: :off, :right, or :center. If max-width is smaller than the
+;;;     rendered text, determines how the text should be cropped.
+;;;
+;;;   expand: when true, the image is clickable and hyperlinked to the
+;;;     full-size version of the image.
+;;;
+;;; Example — uniform buttons using a blank button image as background:
+;;;   WITH-OBJECT :index
+;;;     FOR-EACH-OBJECT @contents
+;;;       WITH-LINK TO id
+;;;         IMAGE source RENDER image @blank-button
+;;;                             text @name
+;;;                             text-align :center
+;;;                             max-width 150
+;;;               alt @name
+;;;       LINEBREAK
+;;;
+;;; See also: FUSE, IMAGE
+
+(def RENDER (:image :text :text-color :text-align :background-color
+             :font :font-size :destination :alt
+             :top-margin :bottom-margin :left-margin :right-margin
+             :max-height :min-height :max-width :min-width
+             :thickness :intaglio :crop :expand)
+  (or= text-align 'left background-color 'none font 'verdana font-size 18
+       top-margin 0 bottom-margin 0 left-margin 0 right-margin 0)
+  (let src
+    (if (and image text)
+        ;; Both: superimpose text over image
+        (render-text-over image text
+                          font: font font-size: font-size
+                          text-align: text-align text-color: text-color)
+        image
+        ;; Image only: copy/resize source
+        (render-image-src image
+                          max-width: max-width max-height: max-height
+                          min-width: min-width min-height: min-height)
+        text
+        ;; Text only: render text as PNG
+        (render-text text
+                     font: font font-size: font-size
+                     text-color: (or text-color black)
+                     background-color: background-color
+                     gravity: (case text-align
+                                left 'west center 'center right 'east 'west))
+        (err "RENDER requires image: or text:"))
+    ;; Size constraints (when no image source to handle it above)
+    (when (and (no image) (or max-width max-height min-width min-height))
+      (zap [resize-rim _ max-width max-height min-width min-height] src))
+    ;; Margins
+    (when (or (> top-margin 0) (> bottom-margin 0)
+              (> left-margin 0) (> right-margin 0))
+      (zap [add-margins _ top-margin bottom-margin left-margin right-margin
+                          background-color] src))
+    ;; Raised 3D border (button effect)
+    (when thickness
+      (zap [add-frame _ thickness background-color intaglio] src))
+    (make-rim src destination: destination alt: (or alt text))))
+
+;; Copy or resize a source image (URL or local path) to a fresh output file.
+(def render-image-src (src :max-width :max-height :min-width :min-height)
+  (with img (render-image-name)
+    (if (valid-url src)
+        (shell 'curl '-sL src '-o img)
+        (shell 'cp src img))
+    (when (or max-width max-height min-width min-height)
+      (zap [resize-rim _ max-width max-height min-width min-height] img))
+    img))
+
+;; Superimpose text over a background image via ImageMagick -annotate.
+(def render-text-over (base-src text :font :font-size :text-align :text-color)
+  (withs (base (render-image-src base-src)
+          img  (render-image-name))
+    (shell 'magick base
+           '-font      (find-font (or font 'verdana))
+           '-pointsize (or font-size 18)
+           '-fill      (render-color (or text-color black))
+           '-gravity   (case text-align
+                         left 'west center 'center right 'east 'center)
+           '-annotate "0" text
+           img)
+    img))
+
+;; Resize to fit within max/min constraints using ImageMagick geometry.
+(def resize-rim (src max-w max-h min-w min-h)
+  (with img (render-image-name)
+    (let geom (cat (or max-w "") "x" (or max-h "")
+                   (if (or min-w min-h) "^" ">"))
+      (shell 'magick src '-resize geom img))
+    img))
+
+;; Add margin padding around an image using -splice and -extent.
+(def add-margins (src top bot left right bgcolor)
+  (with img (render-image-name)
+    (let bg (render-color (or bgcolor 'none))
+      ;; Add top and left margins via splice
+      (shell 'magick src
+             '-background bg '-gravity 'none
+             '-splice (cat left "x" top "+0+0")
+             img)
+      ;; Extend canvas to add bottom and right margins
+      (withs (w (imwidth img) h (imheight img))
+        (shell 'magick img '-background bg
+               '-extent (cat (+ w right) "x" (+ h bot))
+               img)))
+    img))
+
+;; Add a raised 3D frame around an image (button border effect).
+(def add-frame (src thickness bgcolor intaglio)
+  (withs (img (render-image-name)
+          t   (or thickness 2))
+    (shell 'magick src
+           '-mattecolor (render-color (or bgcolor 'silver))
+           '-frame (cat t "x" t "+" t "+0")
+           img)
+    img))
 
 (def TEXT (text)
   (if text (pr text)))
@@ -269,7 +594,9 @@
 ;; Passing a variable of type image (such as the name-image) to
 ;; WIDTH returns nil.
 (def WIDTH (img)
-  (imwidth img))
+  (if (and (isa img 'table) (is img!type 'rim))
+      img!width
+      (imwidth img)))
 
 (mac WITH= (:var :variable :value . body)
   `(let ,(or var variable) ,value

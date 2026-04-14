@@ -296,21 +296,6 @@
             (only&pr @!footer)
             ))))))
 
-(def clean-name (name)
-  (def prev nil)
-  (aand (each c (downcase name)
-          (if (~alphadig c) (= c #\-))
-          (if (or (isnt prev c)
-                  (isnt prev #\-))
-              (out c))
-          (= prev c))
-        (trim (str it) 'both #\-)))
-
-(def render-image-name ()
-  (defs name (clean-name (or @!title (cat @!id)))
-        n    (++ (@ 'counter 0)))
-  (ero (cat name "-" n ".png") 'image-name))
-
 (def render-color (col)
   (if (isa!sym col) (cat col) (cat "#" (hexrep col))))
 
