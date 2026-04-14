@@ -493,14 +493,10 @@
   (let src
     (if (and image text)
         ;; Both: superimpose text over image
-        (render-text-over image text
-                          font: font font-size: font-size
-                          text-align: text-align text-color: text-color)
+        (render-text-over image text :font :font-size :text-align :text-color)
         image
         ;; Image only: copy/resize source
-        (render-image-src image
-                          max-width: max-width max-height: max-height
-                          min-width: min-width min-height: min-height)
+        (render-image-src image :max-width :max-height :min-width :min-height)
         text
         ;; Fixed-size button: render text directly onto a canvas of the target size.
         ;; This avoids resize distortion and lets left-margin act as an x-offset.
@@ -547,30 +543,27 @@
         (shell 'curl '-sL src '-o img)
         (shell 'cp src img))
     (when (or max-width max-height min-width min-height)
-      (zap [resize-rim _ max-width max-height min-width min-height] img))
-    img))
+      (zap [resize-rim _ max-width max-height min-width min-height] img))))
 
 ;; Superimpose text over a background image via ImageMagick -annotate.
 (def render-text-over (base-src text :font :font-size :text-align :text-color)
-  (withs (base (render-image-src base-src)
-          img  (render-image-name))
-    (shell 'magick base
-           '-font      (find-font (or font 'verdana))
-           '-pointsize (or font-size 18)
-           '-fill      (render-color (or text-color black))
-           '-gravity   (case text-align
-                         left 'west center 'center right 'east 'center)
-           '-annotate "0" text
-           img)
-    img))
+  (let base (render-image-src base-src)
+    (with img (render-image-name)
+      (shell 'magick base
+             '-font      (find-font (or font 'verdana))
+             '-pointsize (or font-size 18)
+             '-fill      (render-color (or text-color black))
+             '-gravity   (case text-align
+                           left 'west center 'center right 'east 'center)
+             '-annotate "0" text
+             img))))
 
 ;; Resize to fit within max/min constraints using ImageMagick geometry.
 (def resize-rim (src max-w max-h min-w min-h)
   (with img (render-image-name)
     (let geom (cat (or max-w "") "x" (or max-h "")
                    (if (or min-w min-h) "^" ">"))
-      (shell 'magick src '-resize geom img))
-    img))
+      (shell 'magick src '-resize geom img))))
 
 ;; Add margin padding around an image using -splice and -extent.
 (def add-margins (src top bot left right bgcolor)
@@ -585,8 +578,7 @@
       (withs (w (imwidth img) h (imheight img))
         (shell 'magick img '-background bg
                '-extent (cat (+ w right) "x" (+ h bot))
-               img)))
-    img))
+               img)))))
 
 ;; Render text onto a fixed-size transparent canvas at an explicit x offset.
 ;; Used by RENDER when min-width=max-width and min-height=max-height (button case).
@@ -600,8 +592,7 @@
            '-pointsize (or font-size 18)
            '-kerning  0.0
            '-draw     (cat "text " (or left-margin 0) ",-1 " (tostring:write text))
-           img)
-    img))
+           img)))
 
 ;; Apply the imbutton-style drop shadow to a transparent-background text image.
 ;; Shadow is black, 60% opacity, offset -1,-1 (upper-left), giving an embossed look.
@@ -612,8 +603,7 @@
            '+swap
            '-background 'none
            '-layers 'merge
-           img)
-    img))
+           img)))
 
 ;; Flatten a transparent-background image onto a solid colored canvas.
 (def add-background (src bgcolor)
