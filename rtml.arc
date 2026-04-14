@@ -1,4 +1,6 @@
+(require (libpath "strings.arc")) ; for tokens
 (require (libpath "html.arc"))
+(require (libpath "app.arc")) ; for paras
 
 (or= pages* (obj) site* nil rootdir* (expandpath "."))
 
@@ -87,13 +89,389 @@
        hotspots:    (or hotspots nil)))
 
 (= unique-id* 0)
+
 (def unique-id ()
   (cat (++ unique-id*)))
 
-;; ----
+
+
+;;;
+;;;
+;;; Logical operators
+;;;
+;;;
+
+;; AND takes one or more arguments. Each argument can be any valid RTML
+;; expression pasted within the body of AND. The operator then evaluates each of
+;; those expressions, and if all are true (none are nil), it returns the value of
+;; the last expression.
+;;
+;; Consider the following template segment:
+;;
+;;   (IF test: (AND @!taxable @!orderable)
+;;       then: (TEXT "This item is orderable and taxable.")
+;;       else: (TEXT "This item is either not orderable or not taxable."))
+;;
+;; This example prints, "This item is orderable and taxable." if both the
+;; orderable and taxable properties of the current page are set to "Yes."
+;; If any of the expressions within the AND block are nil (false), then the rest
+;; of the expressions are ignored.
 
 (mac AND args
   `(and ,@args))
+
+;; OR takes one or more arguments (pasted within it)—each being a valid
+;; RTML expression—and returns the value of the first one that is other than nil.
+;; Once it finds an expression whose value is other than nil, the rest of the
+;; expressions are ignored.
+;;
+;; If either the orderable or the taxable (or both) properties of the current page
+;; is set to "Yes," the following example will print, "This item is orderable or
+;; taxable."
+;;
+;;   (IF test: (OR
+;;               @!taxable
+;;               @!orderable)
+;;       then: (TEXT "This item is orderable or taxable.")
+;;       else: (TEXT "This item is neither orderable nor taxable."))
+;;
+;; The fact that the first non-nil value of the OR operator is returned and the
+;; rest ignored is important. Based on this fact, we can write expressions such as:
+;;
+;;   (WITH= variable: price
+;;          value: (OR @!sale-price @!price))
+;;
+;; In this example, the local variable price will be set to the value of the
+;; Sale-price property, if Sale-price is not empty, otherwise, to the value of
+;; the Price property. Notice, that the above example is NOT equivalent to:
+;;
+;;   (WITH= variable: price
+;;          value: (OR @!price @!sale-price))
+;;
+;; Here, OR returns the value of its first non-nil expression. This example will
+;; almost always set the local variable price to the value of the regular price of
+;; the current item (unless you forgot to enter the regular price but not the sale
+;; price).
+
+(mac OR args
+  `(or ,@args))
+
+;; This operator returns the logical opposite of its argument. It takes a single
+;; RTML expression as its argument. If the expression returns nil, NOT returns true
+;; (the logical opposite of its argument). If the expression returns a value other
+;; than nil, NOT returns false.
+
+(def NOT (x)
+  (no x))
+
+
+
+;;;
+;;;
+;;; Control structures
+;;;
+;;;
+
+(mac IF (:test :then :else)
+  `(if ,(assert test)
+       ,(assert then)
+       ,else))
+
+;; The WHEN operator is similar to the IF operator: it is basically "one half" of
+;; the IF operator. It says, "evaluate the following if this expression is true
+;; (not nil)" and is equivalent to the following IF block:
+;;
+;;   (IF test: <some expression>
+;;       then: <some other expression>
+;;       else: nil)
+;;
+;; WHEN has a single argument, a condition. If the result of the condition is true
+;; (not nil) then the expression or expressions pasted within the WHEN block
+;; is/are evaluated. Similar to the IF operator arguments, the WHEN operator's
+;; condition argument can only be a single operator. However, the WHEN operator
+;; may contain any simple or complex expression. (Use the CALL or MULTI operators
+;; to enter a more complex expression.)
+;;
+;; For an example on how to use the WHEN operator, consider the following
+;; template snippet:
+;;
+;;   (WHEN @!sale-price
+;;     (TEXT "This item is on sale."))
+;;
+;; If the current page has a sale price entered, the code above will print: "This
+;; item is on sale." Otherwise, it will do nothing.
+
+(mac WHEN (cond . body)
+  `(when ,cond
+     ,@body))
+
+;; The SWITCH operator is very much like a multi-state switch (hence the name).
+;; It takes one argument, the switch expression, and one or more key-expression
+;; pairs. It then compares the result of the switch expression to each key. If
+;; there is a match, the corresponding expression is evaluated and its value
+;; returned. If there is no match, SWITCH returns nil. It is much easier to
+;; understand how SWITCH works by looking at an example:
+;;
+;;   (SWITCH @!page-format
+;;     :top-buttons  (TEXT "You have top buttons.")
+;;     :side-buttons (TEXT "You have side buttons."))
+;;
+;; In this example, the switch expression is the global variable @!page-format.
+;; There are two key-expression pairs, one starting with :top-buttons, the other,
+;; with :side-buttons. The operator will compare the value of @!page-format first
+;; to the constant :top-buttons (because @!page-format is a variable that has
+;; values from a drop-down list, we must use the constant notation for those
+;; values). If our Page-format variable is set to "Top-buttons" then this template
+;; segment will print "You have top buttons." If, on the other hand, our
+;; Page-format variable is set to "Side-buttons", then the template will print
+;; "You have side buttons."
+
+(mac SWITCH (expr . args)
+  `(SWITCH-let ,(uvar) ,expr ,@args))
+
+(mac SWITCH-let (var expr . args)
+  (def ex (args)
+    (if (no (cdr args))
+        (car args)
+        `(if (is ,var ,(car args))
+             ,(cadr args)
+             ,(ex (cddr args)))))
+  `(let ,var ,expr ,(ex args)))
+
+
+
+;;;
+;;;
+;;; Sequences
+;;;
+;;;
+
+;; The ELEMENTS operator returns a subsequence of a sequence. It takes three
+;; parameters: a sequence, a start index, and an end index. It returns a
+;; subsequence consisting of the elements of sequence from start index to end
+;; index. The following example, for instance, will print "bcd":
+;;
+;;   (TEXT (ELEMENTS sequence: "abcde" first: 1 last: 3))
+;;
+;; From this example, you can see that the numbering of sequence elements is
+;; zero-based, so the letter "a" in the sequence "abcde" is at position 0.
+;; The second and third parameters of ELEMENTS are optional. If first is omitted,
+;; it is assumed to be 0 (meaning the start of the sequence). If last is omitted,
+;; it is assumed to be the last element of the sequence. Consequently, if both
+;; first and last are omitted, then the ELEMENTS operator simply returns the
+;; sequence itself.
+
+(def ELEMENTS (:sequence first: a last: b)
+  (if a (zap max a 0))
+  (if b (++ b))
+  (if b (zap max b 0))
+  (cut sequence (or a 0) b))
+
+;; ELEMENT takes two parameters, a position and a sequence. It then returns
+;; the element of sequence sequence at position position. As in the case of the
+;; ELEMENTS operator, the numbering of sequence elements starts at zero. If
+;; sequence sequence has no element at position position, ELEMENT returns nil.
+;; The following example will print the first letter of every special in your
+;; store:
+;;
+;;   (WITH-OBJECT 'index
+;;     (FOR-EACH-OBJECT @!specials
+;;       (TEXT (ELEMENT position: 0 sequence: @!name))
+;;       (LINEBREAK)))
+
+(def ELEMENT (:position :sequence)
+  (sequence position))
+
+;; If you use the ELEMENT or ELEMENTS operator, you might need to find out how
+;; many elements there are in a sequence. You can do that with the LENGTH
+;; operator. The length operator takes a single parameter, a sequence, and
+;; returns the number of elements within the sequence. If the sequence is empty,
+;; LENGTH returns 0.
+;;
+;; Remember, that all operators that work on sequences and refer to particular
+;; positions within a sequence (such as the ELEMENT or ELEMENTS operator)
+;; consider element 0 to be the first element within a sequence. Therefore, when
+;; you use these operators in conjunction with the LENGTH operator, you should
+;; know that the last element of a sequence is at the position returned by LENGTH
+;; minus one.
+;;
+;; To demonstrate this, consider the following example:
+;;
+;;   (WITH-OBJECT 'index
+;;     (FOR-EACH-OBJECT @!specials
+;;       (WITH= variable: len
+;;              value: (LENGTH @!name))
+;;       (TEXT (ELEMENT position: (- len 1) sequence: @!name))
+;;       (LINEBREAK)))
+;;
+;; This example is very similar to last one where we printed the first letter of
+;; each special item, except in this case; we are printing the last element of
+;; every special item. For each special, we first store the length of the
+;; special's name in the local variable len, and then we print the element of
+;; the name at position len - 1.
+
+(def LENGTH (sequence)
+  (len sequence))
+
+;; Returns true if a text string contains at least one non-whitespace character.
+;; Whitespace characters include the space character, the tab character, and a new
+;; line (carriage return) character. NONEMPTY takes a single argument, a text
+;; string. This operator should only be used to test whether a text string is
+;; empty or not. Do not use it with any other sequence.
+(def NONEMPTY (str)
+  (assert (isa!string str) "NONEMPTY expected a string")
+  (any str nonwhite))
+
+;; PARAGRAPHS takes a text string and returns a sequence in which each element
+;; is a paragraph of the text string.
+
+(def PARAGRAPHS (s)
+  (paras s))
+
+;; POSITION takes two arguments: an element and a sequence. It returns the
+;; position at which the sequence contains the specified element or nil, if the
+;; element was not found in the sequence. The numbering of the elements within a
+;; sequence starts at position 0.
+;; This operator is most commonly used to check if an element exists within a
+;; sequence. The following example demonstrates this use.
+;;
+;; Example:
+;;
+;;   (WHEN (POSITION element: 'contents sequence: @!nav-buttons)
+;;     (TEXT "Contents are part of Nav-buttons."))
+;;
+;; See also: ELEMENT, ELEMENTS
+
+(def POSITION (:element :sequence)
+  (pos element sequence))
+
+;; The SEGMENTS operator takes a sequence, and returns successive segments of a
+;; specified length of that sequence. Consider the built-in template
+;; Pack-contents. This template is used to show the contents of a page if
+;; contents-format is set to Pack. For your reference, the template is included
+;; below:
+;;
+;;   (def pack-contents. (ids)
+;;     (FOR-EACH variable: tuple
+;;               sequence: (SEGMENTS length: @!columns sequence: ids)
+;;       (FOR-EACH-OBJECT tuple
+;;         (WITH-LINK TO: id
+;;           (IMAGE source: (RENDER image: (CALL :shown-image)) alt: @!name))
+;;         (LINEBREAK))))
+;;
+;; This template takes a sequence of IDs, those included in the contents property
+;; of a page. Visualize how contents are rendered on the page when contents
+;; format is set to Pack and you will understand how SEGMENTS is used. Contents
+;; are generated on the page arranged into a number of columns as set by the
+;; columns global variable. If the columns global variable is set to 3, for
+;; instance, and a page has, say, 6 items in its contents property, then the
+;; first row will contain the images (or icons) of the first three items, and the
+;; second row will contain the second three items. Basically, what you need to do
+;; is to break apart the contents property into subsets of three—each subset
+;; being a sequence. This is exactly what is happening in the Pack-contents
+;; template.
+;;
+;; The first FOR-EACH operator (the "outer loop") takes each subset of the
+;; contents. These subsets are returned from the SEGMENTS operator. The SEGMENTS
+;; operator takes the IDs (from the contents property) and returns subsets of the
+;; IDs each having a length specified by the columns global variable.
+;;
+;; The second FOR-EACH operator—the "inner loop"—walks through each of these
+;; segments, and displays the image for each object pointed to by the IDs
+;; contained within the segments.
+;;
+;; If the last segment doesn't contain enough elements (fewer than the number
+;; specified by the length parameter), it will simply contain however many
+;; elements are left from the original sequence. For example, if the sequence has
+;; seven elements and we want subsets of three elements each, SEGMENTS will return
+;; three subsequences: the first two containing three elements each, while the
+;; last sub-sequence, only one element.
+
+(def SEGMENTS (:length :sequence)
+  (assert (isa!int length)
+          "SEGMENTS expected :length to be an integer")
+  (assert (> length 0)
+          "SEGMENTS expected :length to be greater than zero")
+  (tuples sequence length))
+
+
+;; The TOKENS operator takes a text string and turns it into a sequence in which
+;; each element is a "token" from the original string. Tokens are either single
+;; words or phrases enclosed in double quotes and separated by spaces from one
+;; another. The following example will print each word of the sentence "This is
+;; how TOKENS works" on a new line:
+;;
+;;   (FOR-EACH variable: word
+;;             sequence: (TOKENS "This is how TOKENS works")
+;;     (TEXT word)
+;;     (LINEBREAK))
+;;
+
+(def TOKENS (str)
+  (tokens str))
+
+;; YANK has two parameters: a sequence and an element. It returns the same
+;; sequence but with all occurrences of the given element removed. Below is a
+;; modified version of the template we used to demonstrate the use of the TOKENS
+;; operator. This modified version prints each word of the sentence "This is how
+;; TOKENS work" but with the word TOKENS removed.
+;;
+;;   (FOR-EACH variable: 'word
+;;             sequence: (YANK element: "TOKENS"
+;;                             sequence: (TOKENS "This is how TOKENS works"))
+;;     (TEXT word)
+;;     (LINEBREAK))
+
+(def YANK (:element :sequence)
+  (assert (alist sequence)
+          "YANK expected :sequence to be a list")
+  (rem element sequence))
+
+;; The REVERSE operator takes a sequence as its argument and returns
+;; the same sequence in reverse order.
+
+(def REVERSE (seq)
+  (assert (alist seq)
+          "REVERSE expected argument to be a list")
+  (rev seq))
+
+;; This operator returns a sequence consisting of the IDs of all objects (pages)
+;; in the store in alphabetical order. Right now, only the built-in Index-body.
+;; template uses this operator to generate the index page of your store (in
+;; Editor V3.0, the sitemap. template does the same.) The WHOLE-CONTENTS operator
+;; is very useful and is the only way to obtain a list of all the pages in your
+;; store.
+
+(def WHOLE-CONTENTS ()
+  (err 'todo-WHOLE-CONTENTS))
+
+;; MAKE-LIST takes any number of values pasted within it and returns a
+;; sequence consisting of all those values.
+
+(def MAKE-LIST args
+  args)
+
+;; APPEND takes any number of sequences (except text strings) pasted
+;; within it and returns a new sequence by joining all the sequences
+;; together.
+
+(def APPEND args
+  (accum a
+    (each xs args
+      (assert (alist xs)
+              "APPEND expected each argument to be a list")
+      (if xs
+          (each y xs
+            (a y))
+          (a nil)))))
+
+
+
+;;;
+;;;
+;;; RTML operators
+;;;
+;;;
 
 (mac BODY ( ; the color used for the background of the page. Usually
             ; set to @!background-color.
@@ -166,14 +544,6 @@
 (mac CENTER body
   `(tag center ,@body))
 
-(def ELEMENT (:position :sequence)
-  (sequence position))
-
-(def ELEMENTS (:sequence first: a last: b)
-  (if a (zap max a 0))
-  (if b (zap max b 0))
-  (cut sequence (or a 0) b))
-
 (mac EQUALS (:value1 :value2)
   `(is ,(assert value1)
        ,(assert value2)))
@@ -218,7 +588,7 @@
 ;; example is Display-font. According to FONT-WIDTH, Lithos-Bold, for
 ;; example, is 1.3068392 times wider than Helvetica Bold.
 (def FONT-WIDTH (font)
-  (err 'todo-font-width))
+  (err 'todo-FONT-WIDTH))
 
 ;; Glues images pasted within its body into a single image, arranged either
 ;; vertically or horizontally. All child images must be passed through RENDER   
@@ -331,9 +701,6 @@
       img!height
       (imheight img)))
 
-(mac IF (:test :then :else)
-  `(if ,(assert test) ,(assert then) ,else))
-
 ;; IMAGE inserts an image into the current page. The source must be the
 ;; result of a RENDER or FUSE operator — a common mistake is to pass a         
 ;; variable or property of type image directly (e.g. @name-image). Takes       
@@ -390,7 +757,7 @@
             spots  source!hotspots
             dest   source!destination
             bdr    (or border 0))
-      (if (and spots (~empty spots))
+      (if (~empty spots)
           ;; Image-map case: emit <map> then <img usemap="...">
           (let map-id (cat "map-" (unique-id))
             (tag map name: map-id
@@ -454,67 +821,6 @@
 
 (def META (:name :content)
   (err 'todo-META)) ; todo
-
-;; This operator returns the logical opposite of its argument. It takes a single
-;; RTML expression as its argument. If the expression returns nil, NOT returns true
-;; (the logical opposite of its argument). If the expression returns a value other
-;; than nil, NOT returns false.
-
-(def NOT (x)
-  (no x))
-
-;; OR takes one or more arguments (pasted within it)—each being a valid
-;; RTML expression—and returns the value of the first one that is other than nil.
-;; Once it finds an expression whose value is other than nil, the rest of the
-;; expressions are ignored.
-;;
-;; If either the orderable or the taxable (or both) properties of the current page
-;; is set to "Yes," the following example will print, "This item is orderable or
-;; taxable."
-;;
-;;   (IF test: (OR
-;;               @!taxable
-;;               @!orderable)
-;;       then: (TEXT "This item is orderable or taxable.")
-;;       else: (TEXT "This item is neither orderable nor taxable."))
-;;
-;; The fact that the first non-nil value of the OR operator is returned and the
-;; rest ignored is important. Based on this fact, we can write expressions such as:
-;;
-;;   (WITH= variable: 'price
-;;          value: (OR @!sale-price @!price))
-;;
-;; In this example, the local variable price will be set to the value of the
-;; Sale-price property, if Sale-price is not empty, otherwise, to the value of
-;; the Price property. Notice, that the above example is NOT equivalent to:
-;;
-;;   (WITH= variable: 'price
-;;          value: (OR @!price @!sale-price))
-;;
-;; Here, OR returns the value of its first non-nil expression. This example will
-;; almost always set the local variable price to the value of the regular price of
-;; the current item (unless you forgot to enter the regular price but not the sale
-;; price).
-
-(mac OR args
-  `(or ,@args))
-
-;; POSITION takes two arguments: an element and a sequence. It returns the
-;; position at which the sequence contains the specified element or nil, if the
-;; element was not found in the sequence. The numbering of the elements within a
-;; sequence starts at position 0.
-;; This operator is most commonly used to check if an element exists within a
-;; sequence. The following example demonstrates this use.
-;;
-;; Example:
-;;
-;;   (WHEN (POSITION element: 'contents sequence: @!nav-buttons)
-;;     (TEXT "Contents are part of Nav-buttons."))
-;;
-;; See also: ELEMENT, ELEMENTS
-
-(def POSITION (:element :sequence)
-  (pos element sequence))
 
 ;; RENDER creates an image from an image property, renders text as an image,
 ;; or both. Does not display the image itself — pass the result to IMAGE as
@@ -721,9 +1027,6 @@
 (def TITLE (name)
   (tag title
     (TEXT name)))
-
-(mac WHEN (cond . body)
-  `(when ,cond ,@body))
 
 ;; WIDTH returns the width of an image in pixels. The image passed
 ;; to the WIDTH operator must be an image that is already rendered,
