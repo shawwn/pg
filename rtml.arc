@@ -593,12 +593,13 @@
 (def render-text-on-canvas (text w h :text-color :font :font-size :text-align :left-margin)
   (with img (render-image-name)
     (shell 'magick
-           '-size (cat w "x" h) "xc:none"
+           '-size (cat w "x" h) '-background 'none "xc:"
            '-gravity  (case text-align left 'west center 'center right 'east 'west)
            '-font     (find-font (or font 'verdana))
-           '-pointsize (or font-size 18)
            '-fill     (render-color (or text-color black))
-           '-annotate (cat "0x0+" (or left-margin 0) "+0") text
+           '-pointsize (or font-size 18)
+           '-kerning  0.0
+           '-draw     (cat "text " (or left-margin 0) ",-1 " (tostring:write text))
            img)
     img))
 
@@ -616,25 +617,17 @@
 
 ;; Flatten a transparent-background image onto a solid colored canvas.
 (def add-background (src bgcolor)
-  (withs (img (render-image-name)
-          bg  (render-color bgcolor)
-          w   (imwidth src)
-          h   (imheight src))
-    (shell 'magick '-size (cat w "x" h) (cat "xc:" bg) src '-composite img)
-    img))
+  (with img (render-image-name)
+    (shell 'magick src '-background (render-color bgcolor) '-flatten img)))
 
 ;; Add a 3D frame around an image.
-;; intaglio: nil → raised bevel (+outer+0); t → sunken bevel (+0+inner).
 (def add-frame (src thickness bgcolor intaglio)
-  (withs (img (render-image-name)
-          t   (or thickness 2))
-    (shell 'magick src
-           '-mattecolor (render-color (or bgcolor 'silver))
-           '-frame (if intaglio
-                       (cat t "x" t "+0+" t)   ; sunken
-                       (cat t "x" t "+" t "+0")) ; raised
-           img)
-    img))
+  (with img (render-image-name)
+    (let h (or thickness 2)
+      (shell 'magick src
+             '-mattecolor (render-color (color 0x99 0x99 0x99))
+             '-frame (cat h "x" h "+" h "+0")
+             img))))
 
 (def TEXT (text)
   (if text (pr text)))
