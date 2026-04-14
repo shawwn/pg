@@ -1,51 +1,6 @@
 #!/usr/bin/env sparc
 
-(require (libpath "html.arc"))
-
-(or= pages* (obj) site* nil rootdir* (expandpath "."))
-
-(defvar self*)
-
-(def current-object ()
-  (or (self*) site*))
-
-(def @ (prop (o fail))
-  (let x (aand (self*) (it prop))
-    (if (~null x) x
-        site*     (site* prop fail)
-                  fail)))
-
-(defset @ (prop (o fail))
-  (w/uniq p
-    (list (list p prop)
-          `(@ ,prop ,fail)
-          `(fn (val) (set-prop ,p val)))))
-
-(def set-prop (prop value)
-  (= ((current-object) prop) value))
-
-(mac with-object (x . body)
-  (w/uniq v
-    `(whenlet ,v (as-object ,x)
-       (w/param self* ,v
-         ,@body))))
-
-(def as-object (x)
-  (if (null x)
-       x
-      (isa!sym x)
-       (assert (pages* x) "Page '@x' doesn't exist")
-      (isa!table x)
-       x
-      (isa!fn x)
-       (as-object (x (current-object)))
-       (err "Can't use as object" x)))
-
-(mac each-object (lst . body)
-  (w/uniq v
-    `(each ,v ,lst
-       (with-object ,v
-         ,@body))))
+(require "viaweb.arc")
 
 (deftem item
   id       nil
@@ -395,18 +350,6 @@
           (when (is name font)
             (break (expandpath (+ "assets/fonts/" file) rootdir*)))))
       font))
-
-(def imsize (img)
-  (if (valid-url img)
-      (fromstring (GET img :bytes)
-        (imsize "-"))
-      (map int (tokens (shell 'identify '-format "%w %h" img)))))
-
-(defmemo imwidth (img)
-  (car (imsize img)))
-
-(defmemo imheight (img)
-  (cadr (imsize img)))
 
 (def imtitle (text)
   (= text (multisubst (list (list "-" "–"))
