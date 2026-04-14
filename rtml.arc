@@ -303,6 +303,9 @@
         (each child children
           (when child!destination
             (push (list cx cy child!width child!height child!destination) hotspots))
+          (when child!hotspots
+            (each hs child!hotspots
+              (push (list (+ cx (hs 0)) (+ cy (hs 1)) (hs 2) (hs 3) (hs 4)) hotspots)))
           (shell 'magick img child!path
                  '-geometry (cat "+" cx "+" cy)
                  '-composite img)
