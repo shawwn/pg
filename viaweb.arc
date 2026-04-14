@@ -167,108 +167,84 @@
   )
 )
 
-(def item. ()
-  (CALL 'base-item.
-    'item))
+;; This template is used to generate a button in the left or top navigation bar.                           
+;; It takes five parameters: text sets the label for the button; dest is the                               
+;; target URL of the button; topm sets the top margin; botm sets the bottom                                
+;; margin; and sidem sets the left and right margins (this normally comes from                             
+;; the button-padding variable.) The color of the button and its text, whether                             
+;; the button is raised or not, and whether the label is beveled or not is                                 
+;; determined by the various button-related variables such as button-text-color,
+;; button-color, button-font-size, and button-style.                                                       
+;;
+;; Example:                                                                                                
+;;              
+;;   (IMAGE source: (CALL 'button. "Test Button" (TO 'index) 5 5 5))
+;;                                                                                                         
+;; Called by: imbutton., mall-button., nav-button., text-nav-button., x-navbuttons.                        
+
+(def button. (text dest topm botm sidem)
+  (RENDER text: text
+          text-color: @!button-text-color
+          text-align: 'left
+          background-color: @!button-color
+          font: @!button-font
+          font-size: @!button-font-size
+          destination: dest
+          top-margin: topm
+          bottom-margin: botm
+          left-margin: sidem
+          right-margin: sidem
+          thickness: (CALL '|3d.|)
+          intaglio: (AND
+                      (EQUALS value1: @!button-style
+                              value2: 'incised)
+                      (NOT (EQUALS value1: @!button-color
+                                   value2: black))
+                      (CALL 'light-color.
+                        @!button-text-color)
+                    )
+  )
+)
 
 (def group. ()
   (CALL 'base-item.
     'group))
 
-;; This is the main template used by section and item pages. It is
-;; responsible for the main layout of the page.
+;; This template creates a button if the button-style variable is set to "icon".
+;; It takes three parameters:
+;;
+;; Im:   The image to be used as the button. If there is no image, then a simple
+;;       button is generated using text as the label.
+;; Text: The label to be used if the icon image for the button is not available.
+;; Dest: The URL the button should linked to.
+;;
+;; The following example creates a sample "View Cart" button (if button-style is
+;; "icon".)
+;;
+;;   (IMAGE source: (CALL 'imbutton. @!show-order-image "View Cart" (ACTION 'show-order)))
+;;
+;; Called by: nav-button.
 
-(def page. ()
-  (HEAD
-    (WHEN (VALUE id: (ID*)
-                 query: 'local
-                 property: 'keywords)
-      (META name: "Keywords"
-            content: @!keywords)
-    )
-    (TITLE (IF test: (NONEMPTY @!page-title)
-               then: @!page-title
-               else: @!name))
-    (TEXT @!head-tags)
-  )
-  (WITH= variable: vnav
-         value: (WHEN (EQUALS value1: @!page-format
-                              value2: 'side-buttons)
-                  (CALL 'nav-buttons.
-                    @!nav-buttons
-                    'vertical))
-    (WITH= variable: vnav-wid
-           value: (WIDTH vnav)
-      (BODY background-color: @!background-color
-            background-image: (OR @!background-image
-                                  (AND
-                                    vnav
-                                    (CALL 'side-stripe.
-                                      vnav-wid)))
-            text-color: @!text-color
-            link-color: @!link-color
-            visited-link-color: @!visited-link-color
-        (SWITCH @!page-format
-          'top-buttons
-          (CENTER
-            (WITH= variable: navbut
-                   value: (CALL 'nav-buttons.
-                            @!nav-buttons
-                            'horizontal)
-              (WITH= variable: wid
-                     value: (CALL 'apparent-width.
-                              navbut)
-                (WHEN @!name-image
-                  (WITH-LINK (TO 'index)
-                    (IMAGE source: (RENDER image: @!name-image))
-                  )
-                  (LINEBREAK)
-                )
-                (WHEN (> wid 0)
-                  (IMAGE source: navbut)
-                )
-                (CALL 'vspace.
-                  20)
-                (CALL 'body-switch.
-                  wid)
-              )
+(def imbutton. (im text dest)
+  (IF test: (AND
+              (EQUALS value1: @!button-style
+                      value2: 'icon)
+              im
             )
-          )
-          'side-buttons
-          (TABLE border: 0
-                 cellspacing: 0
-                 cellpadding: 0
-            (TABLE-ROW valign: 'top
-              (CALL 'side-nav.
-                vnav)
-              (TABLE-CELL
-                (WITH= variable: wid
-                       value: (- (- @!page-width 26) vnav-wid)
-                  (WITH= variable: banner
-                         value: (CALL 'page-name.
-                                  wid)
-                    (WITH-LINK (TO 'index)
-                      (IMAGE source: banner)
-                    )
-                    (LINEBREAK number: 2)
-                    (CALL 'body-switch.
-                      (MAXIMUM
-                        (IF test: banner
-                            then: (WIDTH banner)
-                            else: 0)
-                        wid
-                      )
-                    )
-                  )
-                )
-              )
-            )
-          )
-        )
-      )
-    )
+      then: (RENDER image: im
+                    destination: dest)
+      else: (CALL 'button.
+              text
+              dest
+              3
+              1
+              @!button-padding)
   )
 )
+
+(def item. ()
+  (CALL 'base-item.
+    'item))
 
 ;; This template creates a single icon-style button based on the type
 ;; of button needed. The type is one of the selections of the buttons
@@ -468,6 +444,100 @@
                 (CALL 'nav-button.
                   but)))))
 
+;; This is the main template used by section and item pages. It is
+;; responsible for the main layout of the page.
+
+(def page. ()
+  (HEAD
+    (WHEN (VALUE id: (ID*)
+                 query: 'local
+                 property: 'keywords)
+      (META name: "Keywords"
+            content: @!keywords)
+    )
+    (TITLE (IF test: (NONEMPTY @!page-title)
+               then: @!page-title
+               else: @!name))
+    (TEXT @!head-tags)
+  )
+  (WITH= variable: vnav
+         value: (WHEN (EQUALS value1: @!page-format
+                              value2: 'side-buttons)
+                  (CALL 'nav-buttons.
+                    @!nav-buttons
+                    'vertical))
+    (WITH= variable: vnav-wid
+           value: (WIDTH vnav)
+      (BODY background-color: @!background-color
+            background-image: (OR @!background-image
+                                  (AND
+                                    vnav
+                                    (CALL 'side-stripe.
+                                      vnav-wid)))
+            text-color: @!text-color
+            link-color: @!link-color
+            visited-link-color: @!visited-link-color
+        (SWITCH @!page-format
+          'top-buttons
+          (CENTER
+            (WITH= variable: navbut
+                   value: (CALL 'nav-buttons.
+                            @!nav-buttons
+                            'horizontal)
+              (WITH= variable: wid
+                     value: (CALL 'apparent-width.
+                              navbut)
+                (WHEN @!name-image
+                  (WITH-LINK (TO 'index)
+                    (IMAGE source: (RENDER image: @!name-image))
+                  )
+                  (LINEBREAK)
+                )
+                (WHEN (> wid 0)
+                  (IMAGE source: navbut)
+                )
+                (CALL 'vspace.
+                  20)
+                (CALL 'body-switch.
+                  wid)
+              )
+            )
+          )
+          'side-buttons
+          (TABLE border: 0
+                 cellspacing: 0
+                 cellpadding: 0
+            (TABLE-ROW valign: 'top
+              (CALL 'side-nav.
+                vnav)
+              (TABLE-CELL
+                (WITH= variable: wid
+                       value: (- (- @!page-width 26) vnav-wid)
+                  (WITH= variable: banner
+                         value: (CALL 'page-name.
+                                  wid)
+                    (WITH-LINK (TO 'index)
+                      (IMAGE source: banner)
+                    )
+                    (LINEBREAK number: 2)
+                    (CALL 'body-switch.
+                      (MAXIMUM
+                        (IF test: banner
+                            then: (WIDTH banner)
+                            else: 0)
+                        wid
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+)
 
 
 
