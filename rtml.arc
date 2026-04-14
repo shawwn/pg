@@ -334,50 +334,50 @@
 (mac IF (:test :then :else)
   `(if ,(assert test) ,(assert then) ,else))
 
-;;; IMAGE inserts an image into the current page. The source must be the
-;;; result of a RENDER or FUSE operator — a common mistake is to pass a         
-;;; variable or property of type image directly (e.g. @name-image). Takes       
-;;; 10 parameters:                                                              
-;;;                                                                             
-;;;   source: result of a RENDER or FUSE operator. Required.                    
-;;;                                                                             
-;;;   lowsource: a low-resolution version of the image (also a RENDER or        
-;;;     FUSE result), typically the same image in grayscale at lower            
-;;;     resolution or higher compression. The browser renders it first,         
-;;;     then gradually wipes it away as the full image loads. Only              
-;;;     noticeable on slow connections.                                         
-;;;                                                                             
-;;;   width, height: size of the image in pixels. Lets the browser reserve      
-;;;     space before the image loads. Does not scale the image — use the        
-;;;     sizing parameters of RENDER instead.
-;;;                                                                             
-;;;   align: :top, :middle, :bottom, :left, or :right. The first three
-;;;     align the image vertically relative to surrounding text. :left and      
-;;;     :right float the image to the side of the page; surrounding text        
-;;;     wraps around it.                                                        
-;;;                                                                             
-;;;   border: size of the border in pixels. If the image is hyperlinked,        
-;;;     set to 0 to suppress the default border. When not hyperlinked,          
-;;;     omitting border may also cause no border to appear.                     
-;;;                                                                             
-;;;   hspace, vspace: horizontal and vertical spacing around the image in       
-;;;     pixels. Useful for adding breathing room so surrounding text does       
-;;;     not flush against the image.                                            
-;;;
-;;;   alt: textual representation of the image. Used in three ways:             
-;;;     displayed in place of the image in non-graphical browsers or when       
-;;;     image loading is off; shown as a tooltip on mouseover; and indexed      
-;;;     by search engines.                                                      
-;;;                                                                             
-;;;   antialias-color: color used to anti-alias the image, blurring jagged      
-;;;     edges to create a more continuous border. Best results when it          
-;;;     matches the background behind the image. Most noticeable when using     
-;;;     RENDER to create text images.                                           
-;;;                                                                             
-;;; Example:                                                                    
-;;;   IMAGE source RENDER image @image                                          
-;;;                                                                             
-;;; See also: RENDER, FUSE
+;; IMAGE inserts an image into the current page. The source must be the
+;; result of a RENDER or FUSE operator — a common mistake is to pass a         
+;; variable or property of type image directly (e.g. @name-image). Takes       
+;; 10 parameters:                                                              
+;;                                                                             
+;;   source: result of a RENDER or FUSE operator. Required.                    
+;;                                                                             
+;;   lowsource: a low-resolution version of the image (also a RENDER or        
+;;     FUSE result), typically the same image in grayscale at lower            
+;;     resolution or higher compression. The browser renders it first,         
+;;     then gradually wipes it away as the full image loads. Only              
+;;     noticeable on slow connections.                                         
+;;                                                                             
+;;   width, height: size of the image in pixels. Lets the browser reserve      
+;;     space before the image loads. Does not scale the image — use the        
+;;     sizing parameters of RENDER instead.
+;;                                                                             
+;;   align: :top, :middle, :bottom, :left, or :right. The first three
+;;     align the image vertically relative to surrounding text. :left and      
+;;     :right float the image to the side of the page; surrounding text        
+;;     wraps around it.                                                        
+;;                                                                             
+;;   border: size of the border in pixels. If the image is hyperlinked,        
+;;     set to 0 to suppress the default border. When not hyperlinked,          
+;;     omitting border may also cause no border to appear.                     
+;;                                                                             
+;;   hspace, vspace: horizontal and vertical spacing around the image in       
+;;     pixels. Useful for adding breathing room so surrounding text does       
+;;     not flush against the image.                                            
+;;
+;;   alt: textual representation of the image. Used in three ways:             
+;;     displayed in place of the image in non-graphical browsers or when       
+;;     image loading is off; shown as a tooltip on mouseover; and indexed      
+;;     by search engines.                                                      
+;;                                                                             
+;;   antialias-color: color used to anti-alias the image, blurring jagged      
+;;     edges to create a more continuous border. Best results when it          
+;;     matches the background behind the image. Most noticeable when using     
+;;     RENDER to create text images.                                           
+;;                                                                             
+;; Example:                                                                    
+;;   IMAGE source RENDER image @image                                          
+;;                                                                             
+;; See also: RENDER, FUSE
 
 (def IMAGE (:source :lowsource :width :height :align :border
             :hspace :vspace :alt :antialias-color)
@@ -421,67 +421,67 @@
 (mac OR args
   `(or ,@args))
 
-;;; RENDER creates an image from an image property, renders text as an image,
-;;; or both. Does not display the image itself — pass the result to IMAGE as
-;;; its source value. Has 20 parameters:
-;;;
-;;;   image: a property or variable of type image (e.g. @name-image or an
-;;;     object's image property). When specified, RENDER generates an image
-;;;     from that variable.
-;;;
-;;;   text: when specified, renders the text as an image. If both image and
-;;;     text are given, RENDER superimposes text over image, useful for
-;;;     generating uniform buttons.
-;;;
-;;;   text-align: :center, :left, or :right. Alignment of the text.
-;;;
-;;;   background-color: color for the image. Has no visible effect if image
-;;;     is specified. Must be a color variable, result of COLOR, or
-;;;     transparent.
-;;;
-;;;   font: font for rendering text. Must be a property or variable of type
-;;;     font (button-font or the name of one of Yahoo! Store's graphical
-;;;     fonts), in the format .font-name (e.g. .xsica). Note the colon
-;;;     before the period after the font name.
-;;;
-;;;   font-size: size of the font to use when rendering text as an image.
-;;;
-;;;   destination: a URL. When specified, the image will be hyperlinked to
-;;;     this URL. Can be entered as a string or obtained from TO or ACTION.
-;;;
-;;;   top-margin, bottom-margin, left-margin, right-margin: margins in
-;;;     pixels. Default 0.
-;;;
-;;;   max-height, min-height, max-width, min-width: used to resize the
-;;;     image. If neither is specified, image is rendered at original size.
-;;;     Resampling changes pixel count to match desired display size; a
-;;;     resampled image will appear "smooth".
-;;;
-;;;   thickness: if non-nil, draws a raised border, but only if thickness
-;;;     is specified and background-color is other than transparent. Causes
-;;;     RENDER to create a button image out of text.
-;;;
-;;;   intaglio: when set, causes text to have a "chiseled" or "incised"
-;;;     appearance.
-;;;
-;;;   crop: :off, :right, or :center. If max-width is smaller than the
-;;;     rendered text, determines how the text should be cropped.
-;;;
-;;;   expand: when true, the image is clickable and hyperlinked to the
-;;;     full-size version of the image.
-;;;
-;;; Example — uniform buttons using a blank button image as background:
-;;;   WITH-OBJECT :index
-;;;     FOR-EACH-OBJECT @contents
-;;;       WITH-LINK TO id
-;;;         IMAGE source RENDER image @blank-button
-;;;                             text @name
-;;;                             text-align :center
-;;;                             max-width 150
-;;;               alt @name
-;;;       LINEBREAK
-;;;
-;;; See also: FUSE, IMAGE
+;; RENDER creates an image from an image property, renders text as an image,
+;; or both. Does not display the image itself — pass the result to IMAGE as
+;; its source value. Has 20 parameters:
+;;
+;;   image: a property or variable of type image (e.g. @name-image or an
+;;     object's image property). When specified, RENDER generates an image
+;;     from that variable.
+;;
+;;   text: when specified, renders the text as an image. If both image and
+;;     text are given, RENDER superimposes text over image, useful for
+;;     generating uniform buttons.
+;;
+;;   text-align: :center, :left, or :right. Alignment of the text.
+;;
+;;   background-color: color for the image. Has no visible effect if image
+;;     is specified. Must be a color variable, result of COLOR, or
+;;     transparent.
+;;
+;;   font: font for rendering text. Must be a property or variable of type
+;;     font (button-font or the name of one of Yahoo! Store's graphical
+;;     fonts), in the format .font-name (e.g. .xsica). Note the colon
+;;     before the period after the font name.
+;;
+;;   font-size: size of the font to use when rendering text as an image.
+;;
+;;   destination: a URL. When specified, the image will be hyperlinked to
+;;     this URL. Can be entered as a string or obtained from TO or ACTION.
+;;
+;;   top-margin, bottom-margin, left-margin, right-margin: margins in
+;;     pixels. Default 0.
+;;
+;;   max-height, min-height, max-width, min-width: used to resize the
+;;     image. If neither is specified, image is rendered at original size.
+;;     Resampling changes pixel count to match desired display size; a
+;;     resampled image will appear "smooth".
+;;
+;;   thickness: if non-nil, draws a raised border, but only if thickness
+;;     is specified and background-color is other than transparent. Causes
+;;     RENDER to create a button image out of text.
+;;
+;;   intaglio: when set, causes text to have a "chiseled" or "incised"
+;;     appearance.
+;;
+;;   crop: :off, :right, or :center. If max-width is smaller than the
+;;     rendered text, determines how the text should be cropped.
+;;
+;;   expand: when true, the image is clickable and hyperlinked to the
+;;     full-size version of the image.
+;;
+;; Example — uniform buttons using a blank button image as background:
+;;   WITH-OBJECT :index
+;;     FOR-EACH-OBJECT @contents
+;;       WITH-LINK TO id
+;;         IMAGE source RENDER image @blank-button
+;;                             text @name
+;;                             text-align :center
+;;                             max-width 150
+;;               alt @name
+;;       LINEBREAK
+;;
+;; See also: FUSE, IMAGE
 
 (def RENDER (:image :text :text-color :text-align :background-color
              :font :font-size :destination :alt
