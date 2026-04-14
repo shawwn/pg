@@ -616,7 +616,8 @@
     (let h (or thickness 2)
       (shell 'magick src
              '-mattecolor (render-color (color 0x99 0x99 0x99))
-             '-frame (cat h "x" h "+" h "+0")
+             '-frame (cat h "x" h "+" h "+" 0)
+             ;'-shade (cat (+ 45 90 90 90) "x" (+ 45 0))
              img))))
 
 (def TEXT (text)
