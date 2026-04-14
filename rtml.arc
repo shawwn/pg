@@ -412,14 +412,109 @@
                  (link img-tag it)
                  (pr img-tag)))))))
 
+;; Return the URL of an image stored in the Yahoo! Store system.
+;;
+;; When an image is uploaded into an image-type property or global variable
+;; (e.g. the IMAGE property of an item), it is stored internally by the
+;; store system and its exact location is not exposed by the editor.
+;; Pass the image value to IMAGE-REF to retrieve its URL.
+;;
+;; Example:
+;;
+;;   (WITH-LINK (IMAGE-REF @!image)
+;;     (IMAGE source: (RENDER image @!image)
+;;            max-height: @!thumb-height
+;;            max-width: @!thumb-width))
+;;
+;; See also: IMAGE, RENDER
+
+(def IMAGE-REF (img)
+  (err 'todo-IMAGE-REF))
+
+;; Emit an <IMG> HTML tag. Equivalent to the HTML <IMG> element.
+;;
+;; Takes seven parameters: class, id, style, title, alt, src, and lowsr,
+;; all direct equivalents of the <IMG> tag's attributes. src must be a
+;; URL string — image-type properties or variables cannot be used directly.
+;; Wrap image variables with IMAGE-REF to obtain their URL first.
+;;
+;; Example:
+;;
+;;   ;; Wrong — src cannot be an image-type variable:
+;;   (IMG :src @!name-image)
+;;
+;;   ;; Correct — use IMAGE-REF to get the URL:
+;;   (IMG :src (IMAGE-REF @!name-image))
+;;
+;; See also: IMAGE-REF
+
+(def IMG (:class :id :style :title :alt :src :lowsr)
+  (assert (no lowsr))
+  (tag img :class :id :style :title :alt :src))
+
 (def META (:name :content)
   (err 'todo-META)) ; todo
 
-(mac NOT (x)
-  `(no ,x))
+;; This operator returns the logical opposite of its argument. It takes a single
+;; RTML expression as its argument. If the expression returns nil, NOT returns true
+;; (the logical opposite of its argument). If the expression returns a value other
+;; than nil, NOT returns false.
+
+(def NOT (x)
+  (no x))
+
+;; OR takes one or more arguments (pasted within it)—each being a valid
+;; RTML expression—and returns the value of the first one that is other than nil.
+;; Once it finds an expression whose value is other than nil, the rest of the
+;; expressions are ignored.
+;;
+;; If either the orderable or the taxable (or both) properties of the current page
+;; is set to "Yes," the following example will print, "This item is orderable or
+;; taxable."
+;;
+;;   (IF test: (OR
+;;               @!taxable
+;;               @!orderable)
+;;       then: (TEXT "This item is orderable or taxable.")
+;;       else: (TEXT "This item is neither orderable nor taxable."))
+;;
+;; The fact that the first non-nil value of the OR operator is returned and the
+;; rest ignored is important. Based on this fact, we can write expressions such as:
+;;
+;;   (WITH= variable: 'price
+;;          value: (OR @!sale-price @!price))
+;;
+;; In this example, the local variable price will be set to the value of the
+;; Sale-price property, if Sale-price is not empty, otherwise, to the value of
+;; the Price property. Notice, that the above example is NOT equivalent to:
+;;
+;;   (WITH= variable: 'price
+;;          value: (OR @!price @!sale-price))
+;;
+;; Here, OR returns the value of its first non-nil expression. This example will
+;; almost always set the local variable price to the value of the regular price of
+;; the current item (unless you forgot to enter the regular price but not the sale
+;; price).
 
 (mac OR args
   `(or ,@args))
+
+;; POSITION takes two arguments: an element and a sequence. It returns the
+;; position at which the sequence contains the specified element or nil, if the
+;; element was not found in the sequence. The numbering of the elements within a
+;; sequence starts at position 0.
+;; This operator is most commonly used to check if an element exists within a
+;; sequence. The following example demonstrates this use.
+;;
+;; Example:
+;;
+;;   (WHEN (POSITION element: 'contents sequence: @!nav-buttons)
+;;     (TEXT "Contents are part of Nav-buttons."))
+;;
+;; See also: ELEMENT, ELEMENTS
+
+(def POSITION (:element :sequence)
+  (pos element sequence))
 
 ;; RENDER creates an image from an image property, renders text as an image,
 ;; or both. Does not display the image itself — pass the result to IMAGE as
