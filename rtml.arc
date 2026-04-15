@@ -687,8 +687,21 @@
 ;; example is Display-font. According to FONT-WIDTH, Lithos-Bold, for
 ;; example, is 1.3068392 times wider than Helvetica Bold.
 
-(def FONT-WIDTH (font)
-  (err 'todo-FONT-WIDTH))
+(defmemo FONT-WIDTH (font)
+  (let ref (+ "label:This is a test label."
+              " abcdefghijklmnopqrstuvwxyz"
+              " ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    (withs (base-w (int (SHELL 'magick '-background 'none
+                               '-font 'Helvetica-Bold
+                               '-pointsize 72 ref
+                               '-trim '+repage
+                               '-format "%[fx:w]" "info:"))
+            font-w (int (SHELL 'magick '-background 'none
+                               '-font (find-font font)
+                               '-pointsize 72 ref
+                               '-trim '+repage
+                               '-format "%[fx:w]" "info:")))
+      (/ (* 1.0 font-w) base-w))))
 
 ;; Glues images pasted within its body into a single image, arranged either
 ;; vertically or horizontally. All child images must be passed through RENDER   
