@@ -53,14 +53,13 @@
   (if (valid-url img)
       (fromstring (GET img :bytes)
         (imsize "-"))
-      (map int (tokens (shell 'identify '-format "%w %h" img)))))
+      (map int (tokens (SHELL 'identify '-format "%w %h" img)))))
 
 (def imwidth (img)
   (car (imsize img)))
 
 (def imheight (img)
   (cadr (imsize img)))
-
 
 (def clean-name (name)
   (def prev nil)
@@ -76,7 +75,6 @@
   (defs name (clean-name (or @!title (cat @!id)))
         n    (++ (@ 'counter 0)))
   (ero (cat name "-" n ".png") 'image-name))
-
 
 ;; A "rim" (rendered image) is what RENDER and FUSE return.
 ;; Fields: type='rim, path, width, height, destination, alt, hotspots.
@@ -95,6 +93,9 @@
 (def unique-id ()
   (cat (++ unique-id*)))
 
+(def SHELL args
+  (ero `(SHELL ,@args))
+  (apply shell args))
 
 
 ;;;
@@ -173,6 +174,9 @@
 ;;; Control structures
 ;;;
 ;;;
+
+(mac MULTI exprs
+  `(do ,@exprs))
 
 (mac IF (:test :then :else)
   `(if ,(assert test)
@@ -331,6 +335,9 @@
 (def PARAGRAPHS (s)
   (paras s))
 
+(def LINES (text)
+  (lines text))
+
 ;; POSITION takes two arguments: an element and a sequence. It returns the
 ;; position at which the sequence contains the specified element or nil, if the
 ;; element was not found in the sequence. The numbering of the elements within a
@@ -472,6 +479,62 @@
 
 ;;;
 ;;;
+;;; working with images
+;;;
+;;;
+
+;; HEIGHT returns the height of an image in pixels. The image passed
+;; to the HEIGHT operator must be an image that is already rendered,
+;; i.e., one that was returned by the RENDER or FUSE operators.
+;; Passing a variable of type image (such as the name-image), to
+;; HEIGHT returns nil.
+
+(def HEIGHT (img)
+  (if (and (isa!table img) (is img!type 'rim))
+      img!height
+      (imheight img)))
+
+;; WIDTH returns the width of an image in pixels. The image passed
+;; to the WIDTH operator must be an image that is already rendered,
+;; i.e., one that was returned by the RENDER or FUSE operators.
+;; Passing a variable of type image (such as the name-image) to
+;; WIDTH returns nil.
+
+(def WIDTH (img)
+  (if (and (isa!table img) (is img!type 'rim))
+      img!width
+      (imwidth img)))
+
+
+
+;;;
+;;;
+;;; working with colors
+;;;
+;;;
+
+(def RED (col)
+  (assert (and (isa!table col) col!r))
+  col!r)
+
+(def GREEN (col)
+  (assert (and (isa!table col) col!g))
+  col!g)
+
+(def BLUE (col)
+  (assert (and (isa!table col) col!b))
+  col!b)
+
+(def GRAYSCALE (col)
+  ;; average of R G B
+  (int (/ (+ (RED col)
+             (GREEN col)
+             (BLUE col))
+          3)))
+
+
+;;;
+;;;
 ;;; RTML operators
 ;;;
 ;;;
@@ -561,7 +624,7 @@
      ,@body))
 
 (def CALL (f :kws . body)
-  (ero `(CALL ,f ,@kws ,@body))
+  ;(ero `(CALL ,f ,@kws ,@body))
   (kwapply f kws body))
 
 (mac CENTER body
@@ -576,6 +639,7 @@
 ;; for each element, it evaluates the expression pasted within its
 ;; body. FOR-EACH returns a sequence consisting of the values
 ;; returned by the last expression during each iteration.
+
 (mac FOR-EACH (:var :variable :sequence . body)
   `(each ,(or var variable) ,sequence
      ,@body))
@@ -585,6 +649,7 @@
 ;; expressions pasted within for every element of the sequence, but—and
 ;; here is where it differs from FOR-EACH – it also evaluates last
 ;; expression for each element except for the last one.
+
 (mac FOR-EACH-BUT (:var :variable :sequence :last . body)
   (letu (s n i)
     `(withs (,s ,sequence ,n (len ,s) ,i 0)
@@ -598,6 +663,7 @@
 ;; changes context to each element of the list, so every expression
 ;; pasted within the FOR-EACH-OBJECT block will be evaluated in the
 ;; context of that element.
+
 (mac FOR-EACH-OBJECT (:var :variable :sequence . body)
   (let v (or var variable)
     `(FOR-EACH variable: ,v
@@ -605,11 +671,22 @@
        (WITH-OBJECT ,v
          ,@body))))
 
+(mac FONT (:size :color :face :class :id :style :title . body)
+  `(tag font size: ,size
+             color: ,color
+             face: ,face
+             class: ,class
+             id: ,id
+             style: ,style
+             title: ,title
+     ,@body))
+
 ;; Returns a number indicating how wide a font is relative to He
 ;; lvetica Bold. The FONT-WIDTH operator works with Yahoo! Store®’s
 ;; graphical fonts only. Those fonts can be selected from a list. An
 ;; example is Display-font. According to FONT-WIDTH, Lithos-Bold, for
 ;; example, is 1.3068392 times wider than Helvetica Bold.
+
 (def FONT-WIDTH (font)
   (err 'todo-FONT-WIDTH))
 
@@ -691,7 +768,7 @@
               cx       left-margin
               cy       top-margin)
         ;; Create blank canvas
-        (shell 'magick '-size (cat cw "x" ch) (cat "xc:" bg) img)
+        (SHELL 'magick '-size (cat cw "x" ch) (cat "xc:" bg) img)
         ;; Composite each child onto canvas, tracking hotspot positions
         (each child children
           (when child!destination
@@ -699,7 +776,7 @@
           (when child!hotspots
             (each hs child!hotspots
               (push (list (+ cx (hs 0)) (+ cy (hs 1)) (hs 2) (hs 3) (hs 4)) hotspots)))
-          (shell 'magick img child!path
+          (SHELL 'magick img child!path
                  '-geometry (cat "+" cx "+" cy)
                  '-composite img)
           (if horiz
@@ -712,17 +789,6 @@
 (mac HEAD body
   `(tag head
      ,@body))
-
-;; HEIGHT returns the height of an image in pixels. The image passed
-;; to the HEIGHT operator must be an image that is already rendered,
-;; i.e., one that was returned by the RENDER or FUSE operators.
-;; Passing a variable of type image (such as the name-image), to
-;; HEIGHT returns nil.
-
-(def HEIGHT (img)
-  (if (and (isa img 'table) (is img!type 'rim))
-      img!height
-      (imheight img)))
 
 ;; IMAGE inserts an image into the current page. The source must be the
 ;; result of a RENDER or FUSE operator — a common mistake is to pass a         
@@ -912,7 +978,9 @@
              :top-margin :bottom-margin :left-margin :right-margin
              :max-height :min-height :max-width :min-width
              :thickness :intaglio :crop :expand)
+  (ero `(RENDER image: ,image text: ,text))
   (if expand (err 'todo-RENDER-expand))
+  (if crop (err 'todo-RENDER-crop))
   (or= text-align 'left background-color 'none font 'verdana font-size 18
        top-margin 0 bottom-margin 0 left-margin 0 right-margin 0)
   (let src
@@ -937,7 +1005,8 @@
               fixed)
             ;; Variable width: render transparently and trim
             (render-text text
-                         font: font font-size: font-size
+                         font: font
+                         font-size: font-size
                          text-color: (or text-color black)
                          gravity: (case text-align
                                     left 'west center 'center right 'east 'west)))
@@ -963,18 +1032,20 @@
 
 ;; Copy or resize a source image (URL or local path) to a fresh output file.
 (def render-image-src (src :max-width :max-height :min-width :min-height)
+  (ero `(render-image-src ,src max-width: ,max-width max-height: ,max-height min-width: ,min-width min-height: ,min-height))
   (with img (render-image-name)
     (if (valid-url src)
-        (shell 'curl '-sL src '-o img)
-        (shell 'cp src img))
+        (SHELL 'curl '-sL src '-o img)
+        (SHELL 'cp src img))
     (when (or max-width max-height min-width min-height)
       (zap [resize-rim _ max-width max-height min-width min-height] img))))
 
 ;; Superimpose text over a background image via ImageMagick -annotate.
 (def render-text-over (base-src text :font :font-size :text-align :text-color)
+  (ero `(render-text-over ,base-src ,text font: ,font font-size: ,font-size text-align: ,text-align text-color: ,text-color))
   (let base (render-image-src base-src)
     (with img (render-image-name)
-      (shell 'magick base
+      (SHELL 'magick base
              '-font      (find-font (or font 'verdana))
              '-pointsize (or font-size 18)
              '-fill      (render-color (or text-color black))
@@ -985,31 +1056,34 @@
 
 ;; Resize to fit within max/min constraints using ImageMagick geometry.
 (def resize-rim (src max-w max-h min-w min-h)
+  (ero `(resize-rim ,src ,max-w ,max-h ,min-w ,min-h))
   (with img (render-image-name)
     (let geom (cat (or max-w "") "x" (or max-h "")
                    (if (or min-w min-h) "^" ">"))
-      (shell 'magick src '-resize geom img))))
+      (SHELL 'magick src '-resize geom img))))
 
 ;; Add margin padding around an image using -splice and -extent.
 (def add-margins (src top bot left right bgcolor)
+  (ero `(add-margins ,src ,top ,bot ,left ,right ,bgcolor))
   (with img (render-image-name)
     (let bg (render-color (or bgcolor 'none))
       ;; Add top and left margins via splice
-      (shell 'magick src
+      (SHELL 'magick src
              '-background bg '-gravity 'none
              '-splice (cat left "x" top "+0+0")
              img)
       ;; Extend canvas to add bottom and right margins
       (withs (w (imwidth img) h (imheight img))
-        (shell 'magick img '-background bg
+        (SHELL 'magick img '-background bg
                '-extent (cat (+ w right) "x" (+ h bot))
                img)))))
 
 ;; Render text onto a fixed-size transparent canvas at an explicit x offset.
 ;; Used by RENDER when min-width=max-width and min-height=max-height (button case).
 (def render-text-on-canvas (text w h :text-color :font :font-size :text-align :left-margin)
+  (ero `(render-text-on-canvas ,text ,w ,h text-color: ,text-color font: ,font font-size: ,font-size text-align: ,text-align left-margin: ,left-margin))
   (with img (render-image-name)
-    (shell 'magick
+    (SHELL 'magick
            '-size (cat w "x" h) '-background 'none "xc:"
            '-gravity  (case text-align left 'west center 'center right 'east 'west)
            '-font     (find-font (or font 'verdana))
@@ -1022,8 +1096,9 @@
 ;; Apply the imbutton-style drop shadow to a transparent-background text image.
 ;; Shadow is black, 60% opacity, offset -1,-1 (upper-left), giving an embossed look.
 (def apply-shadow (src)
+  (ero `(apply-shadow ,src))
   (with img (render-image-name)
-    (shell 'magick src
+    (SHELL 'magick src
            "(" '+clone '-background 'black '-shadow "60x0-1-1" ")"
            '+swap
            '-background 'none
@@ -1032,18 +1107,58 @@
 
 ;; Flatten a transparent-background image onto a solid colored canvas.
 (def add-background (src bgcolor)
+  (ero `(add-background ,src ,bgcolor))
   (with img (render-image-name)
-    (shell 'magick src '-background (render-color bgcolor) '-flatten img)))
+    (SHELL 'magick src '-background (render-color bgcolor) '-flatten img)))
 
 ;; Add a 3D frame around an image.
 (def add-frame (src thickness bgcolor intaglio)
+  (ero `(add-frame ,src ,thickness ,bgcolor ,intaglio))
   (with img (render-image-name)
-    (let h (or thickness 2)
-      (shell 'magick src
+    (let h (if (in thickness nil t)
+               2
+               (do (assert (isa!int thickness))
+                   thickness))
+      (SHELL 'magick src
              '-mattecolor (render-color (color 0x99 0x99 0x99))
              '-frame (cat h "x" h "+" h "+" 0)
              ;'-shade (cat (+ 45 90 90 90) "x" (+ 45 0))
              img))))
+
+(mac TABLE (:border :align :cellspacing :cellpadding :units :width :class :id :style :title . body)
+  `(tag table border: ,border
+              align: ,align
+              cellspacing: ,cellspacing
+              cellpadding: ,cellpadding
+              width: ,width
+              class: ,class
+              id: ,id
+              style: ,style
+              title: ,title
+     ,@body))
+
+(mac TABLE-ROW (:background-color :align :valign :class :id :style :title . body)
+  `(tag tr background-color: ,background-color
+           align: ,align
+           valign: ,valign
+           class: ,class
+           id: ,id
+           style: ,style
+           title: ,title
+     ,@body))
+
+(mac TABLE-CELL (:background-color :align :valign :width :colspan :rowspan :class :id :style :title . body)
+  `(tag td background-color: ,background-color
+           align: ,align
+           valign: ,valign
+           width: ,width
+           colspan: ,colspan
+           rowspan: ,rowspan
+           class: ,class
+           id: ,id
+           style: ,style
+           title: ,title
+     ,@body))
 
 (def TEXT (text)
   (if text (pr text)))
@@ -1051,16 +1166,6 @@
 (def TITLE (name)
   (tag title
     (TEXT name)))
-
-;; WIDTH returns the width of an image in pixels. The image passed
-;; to the WIDTH operator must be an image that is already rendered,
-;; i.e., one that was returned by the RENDER or FUSE operators.
-;; Passing a variable of type image (such as the name-image) to
-;; WIDTH returns nil.
-(def WIDTH (img)
-  (if (and (isa img 'table) (is img!type 'rim))
-      img!width
-      (imwidth img)))
 
 (mac WITH= (:var :variable :value . body)
   `(let ,(or var variable) ,value

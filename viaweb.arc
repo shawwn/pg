@@ -2,8 +2,10 @@
 
 
 (def 3d. ()
-  (or (is @!button-style 'solid)
-      (is @!button-style 'incised)))
+  (OR (EQUALS value1: @!button-style
+              value2: 'solid)
+      (EQUALS value1: @!button-style
+              value2: 'incised)))
 
 (def apparent-width. (bar)
   (let bwid (WIDTH bar)
@@ -16,16 +18,14 @@
         (- bwid (* 2 @!button-edge-width))
         bwid)))
 
-(def banner-font-size. (font chars wid)
-  (let wid (or wid 370)
-    (let base (if (> chars 15)
-                  (* 0.98 (/ 720 chars) (/ wid 370))
-                  (- 50 (* chars 0.8)))
-      (let mult (FONT-WIDTH font)
-        (/ base mult)))))
+;; This template takes a text string, a text color, a background color, and a width. It returns the given text turned
+;; into an image using the specified text parameters.
+;;
+;; Width is only used if the variable banner-font-size is not set. In that case, the resultant image will use a font
+;; size that will make the text large enough to fit the specified width in pixels.
 
 (def banner. (text color bgcolor wid)
-  (render text: text
+  (RENDER text: text
           text-color: color
           background-color: bgcolor
           font: @!home-button-font
@@ -37,6 +37,27 @@
           top-margin: 0
           bottom-margin: 5
           crop: 'left))
+
+;; Banner-font-size takes a font (a graphical Yahoo! Store font); a number, chars, representing the number of
+;; characters in a line of text; and another number, wid. It then tells what font size to use in order to fit the given
+;; number of characters within the specified pixels using the specified font.
+
+(def banner-font-size. (font chars wid)
+  (WITH= variable: wid
+         value: (OR
+                  wid
+                  370)
+    (WITH= variable: base
+           value: (IF test: (> chars 15)
+                      then: (* 0.98 (* (/ 720 chars) (/ wid 370)))
+                      else: (- 50 (* chars 0.8)))
+      (WITH= variable: mult
+             value: (FONT-WIDTH font)
+        (/ base mult)
+      )
+    )
+  )
+)
 
 ;; Called by group. or item. to create a page with a specific layout.
 ;; Sets up the HTML head (keywords meta tag, title, extra head tags)            
@@ -201,14 +222,150 @@
                       (NOT (EQUALS value1: @!button-color
                                    value2: black))
                       (CALL 'light-color.
-                        @!button-text-color)
-                    )
+                        @!button-text-color))))
+
+;; This template takes a single argument, a text string, and displays the text string separating each para-
+;; graph with a blank line.
+
+(def display-paras. (text)
+  (WITH= variable: paras
+         value: (PARAGRAPHS text)
+    (TEXT (ELEMENT position: 0
+                   sequence: paras))
+    (FOR-EACH var: para
+              sequence: (ELEMENTS sequence: paras
+                                  first: 1)
+      (LINEBREAK number: 2)
+      (TEXT para)
+    )
   )
 )
+
+;; This template takes a text string and a cropping parameter and turns the text into an image using dis-
+;; play-text-color as the color, display-font as the font, and display-font-size as the size of the text. The text
+;; is always left aligned. The cropping parameter crop can be either :left or :right but it does not seem to
+;; have any practical effect on the outcome of this template.
+;;
+;; The result of this template can be passed to an IMAGE operator for display.
+
+(def display-text. (text crop)
+  (FUSE axis: 'vertical
+        align: 'left
+    (FOR-EACH var: line
+              sequence: (LINES text)
+      (RENDER text: line
+              text-color: @!display-text-color
+              text-align: 'left
+              font: @!display-font
+              font-size: @!display-font-size
+              crop: crop))))
 
 (def group. ()
   (CALL 'base-item.
     'group))
+
+(def head. (wid headel headsty)
+  (WITH= variable: text
+         value: (IF test: (NONEMPTY @!headline)
+                    then: @!headline
+                    else: @!name)
+    (WITH= variable: textim
+           value: (AND
+                    (POSITION element: 'display-text-title
+                              sequence: headel)
+                    (CALL 'display-text.
+                      text
+                      'left))
+      (WITH= variable: im
+             value: (AND
+                      (POSITION element: 'image
+                                sequence: headel)
+                      @!image
+                      (RENDER image: @!image
+                              max-height: @!item-height
+                              max-width: @!item-width))
+        (IF test: (EQUALS value1: headsty
+                          value2: 'center)
+            then: (CENTER
+                    (WHEN im
+                      (CALL 'imexpand.
+                        im
+                        @!image
+                        @!item-height
+                        @!item-width
+                        nil)
+                      (LINEBREAK number: 2))
+                    (WHEN textim
+                      (IMAGE source: textim
+                             alt: text)
+                      (LINEBREAK number: 2))
+                  )
+            else: (IF test: (WITH= variable: imwid
+                                   value: (IF test: im
+                                              then: (WIDTH textim)
+                                              else: 0)
+                              (WITH= variable: textwid
+                                     value: (IF test: textim
+                                                then: (WIDTH textim)
+                                                else: 0)
+                                (AND
+                                  imwid
+                                  (> wid 0)
+                                  (OR
+                                    (> (+ imwid textwid 8)
+                                       wid)
+                                    (< (- wid imwid)
+                                       @!minimum-wrap-width)
+                                  )
+                                )
+                              )
+                            )
+                      then: (MULTI
+                              (TAG-WHEN tag: 'center
+                                        test: (EQUALS value1: @!page-format
+                                                      value2: 'top-buttons)
+                                (WHEN im
+                                  (CALL imexpand.
+                                    im
+                                    @!image
+                                    @!item-height
+                                    @!item-width
+                                    nil)
+                                  (LINEBREAK number: 2)
+                                )
+                                (WHEN textim
+                                  (IMAGE source: textim
+                                         alt: text)
+                                  (LINEBREAK number: 2)
+                                )
+                              )
+                            )
+                      else: (MULTI
+                              (WHEN im
+                                (WITH= variable: height
+                                       value: (HEIGHT im)
+                                  (CALL 'imexpand.
+                                    im
+                                    @!image
+                                    @!item-height
+                                    @!item-width
+                                    headsty)
+                                  (SHIM height: (+ height 8)
+                                        width: 10
+                                        align: headsty)
+                                )
+                              )
+                              (IMAGE source: textim
+                                     alt: text)
+                              (WHEN textim
+                                (LINEBREAK number: 2))
+                            )
+                  )
+        )
+      )
+    )
+  )
+)
 
 ;; This template creates a button if the button-style variable is set to "icon".
 ;; It takes three parameters:
@@ -242,9 +399,92 @@
   )
 )
 
+;; This is the template that’s responsible for displaying the main item (or section) image. If the source
+;; image (the one uploaded into the image property) is larger than the item-width and item-height proper-
+;; ties, then the image can be clicked to view the full-sized image.
+
+(def imexpand. (im orig hlimit wlimit align)
+  (WITH= variable: exp
+         value: (CALL 'imexpands.
+                  (RENDER image: orig)
+                  hlimit
+                  wlimit)
+    (IF test: (NOT (EQUALS value1: exp
+                           value2: 'no))
+        then: (WITH-LINK (IMAGE-REF orig)
+                (IMAGE source: im
+                       align: align
+                       alt: (WHEN (EQUALS value1: exp
+                                          value2: 'yes)
+                              "Click to enlarge"))
+              )
+        else: (IMAGE source: im
+                     align: align)
+    )
+  )
+)
+
+;; This template determines whether an image fits within a box whose size is determined by the pa-
+;; rameters hlimit and wlimit. The image parameter must be an image already passed through a RENDER
+;; operator (in other words, not an image property directly, such as @name-image.) The template returns
+;; the constant :yes if the image is expandable or :no if the image is already resized to its maximum.
+
+(def imexpands. (image hlimit wlimit)
+  (AND
+    image
+    hlimit
+    wlimit
+    (WITH= variable: h
+           value: (HEIGHT image)
+      (WITH= variable: w
+             value: (WIDTH image)
+        (WHEN (AND
+                h
+                w)
+          (IF test: (AND (<= h hlimit)
+                         (<= w wlimit))
+              then: 'no
+              else: 'yes
+          )
+        )
+      )
+    )
+  )
+)
+
+;; Inset-image displays the inset image if one exists for the page. It takes two parameters: the image to
+;; display in native (non-rendered) format, and an alignment constant. Based on the alignment constant
+;; (:left or :right) it also automatically generates a 10 pixel left or right margin for the image (line 3 and 7
+;; in the original template.) The image will be clickable to show its full size.
+
+(def inset-image. (im align)
+  (IMAGE source: (FUSE background-color: transparent
+                       bottom-margin: 4
+                       left-margin: (IF test: (EQUALS value1: align
+                                                      value2: 'right)
+                                        then: 10
+                                        else: 0)
+                       right-margin: (IF test: (EQUALS value1: align
+                                                       value2: 'left)
+                                         then: 10
+                                         else: 0)
+                   (RENDER image: im
+                           max-height: @!inset-height
+                           max-width: @!inset-width
+                           expand: t))
+         align: align))
+
 (def item. ()
   (CALL 'base-item.
     'item))
+
+(def light-color. (color)
+  (AND
+    color
+    (> (GRAYSCALE color)
+       180)
+  )
+)
 
 ;; This template creates a single icon-style button based on the type
 ;; of button needed. The type is one of the selections of the buttons
@@ -533,6 +773,42 @@
               )
             )
           )
+        )
+      )
+    )
+  )
+)
+
+
+;; Page-name creates the store banner. If the name-image variable contains an image, it is used as the
+;; store banner. This image is shown without any resizing (line 2.) If there is no name-image, then the title
+;; variable (containing the store’s name) is used to generate a simple text image. The color of this text is
+;; determined by the home-button-text-color variable. The argument wid is the maximum available width
+;; for the banner (usually calculated as the width of the page body) and it is used to calculate the font size
+;; so that the generated banner is as wide as the page body’s width allows it to be.
+(def page-name. (wid)
+  (IF test: @!name-image
+      then: (RENDER image: @!name-image)
+      else: (CALL 'banner.
+              @!title
+              @!home-button-text-color
+              transparent
+              wid)))
+
+;; Paras-in-box takes two arguments, text and width. It then outputs the text string contained in text
+;; separating paragraphs by blank lines. The text will be at most as wide as the width argument in pixels.
+
+(def paras-in-box. (text width)
+  (TABLE border: 0
+         cellspacing: 0
+         cellpadding: 0
+         width: width
+    (TABLE-ROW
+      (TABLE-CELL
+        (FONT size: @!text-size
+              face: @!text-font
+          (CALL 'display-paras.
+            text)
         )
       )
     )
