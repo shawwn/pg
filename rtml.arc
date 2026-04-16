@@ -1254,6 +1254,11 @@
   `(with-object ,id
      ,@body))
 
+(def VALUE (:id :query :property)
+  (assert (is query 'local) "TODO")
+  ((assert (pages* id)) property)
+)
+
 
 
 ;;;
