@@ -1053,7 +1053,6 @@
              :max-height :min-height :max-width :min-width
              :thickness :intaglio :crop :expand)
   (ero `(RENDER image: ,image text: ,text))
-  (if expand (err 'todo-RENDER-expand))
   (if crop (err 'todo-RENDER-crop))
   (or= text-align 'left background-color 'none font 'verdana font-size 18
        top-margin 0 bottom-margin 0 left-margin 0 right-margin 0)
@@ -1102,7 +1101,9 @@
     ;; Raised/sunken 3D border (button effect)
     (when thickness
       (zap [add-frame _ thickness background-color intaglio] src))
-    (make-rim src destination: destination alt: (or alt text))))
+    (with rim (make-rim src :destination alt: (or alt text))
+      (when expand
+        (= rim!destination (IMAGE-REF rim))))))
 
 ;; Copy or resize a source image (URL or local path) to a fresh output file.
 (def render-image-src (src :max-width :max-height :min-width :min-height)
