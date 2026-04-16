@@ -2,7 +2,7 @@
 (require (libpath "app.arc")) ; for paras
 (require (libpath "html.arc"))
 
-(def transparent (obj r: 0 g: 0 b: 0 a: 0))
+(def transparent 'none)
 
 (or= pages* (obj) site* (obj) rootdir* (expandpath "."))
 
@@ -13,8 +13,13 @@
 ; counters always reset to 0 on a reload
 (= site*!counter 0)
 (each (k s) pages*
-  (ero (list k s))
   (= s!counter 0))
+
+
+
+;;;
+;;; Primitives
+;;;
 
 (defvar self*)
 
@@ -85,6 +90,47 @@
   (defs name (clean-name (cat (assert (or @!title @!id))))
         n    (++ (@ 'counter 0)))
   (ero (cat name "-" n ".png") 'image-name))
+
+
+(def render-color (col)
+  (if (isa!sym col) (cat col) (cat "#" (hexrep col))))
+
+(def escaped (x)
+  (multisubst (list (list "\\n" "\n"))
+    (tostring:write x)))
+
+(defmemo render-text (text
+                   (o :text-color black)
+                   (o :text-align 'left)
+                   (o :background-color 'none)
+                   (o :font 'verdana)
+                   (o :kerning 0)
+                   (o :font-size 18)
+                   (o :gravity "west")
+                   (o :trim-edges "east,west")
+                   (o :size "1500x@(* (round font-size) (len:lines text))"))
+  (ero `(render-text ,text))
+  (with img (render-image-name)
+    (shell 'magick
+           '-font (find-font font)
+           '-pointsize font-size
+           '-kerning kerning
+           '-gravity gravity
+           '-size size
+           '-interline-spacing -3
+           "xc:none"
+           '-fill (render-color text-color)
+           '-draw "text 0,-1 @(escaped text)"
+           '-define "trim:edges=@trim-edges" '-trim '+repage
+           img)))
+
+(defmemo find-font (font)
+  (zap sym:downcase:str font)
+  (or (each file (dir (expandpath "assets/fonts" rootdir*))
+        (let name (sym:cut (downcase file) 0 (pos #\. file))
+          (when (is name font)
+            (break (expandpath (+ "assets/fonts/" file) rootdir*)))))
+      font))
 
 ;; A "rim" (rendered image) is what RENDER and FUSE return.
 ;; Fields: type='rim, path, width, height, destination, alt, hotspots.

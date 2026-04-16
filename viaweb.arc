@@ -807,6 +807,105 @@
   )
 )
 
+;; Page-body generates the body of item and section pages. First, it outputs the main image and title
+;; (line 30), then caption (line 43) wrapping it around the inset (if one exists, line 37). If the page has a
+;; price, it is written to the page along with the order button. Next, if the page has contents (if it is an item
+;; page and has accessories or if it is a section page) the contents are displayed (line 59). Finally, if final-
+;; text is non-empty, it is displayed (line 68).
+;;
+;; The blocks on lines 2 through 8 and 9 through 16 are of special interest: these blocks figure out what
+;; head elements and head style to use. Head-elements determine whether the image and or the page name
+;; is to be displayed on the page. Head-style determines how to lay these elements out on the page: cen-
+;; tered, left or right aligned. Lines 2 through 8 check whether the variable head-elements has been over-
+;; ridden. If so, the overridden value is used. If head-elements has not been overridden, then if the current
+;; page is an item page (the leaf property is “Yes”) then the value of leaf-head-elements from the Config
+;; page is used, otherwise (for section pages), the global head-elements variable is used. To put it simply,
+;; the variable head-elements is disregarded on item pages unless you override it. On item pages, the de-
+;; fault head elements are defined by the leaf-head-elements setting on the Config page.
+;;
+;; Similarly, lines 9 through 16 first check if the head-style variable has been overridden. If it has, then
+;; the overridden value will be used. Otherwise, if the current page is an item page (the leaf property is
+;; “Yes”) then head style will be determined by the leaf-head-style setting on the Config page, otherwise,
+;; the global head-style variable is used. This means that on item pages (where leaf is “Yes”) the head-style
+;; variable is disregarded unless you override head-style. On these pages, the default head style comes
+;; from the Config page’s leaf-head-style setting.
+;;
+;; This template is the main template generating the page contents for most pages (items and sections)
+
+(def page-body. (wid)
+  (WITH= variable: headel
+         value: (IF test: (VALUE id: (ID*)
+                                 query: 'local
+                                 property: 'head-elements)
+                    then: @!head-elements
+                    else: (IF test: @!leaf
+                              then: @!leaf-head-elements
+                              else: @!head-elements))
+    (WITH= variable: headsty
+           value: (IF test: (VALUE id: (ID*)
+                                   query: 'local
+                                   property: 'head-style)
+                      then: @!head-style
+                      else: (IF test: @!leaf
+                                then: @!leaf-head-style
+                                else: @!head-style))
+      (WITH= variable: side-im
+             value: (AND
+                      (POSITION element: 'image
+                                sequence: headel)
+                      @!image
+                      (NOT (EQUALS value1: headsty
+                                   value2: 'center)))
+        (TABLE border: 0
+               cellspacing: 0
+               cellpadding: 0
+               width: wid
+          (TABLE-ROW valign: 'top
+            (TABLE-CELL width: wid
+              (CALL 'head.
+                wid
+                headel
+                headsty)
+              (FONT size: @!text-size
+                    face: @!text-font
+                (WHEN @!inset
+                  (CALL 'inset-image.
+                    @!inset
+                    (IF test: (EQUALS value1: headsty
+                                      value2: 'right)
+                        then: 'right
+                        else: 'left)))
+                (FOR-EACH var: para
+                          sequence: (PARAGRAPHS @!caption)
+                  (TEXT para)
+                  (LINEBREAK number: 2))
+                (WHEN side-im
+                  (LINEBREAK clear: 'all))
+                (WHEN (OR
+                        (NONEMPTY @!code)
+                        (CALL 'has-price.))
+                  (CALL 'order.
+                    (IF test: (AND
+                                (NONEMPTY @!headline)
+                                (NONEMPTY @!code))
+                        then: @!name
+                        else: nil)
+                    nil))))))
+        (WHEN @!contents
+          (WHEN (OR
+                  side-im
+                  (NONEMPTY @!caption))
+            (LINEBREAK))
+          (CALL 'contents.
+            @!contents
+            wid)
+          (LINEBREAK))
+        (WHEN (NONEMPTY @!final-text)
+          (CALL 'paras-in-box.
+            @!final-text
+            wid))))))
+
+
 ;; Page-name creates the store banner. If the name-image variable contains an image, it is used as the
 ;; store banner. This image is shown without any resizing (line 2.) If there is no name-image, then the title
 ;; variable (containing the store’s name) is used to generate a simple text image. The color of this text is
