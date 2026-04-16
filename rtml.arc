@@ -16,6 +16,25 @@
   (= s!counter 0))
 
 
+;;;
+;;; Debugging
+;;;
+
+(defvar indent* 0)
+
+(mac w/indent ((o :by 1) . body)
+  `(w/param indent* (+ (indent*) ,by)
+     ,@body))
+
+(def indentation ()
+  (tostring
+    (repeat (indent*) (pr " "))))
+
+(def pri (:kws . body)
+  (atomic
+    (pr file: (stderr) (indentation))
+    (apply ero body)))
+
 
 ;;;
 ;;; Primitives
@@ -68,7 +87,7 @@
   (if (valid-url img)
       (fromstring (GET img :bytes)
         (imsize "-"))
-      (map int (tokens (SHELL 'identify '-format "%w %h" img)))))
+      (map int (tokens (SHELL 'identify '-format "%w %h" (assert img))))))
 
 (def imwidth (img)
   (car (imsize img)))
@@ -89,7 +108,7 @@
 (def render-image-name ()
   (defs name (clean-name (cat (assert (or @!title @!id))))
         n    (++ (@ 'counter 0)))
-  (ero (cat name "-" n ".png") 'image-name))
+  (pri (cat name "-" n ".png") 'image-name))
 
 
 (def render-color (col)
@@ -109,7 +128,7 @@
                    (o :gravity "west")
                    (o :trim-edges "east,west")
                    (o :size "1500x@(* (round font-size) (len:lines text))"))
-  (ero `(render-text ,text))
+  (pri `(render-text ,text))
   (with img (render-image-name)
     (shell 'magick
            '-font (find-font font)
@@ -150,7 +169,7 @@
   (cat (++ unique-id*)))
 
 (def SHELL args
-  (ero `(SHELL ,@args))
+  (pri `(SHELL ,@args))
   (apply shell args))
 
 
@@ -661,8 +680,9 @@
      ,@body))
 
 (def CALL (f :kws . body)
-  (ero `(CALL ,f ,@kws ,@body))
-  (kwapply f kws body))
+  (pri `(CALL ,f ,@kws ,@body))
+  (w/indent
+    (kwapply f kws body)))
 
 (mac CENTER body
   `(tag center ,@body))
@@ -887,7 +907,7 @@
 
 (def IMAGE (:source :lowsource :width :height :align :border
             :hspace :vspace :alt :antialias-color)
-  (if antialias-color (ero 'TODO-antialias-color))
+  (if antialias-color (pri 'TODO-antialias-color))
   (when source
     (assert (is source!type 'rim) "IMAGE source must be a RENDER or FUSE result")
     (withs (path   source!path
@@ -1052,7 +1072,7 @@
              :top-margin :bottom-margin :left-margin :right-margin
              :max-height :min-height :max-width :min-width
              :thickness :intaglio :crop :expand)
-  (ero `(RENDER image: ,image text: ,text))
+  (pri `(RENDER image: ,image text: ,text))
   (if crop (err 'todo-RENDER-crop))
   (or= text-align 'left background-color 'none font 'verdana font-size 18
        top-margin 0 bottom-margin 0 left-margin 0 right-margin 0)
@@ -1107,7 +1127,7 @@
 
 ;; Copy or resize a source image (URL or local path) to a fresh output file.
 (def render-image-src (src :max-width :max-height :min-width :min-height)
-  (ero `(render-image-src ,src max-width: ,max-width max-height: ,max-height min-width: ,min-width min-height: ,min-height))
+  (pri `(render-image-src ,src max-width: ,max-width max-height: ,max-height min-width: ,min-width min-height: ,min-height))
   (with img (render-image-name)
     (if (valid-url src)
         (SHELL 'curl '-sL src '-o img)
@@ -1117,7 +1137,7 @@
 
 ;; Superimpose text over a background image via ImageMagick -annotate.
 (def render-text-over (base-src text :font :font-size :text-align :text-color)
-  (ero `(render-text-over ,base-src ,text font: ,font font-size: ,font-size text-align: ,text-align text-color: ,text-color))
+  (pri `(render-text-over ,base-src ,text font: ,font font-size: ,font-size text-align: ,text-align text-color: ,text-color))
   (let base (render-image-src base-src)
     (with img (render-image-name)
       (SHELL 'magick base
@@ -1131,7 +1151,7 @@
 
 ;; Resize to fit within max/min constraints using ImageMagick geometry.
 (def resize-rim (src max-w max-h min-w min-h)
-  (ero `(resize-rim ,src ,max-w ,max-h ,min-w ,min-h))
+  (pri `(resize-rim ,src ,max-w ,max-h ,min-w ,min-h))
   (with img (render-image-name)
     (let geom (cat (or max-w "") "x" (or max-h "")
                    (if (or min-w min-h) "^" ">"))
@@ -1139,7 +1159,7 @@
 
 ;; Add margin padding around an image using -splice and -extent.
 (def add-margins (src top bot left right bgcolor)
-  (ero `(add-margins ,src ,top ,bot ,left ,right ,bgcolor))
+  (pri `(add-margins ,src ,top ,bot ,left ,right ,bgcolor))
   (with img (render-image-name)
     (let bg (render-color (or bgcolor 'none))
       ;; Add top and left margins via splice
@@ -1156,7 +1176,7 @@
 ;; Render text onto a fixed-size transparent canvas at an explicit x offset.
 ;; Used by RENDER when min-width=max-width and min-height=max-height (button case).
 (def render-text-on-canvas (text w h :text-color :font :font-size :text-align :left-margin)
-  (ero `(render-text-on-canvas ,text ,w ,h text-color: ,text-color font: ,font font-size: ,font-size text-align: ,text-align left-margin: ,left-margin))
+  (pri `(render-text-on-canvas ,text ,w ,h text-color: ,text-color font: ,font font-size: ,font-size text-align: ,text-align left-margin: ,left-margin))
   (with img (render-image-name)
     (SHELL 'magick
            '-size (cat w "x" h) '-background 'none "xc:"
@@ -1171,7 +1191,7 @@
 ;; Apply the imbutton-style drop shadow to a transparent-background text image.
 ;; Shadow is black, 60% opacity, offset -1,-1 (upper-left), giving an embossed look.
 (def apply-shadow (src)
-  (ero `(apply-shadow ,src))
+  (pri `(apply-shadow ,src))
   (with img (render-image-name)
     (SHELL 'magick src
            "(" '+clone '-background 'black '-shadow "60x0-1-1" ")"
@@ -1182,13 +1202,13 @@
 
 ;; Flatten a transparent-background image onto a solid colored canvas.
 (def add-background (src bgcolor)
-  (ero `(add-background ,src ,bgcolor))
+  (pri `(add-background ,src ,bgcolor))
   (with img (render-image-name)
     (SHELL 'magick src '-background (render-color bgcolor) '-flatten img)))
 
 ;; Add a 3D frame around an image.
 (def add-frame (src thickness bgcolor intaglio)
-  (ero `(add-frame ,src ,thickness ,bgcolor ,intaglio))
+  (pri `(add-frame ,src ,thickness ,bgcolor ,intaglio))
   (with img (render-image-name)
     (let h (if (in thickness nil t)
                2
