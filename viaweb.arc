@@ -188,6 +188,34 @@
   )
 )
 
+;; If the current page is the search page (the type of the page is :search.) body-switch calls the search-
+;; body template, otherwise the page-body template.
+;;
+;; The first part of this template (from line 1 to 12) is currently disabled. When the variable show-path.
+;; is true, these twelve rows would display the “breadcrumbs” trail leading to the current page. However,
+;; the show-path. variable is not accessible and because its name ends with a period it cannot be created as
+;; a custom variable.
+
+(def body-switch. (wid)
+  (MULTI
+    (IF test: (@ 'show-path.)
+        then: (MULTI
+                (TEXT "[ ")
+                (WITH-LINK (TO 'index)
+                  (TEXT "Home"))
+                (TEXT " &gt; ")
+                (CALL 'walk-up.)
+                (TEXT @!name)
+                (TEXT " ]")
+                (LINEBREAK number: 2))
+        else: nil)
+    (IF test: (EQUALS value1: @!type
+                      value2: 'search)
+        then: (CALL 'search-body.
+                wid)
+        else: (CALL 'page-body.
+                wid))))
+
 ;; This template is used to generate a button in the left or top navigation bar.                           
 ;; It takes five parameters: text sets the label for the button; dest is the                               
 ;; target URL of the button; topm sets the top margin; botm sets the bottom                                
