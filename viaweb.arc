@@ -779,7 +779,6 @@
   )
 )
 
-
 ;; Page-name creates the store banner. If the name-image variable contains an image, it is used as the
 ;; store banner. This image is shown without any resizing (line 2.) If there is no name-image, then the title
 ;; variable (containing the store’s name) is used to generate a simple text image. The color of this text is
@@ -816,4 +815,18 @@
 )
 
 
+;; This template is used for sites with side-button layouts. It outputs the side navigation bar and a
+;; spacer image. The parameter vnav contains the side navigation image map. The spacer cell next to the
+;; navigation bar is 26 pixels wide (as set by the spacer image on line 5). In Figure 25 you can see the lay-
+;; out of a store with side buttons. The border of the table containing the layout has been highlighted. The
+;; leftmost cell is created by the side-nav template on line 1, while the spacer cell next to it is generated on
+;; line 4.
+
+(def side-nav. (vnav)
+  (TABLE-CELL
+    (IMAGE source: vnav
+           antialias-color @!button-edge-color))
+  (TABLE-CELL
+    (SHIM height: 1
+          width: 26)))
 

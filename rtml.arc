@@ -90,7 +90,7 @@
 
 (= unique-id* 0)
 
-(def unique-id ()
+(def UNIQUE-ID ()
   (cat (++ unique-id*)))
 
 (def SHELL args
@@ -539,25 +539,6 @@
 ;;;
 ;;;
 
-;; Inserts a line break into the current page. LINEBREAK has two
-;; optional arguments: number and clear. When number is specified, it
-;; will cause that many number of line breaks inserted into the
-;; current document. The clear parameter can take one of the following
-;; values: :none (this is the default,) :left, :right, or :all. When
-;; specified, this parameter controls the flow of text around floating
-;; objects. Floating objects are typically tables or images whose
-;; align property is set.
-(def LINEBREAK ((o :number 1) (o :clear 'none))
-  (assert (in clear 'none 'left 'right 'all)
-          "LINEBREAK argument :clear should be 'none 'left 'right or 'all")
-  (while (> number 0)
-    (if (is clear 'none)
-        (TEXT "<br>")
-        (do (TEXT "<br clear=\"")
-            (TEXT clear)
-            (TEXT "\" />")))
-    (-- number)))
-
 (mac BODY ( ; the color used for the background of the page. Usually
             ; set to @!background-color.
             :background-color
@@ -850,6 +831,7 @@
 
 (def IMAGE (:source :lowsource :width :height :align :border
             :hspace :vspace :alt :antialias-color)
+  (if antialias-color (ero 'TODO-antialias-color))
   (when source
     (assert (is source!type 'rim) "IMAGE source must be a RENDER or FUSE result")
     (withs (path   source!path
@@ -861,7 +843,7 @@
             bdr    (or border 0))
       (if (~empty spots)
           ;; Image-map case: emit <map> then <img usemap="...">
-          (let map-id (cat "map-" (unique-id))
+          (let map-id (cat "map-" (UNIQUE-ID))
             (tag map name: map-id
               (each (sx sy sw sh url) spots
                 (gentag area shape 'rect
@@ -920,6 +902,26 @@
 (def IMG (:class :id :style :title :alt :src :lowsr)
   (assert (no lowsr))
   (tag img :class :id :style :title :alt :src))
+
+;; Inserts a line break into the current page. LINEBREAK has two
+;; optional arguments: number and clear. When number is specified, it
+;; will cause that many number of line breaks inserted into the
+;; current document. The clear parameter can take one of the following
+;; values: :none (this is the default,) :left, :right, or :all. When
+;; specified, this parameter controls the flow of text around floating
+;; objects. Floating objects are typically tables or images whose
+;; align property is set.
+
+(def LINEBREAK ((o :number 1) (o :clear 'none))
+  (assert (in clear 'none 'left 'right 'all)
+          "LINEBREAK argument :clear should be 'none 'left 'right or 'all")
+  (while (> number 0)
+    (if (is clear 'none)
+        (TEXT "<br>")
+        (do (TEXT "<br clear=\"")
+            (TEXT clear)
+            (TEXT "\" />")))
+    (-- number)))
 
 (def META (:name :content)
   (err 'todo-META))
