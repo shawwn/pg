@@ -4,7 +4,17 @@
 
 (def transparent (obj r: 0 g: 0 b: 0 a: 0))
 
-(or= pages* (obj) site* nil rootdir* (expandpath "."))
+(or= pages* (obj) site* (obj) rootdir* (expandpath "."))
+
+; minimal site vars
+(or= site*!id 'test
+     site*!title "test")
+
+; counters always reset to 0 on a reload
+(= site*!counter 0)
+(each (k s) pages*
+  (ero (list k s))
+  (= s!counter 0))
 
 (defvar self*)
 
@@ -72,7 +82,7 @@
         (trim (str it) 'both #\-)))
 
 (def render-image-name ()
-  (defs name (clean-name (or @!title (cat @!id)))
+  (defs name (clean-name (cat (assert (or @!title @!id))))
         n    (++ (@ 'counter 0)))
   (ero (cat name "-" n ".png") 'image-name))
 
@@ -880,7 +890,10 @@
 ;; See also: IMAGE, RENDER
 
 (def IMAGE-REF (img)
-  (err 'todo-IMAGE-REF))
+  (if (isa!string img)
+       img
+      (assert (isa!table img))
+       (assert img!path)))
 
 ;; Emit an <IMG> HTML tag. Equivalent to the HTML <IMG> element.
 ;;
