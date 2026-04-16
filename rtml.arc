@@ -661,7 +661,7 @@
      ,@body))
 
 (def CALL (f :kws . body)
-  ;(ero `(CALL ,f ,@kws ,@body))
+  (ero `(CALL ,f ,@kws ,@body))
   (kwapply f kws body))
 
 (mac CENTER body

@@ -531,6 +531,49 @@
   )
 )
 
+;; This template generates the horizontal or vertical navigation button bar if the button-style variable is
+;; anything other than “icon”. There are two parameters:
+;;
+;;     Buttons: A sequence containing what buttons to include in the navigation bar. Typically equals to the
+;; value of the buttons property of the home page or the nav-buttons variable.
+;;
+;;     Axis: The constant :vertical or :horizontal
+;;
+;; The result is a rendered image map that can be passed to the IMAGE operator for display. The but-
+;; tons are spaced evenly and the spacing is determined by the button-edge-width variable. For horizontal
+;; buttons (top-button arrangement) the background behind the buttons (and the gap around them) will be a
+;; solid color determined by the button-edge-color variable. For vertical buttons (side-buttons arrange-
+;; ment) the gaps between the buttons are transparent. The top and bottom margins are always button-edge-
+;; width pixels high. For horizontal buttons, there is also a button-edge-width wide left and right margin.
+;; For vertical buttons, the left margin is 0, the right margin is always 2.
+
+(def nav-bar. (buttons axis)
+  (FUSE axis: axis
+        background-color: (IF test: (EQUALS value1: axis
+                                            value2: 'vertical)
+                              then: transparent
+                              else: @!button-edge-color)
+        top-margin: @!button-edge-width
+        bottom-margin: @!button-edge-width
+        left-margin: (IF test: (EQUALS value1: axis
+                                       value2: 'horizontal)
+                         then: @!button-edge-width
+                         else: 0)
+        right-margin: (IF test: (EQUALS value1: axis
+                                        value2: 'horizontal)
+                          then: @!button-edge-width
+                          else: 2)
+        spacing: @!button-edge-width
+        destination: (TO (ID*))
+    (FOR-EACH var: but
+              sequence: buttons
+      (CALL 'text-nav-button.
+        but
+        axis)
+    )
+  )
+)
+
 ;; This template creates a single icon-style button based on the type
 ;; of button needed. The type is one of the selections of the buttons
 ;; property of the home page or the nav-buttons variable (search,
@@ -969,7 +1012,7 @@
 (def side-nav. (vnav)
   (TABLE-CELL
     (IMAGE source: vnav
-           antialias-color @!button-edge-color))
+           antialias-color: @!button-edge-color))
   (TABLE-CELL
     (SHIM height: 1
           width: 26)))
