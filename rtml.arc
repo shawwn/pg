@@ -691,16 +691,16 @@
   (let ref (+ "label:This is a test label."
               " abcdefghijklmnopqrstuvwxyz"
               " ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-    (withs (base-w (int (SHELL 'magick '-background 'none
-                               '-font 'Helvetica-Bold
-                               '-pointsize 72 ref
-                               '-trim '+repage
-                               '-format "%[fx:w]" "info:"))
-            font-w (int (SHELL 'magick '-background 'none
-                               '-font (find-font font)
-                               '-pointsize 72 ref
-                               '-trim '+repage
-                               '-format "%[fx:w]" "info:")))
+    (withs (base-w (int:SHELL 'magick '-background 'none
+                              '-font 'Helvetica-Bold
+                              '-pointsize 72 ref
+                              '-trim '+repage
+                              '-format "%[fx:w]" "info:")
+            font-w (int:SHELL 'magick '-background 'none
+                              '-font (find-font font)
+                              '-pointsize 72 ref
+                              '-trim '+repage
+                              '-format "%[fx:w]" "info:"))
       (/ (* 1.0 font-w) base-w))))
 
 ;; Glues images pasted within its body into a single image, arranged either
