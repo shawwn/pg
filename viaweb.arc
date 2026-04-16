@@ -15,7 +15,7 @@
             (is @!button-edge-color
                 @!background-color))
           @!button-edge-width)
-        (- bwid (* 2 @!button-edge-width))
+        (SUB bwid (MUL 2 @!button-edge-width))
         bwid)))
 
 ;; This template takes a text string, a text color, a background color, and a width. It returns the given text turned
@@ -48,12 +48,13 @@
                   wid
                   370)
     (WITH= variable: base
-           value: (IF test: (> chars 15)
-                      then: (* 0.98 (* (/ 720 chars) (/ wid 370)))
-                      else: (- 50 (* chars 0.8)))
+           value: (IF test: (OP> value1: chars
+                                 value2: 15)
+                      then: (MUL 0.98 (MUL (DIV 720 chars) (DIV wid 370)))
+                      else: (SUB 50 (MUL chars 0.8)))
       (WITH= variable: mult
              value: (FONT-WIDTH font)
-        (/ base mult)
+        (DIV base mult)
       )
     )
   )
@@ -84,7 +85,8 @@
                              value: (CALL 'apparent-width.
                                       navbut)
                         (AND
-                          (> w 0)
+                          (OP> value1: w
+                               value2: 0)
                           w))
           (WHEN wid
             (IMAGE source: navbut))
@@ -117,8 +119,8 @@
                                  value: (WIDTH label)
                             (IF test: (AND
                                         wid
-                                        (> (+ imwid labwid 8)
-                                           wid))
+                                        (OP> value1: (ADD imwid labwid 8)
+                                             value2: wid))
                                 then: (CENTER
                                         (IMAGE source: im)
                                         (LINEBREAK number: 2))
@@ -126,7 +128,7 @@
                                              value: (HEIGHT im)
                                         (IMAGE source: im
                                                align: 'left)
-                                        (SHIM height: (+ height 8)
+                                        (SHIM height: (ADD height 8)
                                               width: 10
                                               align: 'left))
                             )
@@ -355,19 +357,20 @@
                                                 else: 0)
                                 (AND
                                   imwid
-                                  (> wid 0)
+                                  (OP> value1: wid
+                                       value2: 0)
                                   (OR
-                                    (> (+ imwid textwid 8)
-                                       wid)
-                                    (< (- wid imwid)
-                                       @!minimum-wrap-width)
+                                    (OP> value1: (ADD imwid textwid 8)
+                                         value2: wid)
+                                    (OP< value1: (SUB wid imwid)
+                                         value2: (assert @!minimum-wrap-width))
                                   )
                                 )
                               )
                             )
                       then: (MULTI
                               (TAG-WHEN tag: 'center
-                                        test: (EQUALS value1: @!page-format
+                                        test: (EQUALS value1: (assert @!page-format)
                                                       value2: 'top-buttons)
                                 (WHEN im
                                   (CALL imexpand.
@@ -395,7 +398,7 @@
                                     @!item-height
                                     @!item-width
                                     headsty)
-                                  (SHIM height: (+ height 8)
+                                  (SHIM height: (ADD height 8)
                                         width: 10
                                         align: headsty)
                                 )
@@ -486,8 +489,10 @@
         (WHEN (AND
                 h
                 w)
-          (IF test: (AND (<= h hlimit)
-                         (<= w wlimit))
+          (IF test: (AND (OP<= value1: h
+                               value2: hlimit)
+                         (OP<= value1: w
+                               value2: wlimit))
               then: 'no
               else: 'yes
           )
@@ -526,8 +531,8 @@
 (def light-color. (color)
   (AND
     color
-    (> (GRAYSCALE color)
-       180)
+    (OP> value1: (GRAYSCALE color)
+         value2: 180)
   )
 )
 
@@ -569,10 +574,7 @@
               sequence: buttons
       (CALL 'text-nav-button.
         but
-        axis)
-    )
-  )
-)
+        axis))))
 
 ;; This template creates a single icon-style button based on the type
 ;; of button needed. The type is one of the selections of the buttons
@@ -580,7 +582,6 @@
 ;; info, index, contents, etc.)
 
 (def nav-button. (type)
-  (ero `(nav-button. ,type))
   (SWITCH type
     'help
     (CALL 'imbutton.
@@ -728,6 +729,8 @@
 ;; left hand corner right above the rest of the navigation buttons.        
 
 (def nav-buttons. (buttons axis)
+  (assert buttons)
+  (assert (in axis 'horizontal 'vertical))
   (IF test: (OR
               (EQUALS value1: @!button-style
                       value2: 'text)
@@ -749,13 +752,13 @@
                                                value2: 0))
                               (CALL 'nav-bar.
                                 (ELEMENTS sequence: buttons
-                                          last: (- home-pos 1))
+                                          last: (SUB home-pos 1))
                                 axis))
                             (RENDER image: @!home-image
                                     destination: (TO 'index))
                             (CALL 'nav-bar.
                               (ELEMENTS sequence: buttons
-                                        first: (+ home-pos 1))
+                                        first: (ADD home-pos 1))
                               axis))
                    else: (CALL 'nav-bar.
                            buttons
@@ -821,7 +824,8 @@
                   )
                   (LINEBREAK)
                 )
-                (WHEN (> wid 0)
+                (WHEN (OP> value1: wid
+                           value2: 0)
                   (IMAGE source: navbut)
                 )
                 (CALL 'vspace.
@@ -840,7 +844,7 @@
                 vnav)
               (TABLE-CELL
                 (WITH= variable: wid
-                       value: (- (- @!page-width 26) vnav-wid)
+                       value: (SUB (SUB (assert @!page-width) 26) vnav-wid)
                   (WITH= variable: banner
                          value: (CALL 'page-name.
                                   wid)
@@ -1017,3 +1021,170 @@
     (SHIM height: 1
           width: 26)))
 
+(def text-nav-button. (type axis)
+  (WITH= variable: topm
+         value: (IF test: (CALL '|3d.|)
+                    then: 5
+                    else: 3)
+    (WITH= variable: botm
+           value: (IF test: (CALL '|3d.|)
+                      then: 3
+                      else: 1)
+      (WITH= variable: sidem
+             value: (assert @!button-padding)
+        (SWITCH type
+          'help
+          (CALL button.
+            "Help"
+            (ACTION 'help)
+            topm
+            botm
+            sidem)
+          'search
+          (CALL button.
+            (WITH-OBJECT 'nsearch
+              @!name)
+            (TO 'nsearch)
+            topm
+            botm
+            sidem)
+          'index
+          (CALL button.
+            "Index"
+            (TO 'ind)
+            topm
+            botm
+            sidem)
+          'info
+          (CALL button.
+            (assert @!info-text)
+            (TO 'info)
+            topm
+            botm
+            sidem)
+          'privacypolicy
+          (CALL button.
+            (assert @!privacypolicy-text)
+            (TO 'privacypolicy)
+            topm
+            botm
+            sidem)
+          'show-order
+          (CALL button.
+            (assert @!show-order-text)
+            (ACTION 'show-order)
+            topm
+            botm
+            sidem)
+          'mall
+          (WITH= variable: test
+                 value: (CALL 'button.
+                          "Test"
+                          nil
+                          topm
+                          botm
+                          sidem)
+            (CALL 'mall-button.
+              (HEIGHT test)))
+          'empty
+          (WITH= variable: test
+                 value: (CALL 'button.
+                          "Test"
+                          nil
+                          topm
+                          botm
+                          sidem)
+            (RENDER background-color: (IF test: (EQUALS value1: axis
+                                                        value2: 'horizontal)
+                                          then: (assert @!button-color)
+                                          else: transparent)
+                    top-margin: (HEIGHT (assert test))
+                    right-margin: (assert @!button-padding)
+                    thickness: (CALL '|3d.|)))
+          'up
+          (CALL button.
+            "Up"
+            (TO (OR (UP*)
+                    'index))
+            topm
+            botm
+            sidem)
+          'next
+          (CALL 'button.
+            "Next"
+            (TO (NEXT*))
+            topm
+            botm
+            sidem)
+          'home
+          (IF test: (EQUALS value1: axis
+                            value2: 'horizontal)
+              then: (CALL 'home-button.
+                      (assert @!title)
+                      (TO 'index)
+                      topm
+                      botm
+                      210
+                      (MUL sidem 2))
+              else: (IF test: (EQUALS value1: (ID*)
+                                      value2: 'index)
+                        then: (CALL 'text-nav-button.
+                                'empty
+                                nil)
+                        else: (CALL 'button.
+                                "Home"
+                                (TO 'index)
+                                topm
+                                botm
+                                sidem)
+                    )
+          )
+          'request
+          (CALL 'button.
+            (assert @!request-test)
+            (ACTION 'request)
+            topm
+            botm
+            sidem)
+          'register
+          (CALL 'button.
+            "Register"
+            (ACTION 'register)
+            topm
+            botm
+            sidem)
+          'download
+          (CALL 'button.
+            "Download"
+            (ACTION 'download)
+            topm
+            botm
+            sidem)
+          'contents
+          (WITH= variable: contents
+                 value: (WITH-OBJECT 'index
+                          (assert @!contents))
+            (FOR-EACH var: (ID*)
+                      sequence: (ELEMENTS sequence: contents
+                                          last: 25)
+              (CALL 'button.
+                (WITH-OBJECT (ID*)
+                  (assert @!name))
+                (TO (ID*))
+                topm
+                botm
+                sidem)))
+          'email
+          (WHEN (NONEMPTY @!email)
+            (CALL 'button.
+              "Email"
+              (ACTION 'email)
+              topm
+              botm
+              sidem))
+          (assert nil "text-nav-button. unknown arg @type")
+        )
+      )
+    )
+  )
+)

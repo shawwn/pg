@@ -23,7 +23,7 @@
 (defvar indent* 0)
 
 (mac w/indent ((o :by 1) . body)
-  `(w/param indent* (+ (indent*) ,by)
+  `(let (param indent*) (+ (indent*) ,by)
      ,@body))
 
 (def indentation ()
@@ -63,7 +63,7 @@
 (mac with-object (x . body)
   (w/uniq v
     `(whenlet ,v (as-object ,x)
-       (w/param self* ,v
+       (let (param self*) ,v
          ,@body))))
 
 (def as-object (x)
@@ -155,13 +155,14 @@
 ;; Fields: type='rim, path, width, height, destination, alt, hotspots.
 ;; hotspots is a list of (x y w h url) for image-map areas.
 (def make-rim (path (o :destination) (o :alt) (o :hotspots))
-  (obj type:        'rim
-       path:        path
-       width:       (imwidth path)
-       height:      (imheight path)
-       destination: destination
-       alt:         alt
-       hotspots:    (or hotspots nil)))
+  (with rim (obj type:        'rim
+                 path:        path
+                 width:       (imwidth path)
+                 height:      (imheight path)
+                 destination: destination
+                 alt:         alt
+                 hotspots:    (or hotspots nil))
+    (aif (rims*) (it rim))))
 
 (= unique-id* 0)
 
@@ -241,6 +242,56 @@
 
 (def NOT (x)
   (no x))
+
+
+
+;;;
+;;;
+;;; Binary operators
+;;;
+;;;
+
+(def assert-comparable (op x y)
+  (assert (and x (is (type x) (type y))) op))
+
+(def assert-numeric (op x)
+  (assert (or (isa!int x) (isa!num x)) op)
+  x)
+
+(def EQUALS (value1: x value2: y)
+  (is x y))
+
+(def OP< (value1: x value2: y)
+  (assert-comparable "OP<" x y)
+  (< x y))
+
+(def OP> (value1: x value2: y)
+  (assert-comparable "OP>" x y)
+  (> x y))
+
+(def OP<= (value1: x value2: y)
+  (assert-comparable "OP<=" x y)
+  (<= x y))
+
+(def OP>= (value1: x value2: y)
+  (assert-comparable "OP>=" x y)
+  (>= x y))
+
+(def ADD args
+  (all [assert-numeric "ADD" _] args)
+  (apply + args))
+
+(def SUB args
+  (all [assert-numeric "SUB" _] args)
+  (apply - args))
+
+(def MUL args
+  (all [assert-numeric "MUL" _] args)
+  (apply * args))
+
+(def DIV args
+  (all [assert-numeric "DIV" _] args)
+  (apply / args))
 
 
 
@@ -687,10 +738,6 @@
 (mac CENTER body
   `(tag center ,@body))
 
-(mac EQUALS (:value1 :value2)
-  `(is ,(assert value1)
-       ,(assert value2)))
-
 ;; FOR-EACH takes a variable and a sequence. It then assigns each
 ;; element of the sequence to the variable, one after the other, and
 ;; for each element, it evaluates the expression pasted within its
@@ -795,18 +842,23 @@
 ;;                                                                              
 ;; See also: RENDER, IMAGE
 
+(defvar rims* nil)
+
 (mac FUSE (:axis :background-color :top-margin :bottom-margin :left-margin :right-margin :spacing :destination :align :thickness . body)
-  `(fuse* axis:             ,axis
-          background-color: ,background-color
-          top-margin:       ,top-margin
-          bottom-margin:    ,bottom-margin
-          left-margin:      ,left-margin
-          right-margin:     ,right-margin
-          spacing:          ,spacing
-          destination:      ,destination
-          align:            ,align
-          thickness:        ,thickness
-          children:         (rem nil (list ,@body))))
+  (letu f
+    `(fuse* axis:             ,axis
+            background-color: ,background-color
+            top-margin:       ,top-margin
+            bottom-margin:    ,bottom-margin
+            left-margin:      ,left-margin
+            right-margin:     ,right-margin
+            spacing:          ,spacing
+            destination:      ,destination
+            align:            ,align
+            thickness:        ,thickness
+            children:         (accum ,f
+                                (let (param rims*) ,f
+                                  ,@body)))))
 
 ;; fuse* is the runtime function called by the FUSE macro.
 ;; children is a list of rim objects (results of RENDER or nested FUSE).
@@ -815,7 +867,7 @@
             :align :thickness :children)
   (or= top-margin 0 bottom-margin 0 left-margin 0 right-margin 0 spacing 0)
   (if (no children)
-      nil
+      (assert nil "Expected calls to RENDER within FUSE")
       (is (len children) 1)
       (car children)
       (withs (horiz    (is axis 'horizontal)
@@ -1048,7 +1100,7 @@
 ;;   intaglio: when set, causes text to have a "chiseled" or "incised"
 ;;     appearance.
 ;;
-;;   crop: :off, :right, or :center. If max-width is smaller than the
+;;   crop: 'off, 'right, or 'center. If max-width is smaller than the
 ;;     rendered text, determines how the text should be cropped.
 ;;
 ;;   expand: when true, the image is clickable and hyperlinked to the
@@ -1073,9 +1125,11 @@
              :max-height :min-height :max-width :min-width
              :thickness :intaglio :crop :expand)
   (pri `(RENDER image: ,image text: ,text))
-  (if crop (err 'todo-RENDER-crop))
+  (if crop (ero 'todo-RENDER-crop))
   (or= text-align 'left background-color 'none font 'verdana font-size 18
-       top-margin 0 bottom-margin 0 left-margin 0 right-margin 0)
+       top-margin 0 bottom-margin 0 left-margin 0 right-margin 0 crop 'off)
+  (assert (in text-align 'left 'right))
+  (assert (in crop 'off 'left 'right 'center))
   (let src
     (if (and image text)
         ;; Both: superimpose text over image
@@ -1259,6 +1313,13 @@
            title: ,title
      ,@body))
 
+(mac TAG-WHEN (:tag :test :kws . body)
+  (assert (caris tag 'quote) "TAG-WHEN expected :tag to be a quoted literal")
+  `(tag-if ,(assert test)
+           ,tag ,@kws
+           (do ,@body)
+           nil))
+
 (def TEXT (text)
   (if text (pr text)))
 
@@ -1273,6 +1334,9 @@
 (mac WITH-OBJECT (id . body)
   `(with-object ,id
      ,@body))
+
+(mac WITH-LINK (dest :kws . body)
+  `(tag a href: ,dest ,@kws ,@body))
 
 (def VALUE (:id :query :property)
   (assert (is query 'local) "TODO")
