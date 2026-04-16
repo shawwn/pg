@@ -1140,6 +1140,10 @@
              ;'-shade (cat (+ 45 90 90 90) "x" (+ 45 0))
              img))))
 
+(def SHIM (:height :width :align)
+  (gentag img src: "assets/images/trans_1x1.png"
+          :height :width :align border: 0))
+
 (mac TABLE (:border :align :cellspacing :cellpadding :units :width :class :id :style :title . body)
   `(tag table border: ,border
               align: ,align
