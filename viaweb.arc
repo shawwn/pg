@@ -292,6 +292,23 @@
   (CALL 'base-item.
     'group))
 
+;; Returns true if the current item has a non-zero price (either regular price or sale price.) Because item
+;; pages typically have prices, combined with the fact that item pages also have their leaf property set to
+;; “Yes” by default, this template can be used to determine if the current page is an item or a section:
+
+(def has-price. ()
+  (WITH= variable: price
+         value: (OR
+                  @!price
+                  @!sale-price)
+    (AND
+      price
+      (NOT (EQUALS value1: (ELEMENT position: 0
+                                    sequence: price)
+                   value2: 0)))
+  )
+)
+
 (def head. (wid headel headsty)
   (WITH= variable: text
          value: (IF test: (NONEMPTY @!headline)
